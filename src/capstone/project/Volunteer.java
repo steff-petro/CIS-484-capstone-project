@@ -23,20 +23,22 @@ public class Volunteer {
 
     // Default constructor
     public Volunteer() {
-        
         this.volunteerId = "Default Volunteer ID";
         this.firstName = "Default Volunteer First Name";
-        this.lastName = "Defualt Volunteer Last Name";
-
-        
-        
-        
-        
-
+        this.lastName = "Default Volunteer Last Name";
+        this.volunteerStreet = "Default Volunteer Street";
+        this.volunteerCity = "Default Volunteer City";
+        this.volunteerState = "Default Volunteer State";
+        this.volunteerZip = 00000;
+        this.email = "Default Email";
+        this.phoneNumber = "Default Phone Number";
+        this.experience = "Default Experience";
+        this.status = "Default Status";
+        this.password = "Default Password";
+        this.specialization = "Default Specialization";
     }
 
-
-// Overriden constructor
+// Overloaded constructor
     public Volunteer(String volunteerId, String firstName, String lastName, String volunteerStreet, String volunteerCity, String volunteerState, int volunteerZip, String email, String phoneNumber, String experience, String status, String password, String specialization) {
         setVolunteerId(volunteerId);
         setFirstName(firstName);
@@ -182,8 +184,5 @@ public class Volunteer {
     public void setSpecialization(String specialization) {
         this.specialization = specialization;
     }
-    
-    
-    
-    
+
 }

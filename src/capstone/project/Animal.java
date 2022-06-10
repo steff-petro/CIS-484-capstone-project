@@ -4,9 +4,6 @@ This is the Animal class
 package capstone.project;
 
 // Imports
-
-
-
 public class Animal {
 
     // Class variables and class array list
@@ -25,8 +22,8 @@ public class Animal {
 
     }
 
-    // Overriden constructor
-   public Animal(String animalId, String animalName, String animalType, int animalAge) {
+    // Overloaded constructor
+    public Animal(String animalId, String animalName, String animalType, int animalAge) {
         setAnimalId(animalId);
         setAnimalName(animalName);
         setAnimalType(animalType);
