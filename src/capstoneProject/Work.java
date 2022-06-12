@@ -1,7 +1,7 @@
 /*
 This is the Work class
  */
-package capstone.project;
+package capstoneProject;
 
 // Imports
 public class Work {

@@ -1,7 +1,7 @@
 /*
 This is the Shift class
  */
-package capstone.project;
+package capstoneProject;
 
 // Imports
 public class Shift {

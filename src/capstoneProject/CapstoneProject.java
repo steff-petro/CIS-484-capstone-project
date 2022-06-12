@@ -1,7 +1,7 @@
 /*
 delete this class once Emma adds ui main class
  */
-package capstone.project;
+package capstoneProject;
 
 
 public class CapstoneProject {

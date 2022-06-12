@@ -1,7 +1,7 @@
 /*
 This is the Drives class
  */
-package capstone.project;
+package capstoneProject;
 
 // Imports
 public class Drives {

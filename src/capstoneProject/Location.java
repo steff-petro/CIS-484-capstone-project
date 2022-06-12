@@ -1,7 +1,7 @@
 /*
 This is the Location class
  */
-package capstone.project;
+package capstoneProject;
 
 // Imports
 public class Location {

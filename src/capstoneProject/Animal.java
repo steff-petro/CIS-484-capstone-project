@@ -1,7 +1,7 @@
 /*
 This is the Animal class
  */
-package capstone.project;
+package capstoneProject;
 
 // Imports
 public class Animal {
