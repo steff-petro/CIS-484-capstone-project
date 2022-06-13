@@ -94,4 +94,9 @@ public class Work {
         this.animalId = animalId;
     }
 
+    
+    public void testMethod()  {
+        
+    }
+    
 }
