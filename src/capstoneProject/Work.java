@@ -93,10 +93,5 @@ public class Work {
     public void setAnimalId(String animalId) {
         this.animalId = animalId;
     }
-
-    
-    public void testMethod()  {
-        
-    }
     
 }
