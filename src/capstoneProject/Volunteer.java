@@ -4,6 +4,13 @@ this is the Volunteer class
 package capstoneProject;
 
 // Imports
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import oracle.jdbc.pool.OracleDataSource;
+
 public class Volunteer {
 
     // Data fields
@@ -21,6 +28,7 @@ public class Volunteer {
     String personalInfo;
     String experience;
     String status;
+    String password;
     
     static int volunteerCount = 0;
     
@@ -40,6 +48,7 @@ public class Volunteer {
         this.personalInfo = "none";
         this.experience = "Default Experience";
         this.status = "admin";
+        this.password = "TestPassword123!";
         
         volunteerCount++;
     }
@@ -47,7 +56,7 @@ public class Volunteer {
     // Overloaded constructor
     public Volunteer(String volunteerID, String firstName, String lastName, String dateOfBirth, 
             String email, String phone, String specialization, String street, String city, 
-            String state, int zip, String personalInfo, String experience, String status) {
+            String state, int zip, String personalInfo, String experience, String status, String password) {
         
         this.volunteerID = "volunteer" + volunteerCount;
         this.firstName = firstName;
@@ -63,6 +72,7 @@ public class Volunteer {
         this.personalInfo = personalInfo;
         this.experience = experience;
         this.status = status;
+        this.password = password;
         
         volunteerCount++;
     }
@@ -177,6 +187,62 @@ public class Volunteer {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public String getPassword() {
+        return this.password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    public void writeVolunteer() {
+        String insertVolunteer = "INSERT INTO Volunteer VALUES (";
+        insertVolunteer += "'" + this.getVolunteerID() + "',";
+        insertVolunteer += "'" + this.getFirstName() + "',";
+        insertVolunteer += "'" + this.getLastName() + "',";
+        insertVolunteer += "'" + this.getDateOfBirth() + "',";
+        insertVolunteer += "'" + this.getStreet() + "',";
+        insertVolunteer += "'" + this.getCity() + "',";
+        insertVolunteer += "'" + this.getState() + "',";
+        insertVolunteer += " " + this.getZip() + " ,";
+        insertVolunteer += "'" + this.getEmail() + "',";
+        insertVolunteer += "'" + this.getPhone() + "',";
+        insertVolunteer += "'" + this.getExperience() + "',";
+        insertVolunteer += "'" + this.getStatus() + "',";
+        insertVolunteer += "'" + this.getPassword() + "',";
+        insertVolunteer += "'" + this.getSpecialization() + "',";
+        insertVolunteer += "'" + this.getPersonalInfo() + "')";
+        sendDBCommand(insertVolunteer);
+    }
+
+    public void sendDBCommand(String sqlQuery) {
+        Connection dbConn;
+        Statement commStmt;
+        ResultSet dbResults;
+        // Set up your connection strings
+        // IF YOU ARE IN CIS330 NOW: use YOUR Oracle Username/Password
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser"; // Change to YOUR Oracle username
+        String userPASS = "javapass"; // Change to YOUR Oracle password
+        OracleDataSource ds;
+
+        // Clear Box Testing - Print each query to check SQL syntax
+        //  sent to this method.
+        // You can comment this line out when your program is finished
+        System.out.println(sqlQuery);
+
+        // Lets try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            dbResults = commStmt.executeQuery(sqlQuery);
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
     }
 
 }
