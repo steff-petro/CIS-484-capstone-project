@@ -41,6 +41,9 @@ public class MainWindow {
     VBox eventVBox = new VBox();
     
     // Buttons for admin pane
+    TabPane tbPaneAdmin = new TabPane();
+    Tab tab6 = new Tab("Reports");
+    Tab tab7 = new Tab("Add/Edit Jobs");
     Button btnViewReports = new Button("View Reports");
     Button btnAddJob = new Button("Add a New Job");
     Button btnEditJobs = new Button("Edit Jobs");
@@ -53,6 +56,8 @@ public class MainWindow {
     GridPane eventPane = new GridPane();
     GridPane volunteerPane = new GridPane();
     GridPane adminPane = new GridPane();
+    GridPane adminReportsPane = new GridPane();
+    GridPane adminJobsPane = new GridPane();
 
     // Create Menu Bar
     MenuBar menuBar = new MenuBar();
@@ -103,10 +108,14 @@ public class MainWindow {
         // Volunteer Summary Pane
 
         // Admin Pane
-        adminPane.add(adminVBox, 0, 0);
-        adminVBox.setSpacing(10);
-        adminVBox.setPadding(new Insets(10, 20, 10, 20));
-        adminVBox.getChildren().addAll(btnViewReports, btnAddJob, btnEditJobs);
+//        adminPane.add(adminVBox, 0, 0);
+//        adminVBox.setSpacing(10);
+//        adminVBox.setPadding(new Insets(10, 20, 10, 20));
+//        adminVBox.getChildren().addAll(btnViewReports, btnAddJob, btnEditJobs);
+        adminPane.add(tbPaneAdmin, 0, 0);
+        tab6.setContent(adminReportsPane);
+        tab7.setContent(adminJobsPane);
+        tbPaneAdmin.getTabs().addAll(tab6,tab7);
 
         // Placing tabs in overallPane and setting content of tabs to correspoding panes
         overallPane.add(tbPane, 0, 1);
@@ -126,6 +135,8 @@ public class MainWindow {
         // Set height and width of FX controls
         tbPane.setMinHeight(primaryScene.getHeight());
         tbPane.setMinWidth(primaryScene.getWidth());
+        tbPaneAdmin.setMinHeight(primaryScene.getHeight());
+        tbPaneAdmin.setMinWidth(primaryScene.getWidth());
         jobTable.setMinWidth(primaryScene.getWidth());
         eventTable.setMinWidth(primaryScene.getWidth());
         
