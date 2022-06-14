@@ -4,6 +4,13 @@ This is the Event class
 package capstoneProject;
 
 // Imports
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import oracle.jdbc.pool.OracleDataSource;
+
 public class Event {
 
     // Class variables
@@ -73,6 +80,14 @@ public class Event {
         this.maxVolunteers = maxVolunteers;
     }
     
+    public int getRegisteredVolunteers() {
+        return this.registeredVolunteers;
+    }
+    
+    public void setRegisteredVolunteers(int registeredVolunteers) {
+        this.registeredVolunteers = registeredVolunteers;
+    }
+    
     public String getEventDescription() {
         return this.eventDescription;
     }
@@ -96,4 +111,47 @@ public class Event {
     public void setSpotsLeft(int spotsLeft) {
         this.spotsLeft = spotsLeft;
     }
+    
+    public void writeEvent() {
+        String insertEvent = "INSERT INTO Event VALUES (";
+        insertEvent += "'" + this.getEventID() + "',";
+        insertEvent += "'" + this.getEventName() + "',";
+        insertEvent += " " + this.getMaxVolunteers() + ",";
+        insertEvent += " " + this.getRegisteredVolunteers() + ",";
+        insertEvent += " " + this.getSpotsLeft() + ",";
+        insertEvent += "'" + this.getEventTime() + "',";
+        insertEvent += "'" + this.getEventDate() + "',";
+        insertEvent += "'" + this.getEventDescription() + "',";
+        insertEvent += "'" + this.getLocationID() + "')";
+        sendDBCommand(insertEvent);
+    }
+
+    public void sendDBCommand(String sqlQuery) {
+        Connection dbConn;
+        Statement commStmt;
+        ResultSet dbResults;
+        // Set up your connection strings
+        // IF YOU ARE IN CIS330 NOW: use YOUR Oracle Username/Password
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser"; // Change to YOUR Oracle username
+        String userPASS = "javapass"; // Change to YOUR Oracle password
+        OracleDataSource ds;
+
+        // Clear Box Testing - Print each query to check SQL syntax
+        //  sent to this method.
+        // You can comment this line out when your program is finished
+        System.out.println(sqlQuery);
+
+        // Lets try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            dbResults = commStmt.executeQuery(sqlQuery);
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+    }
+    
 }
