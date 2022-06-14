@@ -4,12 +4,20 @@ This is the Animal class
 package capstoneProject;
 
 // Imports
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import oracle.jdbc.pool.OracleDataSource;
+
 public class Animal {
 
     // Class variables and class array list
     private String animalId;
     private String animalName;
-    private String animalType;
+    private String animalSpecies;
+    private String animalBreed;
     private int animalAge;
 
     // Default Constructor
@@ -17,16 +25,16 @@ public class Animal {
 
         this.animalId = "Default Animal ID";
         this.animalName = "Default Animal Name";
-        this.animalType = "Default Animal Type";
+        this.animalSpecies = "Default Animal Type";
         this.animalAge = 0;
 
     }
 
     // Overloaded constructor
-    public Animal(String animalId, String animalName, String animalType, int animalAge) {
+    public Animal(String animalId, String animalName, String animalSpecies, int animalAge) {
         setAnimalId(animalId);
         setAnimalName(animalName);
-        setAnimalType(animalType);
+        setAnimalSpecies(animalSpecies);
         setAnimalAge(animalAge);
 
     }
@@ -51,14 +59,22 @@ public class Animal {
         this.animalName = animalName;
     }
 
-    // @return the animalType
-    public String getAnimalType() {
-        return animalType;
+    // @return the animalSpecies
+    public String getAnimalSpecies() {
+        return animalSpecies;
     }
 
-    // @param animalType the animalType to set
-    public void setAnimalType(String animalType) {
-        this.animalType = animalType;
+    // @param animalSpecies the animalSpecies to set
+    public void setAnimalSpecies(String animalSpecies) {
+        this.animalSpecies = animalSpecies;
+    }
+    
+    public String getAnimalBreed() {
+        return this.animalBreed;
+    }
+
+    public void setAnimalBreed(String animalBreed) {
+        this.animalBreed = animalBreed;
     }
 
     // @return the animalAge
@@ -69,6 +85,44 @@ public class Animal {
     // @param animalAge the animalAge to set
     public void setAnimalAge(int animalAge) {
         this.animalAge = animalAge;
+    }
+    
+    public void writeAnimal() {
+        String insertAnimal = "INSERT INTO Animal VALUES (";
+        insertAnimal += "'" + this.getAnimalId() + "',";
+        insertAnimal += "'" + this.getAnimalName() + "',";
+        insertAnimal += "'" + this.getAnimalSpecies() + "',";
+        insertAnimal += "'" + this.getAnimalBreed() + "',";
+        insertAnimal += " " + this.getAnimalAge() + ")";
+        sendDBCommand(insertAnimal);
+    }
+
+    public void sendDBCommand(String sqlQuery) {
+        Connection dbConn;
+        Statement commStmt;
+        ResultSet dbResults;
+        // Set up your connection strings
+        // IF YOU ARE IN CIS330 NOW: use YOUR Oracle Username/Password
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser"; // Change to YOUR Oracle username
+        String userPASS = "javapass"; // Change to YOUR Oracle password
+        OracleDataSource ds;
+
+        // Clear Box Testing - Print each query to check SQL syntax
+        //  sent to this method.
+        // You can comment this line out when your program is finished
+        System.out.println(sqlQuery);
+
+        // Lets try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            dbResults = commStmt.executeQuery(sqlQuery);
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
     }
 
 }
