@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import javafx.collections.*;
 import java.util.*;
 import javafx.scene.control.cell.*;
+import javafx.scene.control.TabPane.*;
 
 public class MainWindow {
 
@@ -112,6 +113,9 @@ public class MainWindow {
 //        adminVBox.setSpacing(10);
 //        adminVBox.setPadding(new Insets(10, 20, 10, 20));
 //        adminVBox.getChildren().addAll(btnViewReports, btnAddJob, btnEditJobs);
+        //So tabs cannot close
+        tbPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+        tbPaneAdmin.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         adminPane.add(tbPaneAdmin, 0, 0);
         tab6.setContent(adminReportsPane);
         tab7.setContent(adminJobsPane);
