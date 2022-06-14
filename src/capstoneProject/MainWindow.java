@@ -22,7 +22,7 @@ public class MainWindow {
     String volunteerID;
     
     // Storing data in memory
-    
+    ArrayList<Event> eventList = new ArrayList<>();
     ArrayList<Job> jobList = new ArrayList<>();
 
 //     JavaFX Controls
@@ -41,13 +41,12 @@ public class MainWindow {
     ObservableList<Event> eventTableData = FXCollections.observableArrayList();
     VBox eventVBox = new VBox();
     
-    // Buttons for admin pane
+    // Tabs for admin pane
     TabPane tbPaneAdmin = new TabPane();
     Tab tab6 = new Tab("Reports");
     Tab tab7 = new Tab("Add/Edit Jobs");
-    Button btnViewReports = new Button("View Reports");
-    Button btnAddJob = new Button("Add a New Job");
-    Button btnEditJobs = new Button("Edit Jobs");
+    Tab tab8 = new Tab("Add/Edit Events");
+    ComboBox selectEditJob = new ComboBox<>();
     VBox adminVBox = new VBox();
 
     // Create GridPanes for all tabs
@@ -59,6 +58,7 @@ public class MainWindow {
     GridPane adminPane = new GridPane();
     GridPane adminReportsPane = new GridPane();
     GridPane adminJobsPane = new GridPane();
+    GridPane adminEventsPane = new GridPane();
 
     // Create Menu Bar
     MenuBar menuBar = new MenuBar();
@@ -109,17 +109,17 @@ public class MainWindow {
         // Volunteer Summary Pane
 
         // Admin Pane
-//        adminPane.add(adminVBox, 0, 0);
-//        adminVBox.setSpacing(10);
-//        adminVBox.setPadding(new Insets(10, 20, 10, 20));
-//        adminVBox.getChildren().addAll(btnViewReports, btnAddJob, btnEditJobs);
         //So tabs cannot close
         tbPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         tbPaneAdmin.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         adminPane.add(tbPaneAdmin, 0, 0);
+        // tabs on admin pane
         tab6.setContent(adminReportsPane);
         tab7.setContent(adminJobsPane);
-        tbPaneAdmin.getTabs().addAll(tab6,tab7);
+        tab8.setContent(adminEventsPane);
+        tbPaneAdmin.getTabs().addAll(tab6,tab7,tab8);
+        addJobTab();
+        addEventsTab();
 
         // Placing tabs in overallPane and setting content of tabs to correspoding panes
         overallPane.add(tbPane, 0, 1);
@@ -166,6 +166,10 @@ public class MainWindow {
         
         eventTable.getColumns().addAll(tblcEventID, tblcEventName, tblcEventDate, tblcEventTime, tblcMaxVolunteers, tblcSpotsLeft, tblcEventDescription);
         
+        tblcEventName.setMinWidth(150);
+        tblcEventDescription.setMinWidth(200);
+        
+        
         // Populate job table data
         jobTable.setItems(jobTableData);
         TableColumn tblcJobID = new TableColumn("ID");
@@ -194,23 +198,16 @@ public class MainWindow {
         miEditAccount.setOnAction(e -> {
             editAccountWindow();
         });
-        // View reports button action
-        btnViewReports.setOnAction(e -> {
-            reportsWindow();
-        });
-        // Add Job button action
-        btnAddJob.setOnAction(e -> {
-            addJobWindow();
-        });
+       
     }
     
-    public void addJobWindow() {
+    public void addJobTab() {
         Label lblJobID = new Label("Job ID:");
         Label lblJobName = new Label("Name:");
         Label lblJobType = new Label("Type:");
         Label lblJoblocation = new Label("Location:");
         Label lblJobNotes = new Label("Notes:");
-        TextField txtJobID = new TextField();
+        Text txtJobID = new Text();
         TextField txtJobName = new TextField();
         TextField txtJobType = new TextField();
         TextField txtJoblocation = new TextField();
@@ -224,14 +221,13 @@ public class MainWindow {
         HBox locationHBox = new HBox(lblJoblocation, txtJoblocation);
         HBox notesHBox = new HBox(lblJobNotes, txtJobNotes);
         
-        GridPane addJobPane = new GridPane();
-        addJobPane.setAlignment(Pos.CENTER);
+        adminJobsPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_CENTER);
         rightVBox.setAlignment(Pos.TOP_CENTER);
         
-        addJobPane.add(leftVBox, 0, 0);
-        addJobPane.add(rightVBox, 1, 0);
-        addJobPane.add(btnAddNewJob, 1, 4);
+        adminJobsPane.add(leftVBox, 0, 0);
+        adminJobsPane.add(rightVBox, 1, 0);
+        adminJobsPane.add(btnAddNewJob, 1, 4);
         
         idHBox.setSpacing(10);
         nameHBox.setSpacing(10);
@@ -247,12 +243,6 @@ public class MainWindow {
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
         rightVBox.getChildren().addAll(locationHBox, notesHBox);
         
-        Stage primaryStage = new Stage();
-        Scene primaryScene = new Scene(addJobPane, 600, 400);
-        primaryStage.setScene(primaryScene);
-        primaryStage.setTitle("Add a New Job");
-        primaryStage.show();
-        
         // Add Job button action
         btnAddNewJob.setOnAction(e -> {
             Job tempJob = new Job();
@@ -265,9 +255,74 @@ public class MainWindow {
                     "New job has been added to the list.",
                     ButtonType.OK);
             confirmAddJob.show();
-            primaryStage.close();
         });
         
+    }
+    
+    public void addEventsTab() {
+        Label lblEventID = new Label("Event ID:");
+        Label lblEventName = new Label("Name:");
+        Label lblEventDate = new Label("Date:");
+        Label lblEventTime = new Label("Time:");
+        Label lblMaxVolunteers = new Label("Max Volunteers:");
+        Label lblEventDescription = new Label("Description:");
+        Label lblLocation = new Label("Location:");
+        Text txtEventID = new Text();
+        TextField txtEventName = new TextField();
+        TextField txtEventDate = new TextField();
+        TextField txtEventTime = new TextField();
+        TextField txtMaxVolunteers = new TextField();
+        TextField txtEventDescription = new TextField();
+        TextField txtLocation = new TextField();
+        Button btnAddNewEvent = new Button("Add Event");
+        VBox leftVBox = new VBox();
+        VBox rightVBox = new VBox();
+        HBox idHBox = new HBox(lblEventID, txtEventID);
+        HBox nameHBox = new HBox(lblEventName, txtEventName);
+        HBox dateHBox = new HBox(lblEventDate, txtEventDate);
+        HBox timeHBox = new HBox(lblEventTime, txtEventTime);
+        HBox maxVolHBox = new HBox(lblMaxVolunteers, txtMaxVolunteers);
+        HBox descHBox = new HBox(lblEventDescription, txtEventDescription);
+        HBox locationHBox = new HBox(lblLocation, txtLocation);
+        
+        adminEventsPane.setAlignment(Pos.CENTER);
+        leftVBox.setAlignment(Pos.TOP_CENTER);
+        rightVBox.setAlignment(Pos.TOP_CENTER);
+        
+        adminEventsPane.add(leftVBox, 0, 0);
+        adminEventsPane.add(rightVBox, 1, 0);
+        adminEventsPane.add(btnAddNewEvent, 1, 4);
+        
+        idHBox.setSpacing(10);
+        nameHBox.setSpacing(10);
+        dateHBox.setSpacing(10);
+        timeHBox.setSpacing(10);
+        maxVolHBox.setSpacing(10);
+        descHBox.setSpacing(10);
+        locationHBox.setSpacing(10);
+        
+        leftVBox.setSpacing(10);
+        leftVBox.setPadding(new Insets(10, 20, 10, 20));
+        leftVBox.getChildren().addAll(idHBox, nameHBox, dateHBox, timeHBox);
+        
+        rightVBox.setSpacing(10);
+        rightVBox.setPadding(new Insets(10, 20, 10, 20));
+        rightVBox.getChildren().addAll(maxVolHBox, descHBox, locationHBox);
+        
+        // Add Job button action
+        btnAddNewEvent.setOnAction(e -> {
+            Event tempEvent = new Event("event0","ButterBeer Festival","6/15/2022",
+                    "5:00pm",4,"We will have a booth at the festival.","location0",2); // THIS IS A PLACEHOLDER EVENT
+            eventList.add(tempEvent);
+            eventTableData.clear();
+            for (Event ev: eventList) {
+                eventTableData.add(ev);
+            }
+            Alert confirmAddEvent = new Alert(Alert.AlertType.CONFIRMATION,
+                    "New event has been added to the list.",
+                    ButtonType.OK);
+            confirmAddEvent.show();
+        });
     }
 
     public void reportsWindow() {
