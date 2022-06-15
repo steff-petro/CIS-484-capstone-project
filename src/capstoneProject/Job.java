@@ -93,19 +93,16 @@ public class Job {
         Connection dbConn;
         Statement commStmt;
         ResultSet dbResults;
-        // Set up your connection strings
-        // IF YOU ARE IN CIS330 NOW: use YOUR Oracle Username/Password
+        // Set up connection strings
         String URL = "jdbc:oracle:thin:@localhost:1521:XE";
         String userID = "javauser"; // Change to YOUR Oracle username
         String userPASS = "javapass"; // Change to YOUR Oracle password
         OracleDataSource ds;
 
-        // Clear Box Testing - Print each query to check SQL syntax
-        //  sent to this method.
-        // You can comment this line out when your program is finished
+        // Print each query to check SQL syntax sent to this method.
         System.out.println(sqlQuery);
 
-        // Lets try to connect
+        // Try to connect
         try {
             ds = new OracleDataSource();
             ds.setURL(URL);

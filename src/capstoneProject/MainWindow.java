@@ -43,6 +43,7 @@ public class MainWindow {
     Tab tab6 = new Tab("Reports");
     Tab tab7 = new Tab("Add/Edit Jobs");
     Tab tab8 = new Tab("Add/Edit Events");
+    Tab tab9 = new Tab("Review Volunteer Applications");
     ComboBox selectEditJob = new ComboBox<>();
     VBox adminVBox = new VBox();
 
@@ -56,6 +57,7 @@ public class MainWindow {
     GridPane adminReportsPane = new GridPane();
     GridPane adminJobsPane = new GridPane();
     GridPane adminEventsPane = new GridPane();
+    GridPane adminApplyPane = new GridPane();
 
     // Create Menu Bar
     MenuBar menuBar = new MenuBar();
@@ -114,7 +116,8 @@ public class MainWindow {
         tab6.setContent(adminReportsPane);
         tab7.setContent(adminJobsPane);
         tab8.setContent(adminEventsPane);
-        tbPaneAdmin.getTabs().addAll(tab6,tab7,tab8);
+        tab9.setContent(adminApplyPane);
+        tbPaneAdmin.getTabs().addAll(tab6,tab7,tab8,tab9);
         addJobTab();
         addEventsTab();
 
