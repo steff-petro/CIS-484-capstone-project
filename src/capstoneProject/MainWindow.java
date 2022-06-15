@@ -43,7 +43,7 @@ public class MainWindow {
     Tab tab6 = new Tab("Reports");
     Tab tab7 = new Tab("Add/Edit Jobs");
     Tab tab8 = new Tab("Add/Edit Events");
-    Tab tab9 = new Tab("Review Volunteer Applications");
+    Tab tab9 = new Tab("Manage Volunteers");
     ComboBox selectEditJob = new ComboBox<>();
     VBox adminVBox = new VBox();
 
