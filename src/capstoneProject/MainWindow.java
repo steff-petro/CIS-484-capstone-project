@@ -1,8 +1,5 @@
 package capstoneProject;
 
-import capstoneProject.BarkApplication;
-import capstoneProject.Event;
-import capstoneProject.Job;
 import javafx.geometry.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -450,6 +447,13 @@ public class MainWindow {
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("Edit Account");
         primaryStage.show();
+        
+        submit.setOnAction(e -> {
+            Alert confirmChanges = new Alert(Alert.AlertType.CONFIRMATION,
+                    "Account changes have been saved.",
+                    ButtonType.OK);
+            confirmChanges.show();
+        });
     }
     
   
