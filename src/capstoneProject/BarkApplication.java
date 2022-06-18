@@ -19,7 +19,7 @@ import oracle.jdbc.pool.OracleDataSource;
 public class BarkApplication extends Application {
 
     // Volunteer ArrayList
-    ArrayList<Volunteer> volunteerList = new ArrayList<>();
+//    ArrayList<Volunteer> volunteerList = new ArrayList<>();
     
 //     JavaFX Controls for Sign In page
 //    // Create GridPanes for all tabs
@@ -63,6 +63,8 @@ public class BarkApplication extends Application {
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("BARK Volunteer Information System");
         primaryStage.show();
+        
+        readVolunteerData();
 
         // Actions to open main form when user logs in or open create account form
         btnCheckIn.setOnAction(e -> {
@@ -76,7 +78,10 @@ public class BarkApplication extends Application {
                 MainWindow mainW = new MainWindow(this, volunteerID);
                 primaryStage.close();
             } else {
-                // Make a popup window display that says: this user does not exist or something like that
+                Alert invalidInput = new Alert(Alert.AlertType.ERROR,
+                    "Incorrect user credentials.",
+                    ButtonType.OK);
+            invalidInput.show();
             }
 
         });
@@ -132,8 +137,11 @@ public class BarkApplication extends Application {
                         dbVolunteers.getNString("STATUS"),
                         dbVolunteers.getNString("PASSWORD")
                 );
-                volunteerList.add(dbVolunteer);
-                System.out.println(dbVolunteer.firstName + " " + dbVolunteer.lastName + " " + dbVolunteer.status);
+                Volunteer.volunteerArrayList.add(dbVolunteer);
+//                System.out.println(dbVolunteer.firstName + " " + dbVolunteer.lastName + " " + dbVolunteer.status);
+            }
+            for (Volunteer v: Volunteer.volunteerArrayList) {
+                System.out.println(v.firstName + " " + v.lastName + " " + v.volunteerID + " " + v.password);
             }
             
         } catch (SQLException e) {

@@ -262,7 +262,7 @@ public class Volunteer {
     
     
     // Only use this method once the user has logged in and it has been verified that the user exists or it might return wrong volunteer
-    public Volunteer returnVolunteerObject(String volunteerID) {
+    public static Volunteer returnVolunteerObject(String volunteerID) {
         Volunteer myObject;
         int index = 0;
         for (int i = 0; i < volunteerArrayList.size(); i++) {

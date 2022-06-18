@@ -22,7 +22,7 @@ public class MainWindow {
 
     
     // Storing data in memory
-    ArrayList<Volunteer> volunteerList = new ArrayList<>();
+//    ArrayList<Volunteer> volunteerList = new ArrayList<>();
     ArrayList<Job> jobList = new ArrayList<>();
     ArrayList<Event> eventList = new ArrayList<>();
     ArrayList<Animal> animalList = new ArrayList<>();
@@ -216,7 +216,8 @@ public class MainWindow {
 
         // Menu Bar item actions
         miEditAccount.setOnAction(e -> {
-//            editAccountWindow();
+            Volunteer currentUser = Volunteer.returnVolunteerObject(currentLoggedInUser);
+            editAccountWindow(currentUser);
         });
 
     }
@@ -418,7 +419,7 @@ public class MainWindow {
         btnDelete.setOnAction(e -> {
             Volunteer selectedVolunteer = currentVolList.getSelectionModel().getSelectedItem();
             currentVolunteers.remove(selectedVolunteer);
-            volunteerList.remove(selectedVolunteer);
+            Volunteer.volunteerArrayList.remove(selectedVolunteer);
         });
 
         // Edit Button actions
@@ -589,7 +590,7 @@ public class MainWindow {
                         dbVolunteers.getNString("PASSWORD")
                 );
 
-                volunteerList.add(dbVolunteer);
+                Volunteer.volunteerArrayList.add(dbVolunteer);
                 if (dbVolunteer.status.equals("conditional")) {
                     conditionalVolunteers.add(dbVolunteer);
                 }
