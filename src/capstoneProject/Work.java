@@ -14,41 +14,43 @@ import oracle.jdbc.pool.OracleDataSource;
 public class Work {
 
     // Class variables
-    private String workId;
+    private String workID;
     private String workStatus;
-    private String volunteerId;
-    private String jobId;
-    private String eventId;
-    private String animalId;
+    private String volunteerID;
+    private String jobID;
+    private String eventID;
+    private String animalID;
+    
+    static int workCount;
 
     // Default constructor
     public Work() {
-        this.workId = "Default Work ID";
+        this.workID = "Default Work ID";
         this.workStatus = "Default Work Status";
-        this.volunteerId = "Default Volunteer ID";
-        this.jobId = "Default Job ID";
-        this.eventId = "Default Event ID";
-        this.animalId = "Default Animal ID";
+        this.volunteerID = "Default Volunteer ID";
+        this.jobID = "Default Job ID";
+        this.eventID = "Default Event ID";
+        this.animalID = "Default Animal ID";
     }
 
     // Overloaded constructor
-    public Work(String workId, String workStatus, String volunteerId, String jobId, String eventId, String animalId) {
-        setWorkId(workId);
-        setWorkStatus(workStatus);
-        setVolunteerId(volunteerId);
-        setJobId(jobId);
-        setEventId(eventId);
-        setAnimalId(animalId);
+    public Work(String workID, String workStatus, String volunteerID, String jobID, String eventID, String animalID) {
+        this.workID = workID;
+        this.workStatus = workStatus;
+        this.volunteerID = volunteerID;
+        this.jobID = jobID;
+        this.eventID = eventID;
+        this.animalID = animalID;
     }
 
-    // @return the workId
-    public String getWorkId() {
-        return workId;
+    // @return the workID
+    public String getWorkID() {
+        return workID;
     }
 
-    // @param workId the workId to set
-    public void setWorkId(String workId) {
-        this.workId = workId;
+    // @param workID the workID to set
+    public void setWorkID(String workID) {
+        this.workID = workID;
     }
 
     // @return the workStatus
@@ -61,54 +63,54 @@ public class Work {
         this.workStatus = workStatus;
     }
 
-    // @return the volunteerId
-    public String getVolunteerId() {
-        return volunteerId;
+    // @return the volunteerID
+    public String getVolunteerID() {
+        return volunteerID;
     }
 
-    // @param volunteerId the volunteerId to set
-    public void setVolunteerId(String volunteerId) {
-        this.volunteerId = volunteerId;
+    // @param volunteerID the volunteerID to set
+    public void setVolunteerId(String volunteerID) {
+        this.volunteerID = volunteerID;
     }
 
-    // @return the jobId
-    public String getJobId() {
-        return jobId;
+    // @return the jobID
+    public String getJobID() {
+        return jobID;
     }
 
-    // @param jobId the jobId to set
-    public void setJobId(String jobId) {
-        this.jobId = jobId;
+    // @param jobID the jobID to set
+    public void setJobID(String jobID) {
+        this.jobID = jobID;
     }
 
-    // @return the eventId
-    public String getEventId() {
-        return eventId;
+    // @return the eventID
+    public String getEventID() {
+        return eventID;
     }
 
-    // @param eventId the eventId to set
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
+    // @param eventID the eventID to set
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
     }
 
-    // @return the animalId
-    public String getAnimalId() {
-        return animalId;
+    // @return the animalID
+    public String getAnimalID() {
+        return animalID;
     }
 
-    // @param animalId the animalId to set
-    public void setAnimalId(String animalId) {
-        this.animalId = animalId;
+    // @param animalID the animalID to set
+    public void setAnimalID(String animalIdD) {
+        this.animalID = animalID;
     }
     
     public void writeWork() {
         String insertAnimal = "INSERT INTO Work VALUES (";
-        insertAnimal += "'" + this.getWorkId()+ "',";
+        insertAnimal += "'" + this.getWorkID()+ "',";
         insertAnimal += "'" + this.getWorkStatus() + "',";
-        insertAnimal += "'" + this.getVolunteerId()+ "',";
-        insertAnimal += "'" + this.getJobId()+ "',";
-        insertAnimal += "'" + this.getEventId()+ "',";
-        insertAnimal += "'" + this.getAnimalId()+ "')";
+        insertAnimal += "'" + this.getVolunteerID()+ "',";
+        insertAnimal += "'" + this.getJobID()+ "',";
+        insertAnimal += "'" + this.getEventID()+ "',";
+        insertAnimal += "'" + this.getAnimalID()+ "')";
         sendDBCommand(insertAnimal);
     }
 

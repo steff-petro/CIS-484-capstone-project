@@ -14,16 +14,18 @@ import oracle.jdbc.pool.OracleDataSource;
 public class Animal {
 
     // Class variables and class array list
-    private String animalId;
+    private String animalID;
     private String animalName;
     private String animalSpecies;
     private String animalBreed;
     private int animalAge;
+    
+    static int animalCount = 0;
 
     // Default Constructor
     public Animal() {
 
-        this.animalId = "Default Animal ID";
+        this.animalID = "Default Animal ID";
         this.animalName = "Default Animal Name";
         this.animalSpecies = "Default Animal Type";
         this.animalAge = 0;
@@ -31,22 +33,25 @@ public class Animal {
     }
 
     // Overloaded constructor
-    public Animal(String animalId, String animalName, String animalSpecies, int animalAge) {
-        setAnimalId(animalId);
-        setAnimalName(animalName);
-        setAnimalSpecies(animalSpecies);
-        setAnimalAge(animalAge);
+    public Animal(String animalID, String animalName, String animalSpecies, String animalBreed, int animalAge) {
+        this.animalID = "animal" + animalCount;
+        this.animalName = animalName;
+        this.animalSpecies = animalSpecies;
+        this.animalBreed = animalBreed;
+        this.animalAge = animalAge;
+        
+        animalCount++;
 
     }
 
     // @return the animalId
-    public String getAnimalId() {
-        return animalId;
+    public String getAnimalID() {
+        return animalID;
     }
 
     // @param animalId the animalID to set
-    public void setAnimalId(String animalId) {
-        this.animalId = animalId;
+    public void setAnimalID(String animalID) {
+        this.animalID = animalID;
     }
 
     // @return the animalName
@@ -89,7 +94,7 @@ public class Animal {
     
     public void writeAnimal() {
         String insertAnimal = "INSERT INTO Animal VALUES (";
-        insertAnimal += "'" + this.getAnimalId() + "',";
+        insertAnimal += "'" + this.getAnimalID() + "',";
         insertAnimal += "'" + this.getAnimalName() + "',";
         insertAnimal += "'" + this.getAnimalSpecies() + "',";
         insertAnimal += "'" + this.getAnimalBreed() + "',";

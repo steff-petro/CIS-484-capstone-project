@@ -41,7 +41,7 @@ public class Location {
     }
 
     public Location(String location, String name, String street, String city, String state, int zip, String type) {
-        this.locationID = "Location" + locationCount;
+        this.locationID = "location" + locationCount;
         this.name = name;
         this.street = street;
         this.city = city;

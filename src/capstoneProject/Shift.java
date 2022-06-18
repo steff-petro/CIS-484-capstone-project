@@ -14,35 +14,39 @@ import oracle.jdbc.pool.OracleDataSource;
 public class Shift {
 
     // Class variables
-    private String shiftId;
+    private String shiftID;
     private double clockIn;
     private double clockOut; // Should probably add a total time in system variable to track the total
-    private String volunteerId;
+    private String volunteerID;
+    
+    static int shiftCount;
     
     // Default constructor
     public Shift() {
-        this.shiftId = "Default Shift ID";
+        this.shiftID = "Default Shift ID";
         this.clockIn = 00.00;
         this.clockOut = 00.00;
-        this.volunteerId = "Default Volunteer ID";
+        this.volunteerID = "Default Volunteer ID";
     }
 
     // Overloaded constructor
-    public Shift(String shiftId, double clockIn, double clockOut, String volunteerId) {
-        setShiftId(shiftId);
-        setClockIn(clockIn);
-        setClockOut(clockOut);
-        setVolunteerId(volunteerId);
+    public Shift(String shiftID, double clockIn, double clockOut, String volunteerID) {
+        this.shiftID = "shift" + shiftCount;
+        this.clockIn = clockIn;
+        this.clockOut = clockOut;
+        this.volunteerID = volunteerID;
+        
+        shiftCount++;
     }
 
-    // @return the shiftId
-    public String getShiftId() {
-        return shiftId;
+    // @return the shiftID
+    public String getShiftID() {
+        return shiftID;
     }
 
-    // @param shiftId the shiftId to set
-    public void setShiftId(String shiftId) {
-        this.shiftId = shiftId;
+    // @param shiftID the shiftID to set
+    public void setShiftID(String shiftID) {
+        this.shiftID = shiftID;
     }
 
     // @return the clockIn
@@ -66,21 +70,21 @@ public class Shift {
     }
 
     // @return the volunteerId
-    public String getVolunteerId() {
-        return volunteerId;
+    public String getVolunteerID() {
+        return volunteerID;
     }
 
     // @param volunteerId the volunteerId to set
-    public void setVolunteerId(String volunteerId) {
-        this.volunteerId = volunteerId;
+    public void setVolunteerID(String volunteerID) {
+        this.volunteerID = volunteerID;
     }
     
     public void writeShift() {
         String insertShift = "INSERT INTO Shift VALUES (";
-        insertShift += "'" + this.getShiftId() + "',";
+        insertShift += "'" + this.getShiftID() + "',";
         insertShift += " " + this.getClockIn()+ ",";
         insertShift += " " + this.getClockOut() + ",";
-        insertShift += "'" + this.getVolunteerId()+ "')";
+        insertShift += "'" + this.getVolunteerID()+ "')";
         sendDBCommand(insertShift);
     }
 

@@ -14,61 +14,65 @@ import oracle.jdbc.pool.OracleDataSource;
 public class Drives {
 
     // Class variables
-    private String driveId;
-    private String volunteerId;
-    private String locationId;
+    private String driveID;
+    private String volunteerID;
+    private String locationID;
     private double miles;
     private String driveDate;
     private String driveNotes;
+    
+    static int driveCount;
 
     // Default constructor
     public Drives() {
-        this.driveId = "Default Drive ID";
-        this.volunteerId = "Default Volunteer ID";
-        this.locationId = "Default Location ID";
+        this.driveID = "Default Drive ID";
+        this.volunteerID = "Default Volunteer ID";
+        this.locationID = "Default Location ID";
         this.miles = 000;
         this.driveDate = "Default Drive Date";
         this.driveNotes = "Default Drive Notes";
     }
 
     // Overloaded constructor
-    public Drives(String driveId, String volunteerId, String locationId, double miles, String driveDate, String driveNotes) {
-        setDriveId(driveId);
-        setVolunteerId(volunteerId);
-        setLocationId(locationId);
-        setMiles(miles);
-        setDriveDate(driveDate);
-        setDriveNotes(driveNotes);
+    public Drives(String driveID, String volunteerID, String locationID, double miles, String driveDate, String driveNotes) {
+        this.driveID = "drive" + driveCount;
+        this.volunteerID = volunteerID;
+        this.locationID = locationID;
+        this.miles = miles;
+        this.driveDate = driveDate;
+        this.driveNotes = driveNotes;
+        
+        driveCount++;
     }
 
-    // @return the driveId
-    public String getDriveId() {
-        return driveId;
+    // @return the driveID
+    public String getDriveID() {
+        return driveID;
     }
 
-    // @param driveId the driveId to set
-    public void setDriveId(String driveId) {
-        this.driveId = driveId;
+    // @param driveID the driveID to set
+    public void setDriveId(String driveID) {
+        this.driveID = driveID;
     }
 
-    // @return the volunteerId
-    public String getVolunteerId() {
-        return volunteerId;
+    // @return the volunteerID
+    public String getVolunteerID() {
+        return volunteerID;
     }
 
-    // @param volunteerId the volunteerId to set
-    public void setVolunteerId(String volunteerId) {
-        this.volunteerId = volunteerId;
+    // @param volunteerID the volunteerID to set
+    public void setVolunteerId(String volunteerID) {
+        this.volunteerID = volunteerID;
     }
 
-    // @return the locationId
-    public String getLocationId() {
-        return locationId;
+    // @return the locationID
+    public String getLocationID() {
+        return locationID;
     }
 
-    // @param locationId the locationId to set
-    public void setLocationId(String locationId) {
-        this.locationId = locationId;
+    // @param locationID the locationID to set
+    public void setLocationId(String locationID) {
+        this.locationID = locationID;
     }
 
     // @return the miles
@@ -103,9 +107,9 @@ public class Drives {
     
     public void writeDrives() {
         String insertDrives = "INSERT INTO Drives VALUES (";
-        insertDrives += "'" + this.getDriveId() + "',";
-        insertDrives += "'" + this.getVolunteerId() + "',";
-        insertDrives += "'" + this.getLocationId() + "',";
+        insertDrives += "'" + this.getDriveID() + "',";
+        insertDrives += "'" + this.getVolunteerID() + "',";
+        insertDrives += "'" + this.getLocationID() + "',";
         insertDrives += " " + this.getMiles()+ ",";
         insertDrives += "'" + this.getDriveDate()+ "',";
         insertDrives += "'" + this.getDriveNotes() + "')";

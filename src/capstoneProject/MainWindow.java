@@ -635,6 +635,85 @@ public class MainWindow {
                     System.out.println(e.eventID);
                 }
             }
+            
+            // Reading Animal data into Animal objects
+            String animalQuery = "SELECT ANIMALID,ANIMALNAME,ANIMALSPECIES,ANIMALBREED,ANIMALAGE FROM ANIMAL";
+            ResultSet dbAnimals = commStmt.executeQuery(animalQuery);
+            System.out.println(animalQuery);
+            while (dbAnimals.next()) {
+                Animal dbAnimal = new Animal(
+                        dbAnimals.getNString("ANIMALID"),
+                        dbAnimals.getNString("ANIMALNAME"),
+                        dbAnimals.getNString("ANIMALSPECIES"),
+                        dbAnimals.getNString("ANIMALBREED"),
+                        dbAnimals.getInt("ANIMALAGE")
+                );
+                animalList.add(dbAnimal);
+            }
+            
+            // Reading Location data into Location objects
+            String locationQuery = "SELECT LOCATIONID,LOCATIONNAME,LOCATIONSTREET,LOCATIONCITY,LOCATIONSTATE,LOCATIONZIP,LOCATIONTYPE FROM LOCATION";
+            ResultSet dbLocations = commStmt.executeQuery(locationQuery);
+            System.out.println(locationQuery);
+            while (dbLocations.next()) {
+                Location dbLocation = new Location(
+                        dbLocations.getNString("LOCATIONID"),
+                        dbLocations.getNString("LOCATIONNAME"),
+                        dbLocations.getNString("LOCATIONSTREET"),
+                        dbLocations.getNString("LOCATIONCITY"),
+                        dbLocations.getNString("LOCATIONSTATE"),
+                        dbLocations.getInt("LOCATIONZIP"),
+                        dbLocations.getNString("LOCATIONTYPE")
+                );
+                locationList.add(dbLocation);
+            }
+            
+            // Reading Drive data into Drives objects
+            String driveQuery = "SELECT DRIVEID,VOLUNTEERID,LOCATIONID,MILES,DRIVEDATE,DRIVENOTES FROM DRIVES";
+            ResultSet dbDrives = commStmt.executeQuery(driveQuery);
+            System.out.println(driveQuery);
+            while (dbDrives.next()) {
+                Drives dbDrive = new Drives(
+                        dbDrives.getNString("DRIVEID"),
+                        dbDrives.getNString("VOLUNTEERID"),
+                        dbDrives.getNString("LOCATIONID"),
+                        dbDrives.getDouble("MILES"),
+                        dbDrives.getNString("DRIVEDATE"),
+                        dbDrives.getNString("DRIVENOTES")
+                );
+                drivesList.add(dbDrive);
+            }
+            
+            // Reading Work data into Work objects
+            String workQuery = "SELECT WORKID,WORKSTATUS,VOLUNTEERID,JOBID,EVENTID,ANIMALID FROM WORK";
+            ResultSet dbWorks = commStmt.executeQuery(workQuery);
+            System.out.println(workQuery);
+            while (dbWorks.next()) {
+                Work dbWork = new Work(
+                        dbWorks.getNString("WORKID"),
+                        dbWorks.getNString("WORKSTATUS"),
+                        dbWorks.getNString("VOLUNTEERID"),
+                        dbWorks.getNString("JOBID"),
+                        dbWorks.getNString("EVENTID"),
+                        dbWorks.getNString("ANIMALID")
+                );
+                workList.add(dbWork);
+            }
+            
+            // Reading Shift data into Shift objects
+            String shiftQuery = "SELECT WORKID,WORKSTATUS,VOLUNTEERID,JOBID,EVENTID,ANIMALID FROM WORK";
+            ResultSet dbShifts = commStmt.executeQuery(shiftQuery);
+            System.out.println(shiftQuery);
+            while (dbShifts.next()) {
+                Shift dbShift = new Shift(
+                        dbShifts.getNString("SHIFTID"),
+                        dbShifts.getDouble("CLOCKIN"),
+                        dbShifts.getDouble("CLOCKOUT"),
+                        dbShifts.getNString("VOLUNTEERID")
+                );
+                shiftList.add(dbShift);
+            }
+            
 
         } catch (SQLException e) {
             System.out.println(e.toString());
