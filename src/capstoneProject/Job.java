@@ -83,9 +83,9 @@ public class Job {
             String insertJob = "INSERT INTO Job VALUES (";
         insertJob += "'" + this.getJobID() + "',";
         insertJob += "'" + this.getJobName() + "',";
-        insertJob += "'" + this.getJobNotes() + "',";
         insertJob += "'" + this.getJobType() + "',";
-        insertJob += "'" + this.getLocation() + "')";
+        insertJob += "'" + this.getLocation() + "',";
+        insertJob += "'" + this.getJobNotes() + "')";
         sendDBCommand(insertJob);
     }
 
