@@ -31,7 +31,7 @@ public class Volunteer {
     String experience;
     String status;
     String password;
-    ArrayList<Volunteer> volunteerArrayList = new ArrayList<>();
+    static ArrayList<Volunteer> volunteerArrayList = new ArrayList<>();
 
     static int volunteerCount = 0;
 
@@ -246,8 +246,8 @@ public class Volunteer {
     }
 
 
-
-    public boolean verifyLogin(String volunteerID, String password) {
+    // Method that verifies if the user exists
+    public static boolean verifyLogin(String volunteerID, String password) {
 
         boolean userExists = false;
         for (int i = 0; i < volunteerArrayList.size(); i++) {
@@ -255,9 +255,6 @@ public class Volunteer {
 
             if (volunteerID.equals(myObject.volunteerID) && password.equals(myObject.password)) {
                 userExists = true;
-                // Two ways to do this:
-                // Either we can implement what user to show on each page by refering to the volunteerID which would require the user of a search method whenever that object needs to be referenced.
-                // Or, we can return the index of the object and easily refer to the object thorugh the index in the array. Problem will occur if we for some reason need to change the position of the objects
             }
         }
         return userExists;
