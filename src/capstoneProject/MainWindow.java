@@ -20,6 +20,7 @@ public class MainWindow {
     BarkApplication signInForm;
     String volunteerID;
 
+    
     // Storing data in memory
     ArrayList<Volunteer> volunteerList = new ArrayList<>();
     ArrayList<Job> jobList = new ArrayList<>();
@@ -45,7 +46,7 @@ public class MainWindow {
     ObservableList<Event> eventTableData = FXCollections.observableArrayList();
     VBox eventVBox = new VBox();
 
-    // Tabs for admin pane
+    // Tabs and controls for admin pane
     TabPane tbPaneAdmin = new TabPane();
     Tab tab6 = new Tab("Reports");
     Tab tab7 = new Tab("Add/Edit Jobs");
