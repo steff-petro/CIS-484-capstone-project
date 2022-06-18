@@ -87,9 +87,15 @@ public class MainWindow {
     Tab tab4 = new Tab("Volunteer Summary");
     Tab tab5 = new Tab("Admin");
 
+    // Class wide variable that can be used to display content related to the logged in user
+    String currentLoggedInUser;
+    
     public MainWindow(BarkApplication signInForm, String volunteerID) {
 //        this.signInForm = signInForm;
 
+        // Class wide variable that can be used to display content related to the logged in user
+        currentLoggedInUser = volunteerID;
+        
         overallPane.setAlignment(Pos.CENTER);
         homePane.setAlignment(Pos.CENTER);
         jobPane.setAlignment(Pos.CENTER);

@@ -70,10 +70,14 @@ public class BarkApplication extends Application {
             String volunteerID = textVolunteerID.getText();
             String password = textPassword.getText();
 
-            // METHOD FOR LOGIN VERIFICATION GOES HERE -- CHECK USER ID/PASSWORD, CHECK IF ADMIN
-//             if (verifyLogin()) {};
-            MainWindow mainW = new MainWindow(this, volunteerID);
-            primaryStage.close();
+            // Login verification
+            boolean userExists = Volunteer.verifyLogin(volunteerID, password);
+            if (userExists) {
+                MainWindow mainW = new MainWindow(this, volunteerID);
+                primaryStage.close();
+            } else {
+                // Make a popup window display that says: this user does not exist or something like that
+            }
 
         });
         btnApplyHere.setOnAction(e -> {
