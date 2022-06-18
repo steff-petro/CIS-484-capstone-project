@@ -114,8 +114,14 @@ public class CreateAccountWindow {
             
             // ERROR / EVENT HANDLING
 
-            Volunteer tempVolunteer = new Volunteer();
+            Integer zipInt = Integer.parseInt(txtZip.getText());
+            
+            //NEED TO TEST! COULD WRITE VOL TO DB?
+            Volunteer tempVolunteer = new Volunteer("Vol" + volunteerArray.size(), txtFirstName.getText(), txtLastName.getText(), txtDateOfBirth.getText(),
+            txtEmail.getText(), txtPhone.getText(), comboSpecialization.getSelectionModel().getSelectedItem(), txtStreet.getText(), txtCity.getText(),
+            txtState.getText(), zipInt, txtInfo.getText(), txtExperience.getText(), "Applicant", "Null");
             volunteerArray.add(tempVolunteer);
+            tempVolunteer.writeVolunteer();
             
             Alert confirmSubmit = new Alert(Alert.AlertType.CONFIRMATION,
                     "BARK has received your volunteer application. Thank you for applying!",

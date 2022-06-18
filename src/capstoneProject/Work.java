@@ -4,6 +4,13 @@ This is the Work class
 package capstoneProject;
 
 // Imports
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import oracle.jdbc.pool.OracleDataSource;
+
 public class Work {
 
     // Class variables
@@ -94,4 +101,39 @@ public class Work {
         this.animalId = animalId;
     }
     
+    public void writeWork() {
+        String insertAnimal = "INSERT INTO Work VALUES (";
+        insertAnimal += "'" + this.getWorkId()+ "',";
+        insertAnimal += "'" + this.getWorkStatus() + "',";
+        insertAnimal += "'" + this.getVolunteerId()+ "',";
+        insertAnimal += "'" + this.getJobId()+ "',";
+        insertAnimal += "'" + this.getEventId()+ "',";
+        insertAnimal += "'" + this.getAnimalId()+ "')";
+        sendDBCommand(insertAnimal);
+    }
+
+    public void sendDBCommand(String sqlQuery) {
+        Connection dbConn;
+        Statement commStmt;
+        ResultSet dbResults;
+        // Set up connection strings
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser"; // Change to YOUR Oracle username
+        String userPASS = "javapass"; // Change to YOUR Oracle password
+        OracleDataSource ds;
+
+        // Print each query to check SQL syntax sent to this method.
+        System.out.println(sqlQuery);
+
+        // Try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            dbResults = commStmt.executeQuery(sqlQuery);
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+    }
 }
