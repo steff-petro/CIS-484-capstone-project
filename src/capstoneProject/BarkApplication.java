@@ -17,6 +17,9 @@ import javafx.stage.*;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class BarkApplication extends Application {
+
+    // Volunteer ArrayList
+    ArrayList<Volunteer> volunteerList = new ArrayList<>();
     
 //     JavaFX Controls for Sign In page
 //    // Create GridPanes for all tabs
@@ -38,6 +41,7 @@ public class BarkApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+//        readVolunteerData();
         overallPane.setAlignment(Pos.CENTER);
         signInVBox.setAlignment(Pos.CENTER_RIGHT);
         noAccountVBox.setAlignment(Pos.CENTER);
@@ -62,15 +66,15 @@ public class BarkApplication extends Application {
 
         // Actions to open main form when user logs in or open create account form
         btnCheckIn.setOnAction(e -> {
-            
+
             String volunteerID = textVolunteerID.getText();
             String password = textPassword.getText();
-            
+
             // METHOD FOR LOGIN VERIFICATION GOES HERE -- CHECK USER ID/PASSWORD, CHECK IF ADMIN
-//            verifyLogin();
+//             if (verifyLogin()) {};
             MainWindow mainW = new MainWindow(this, volunteerID);
             primaryStage.close();
-            
+
         });
         btnApplyHere.setOnAction(e -> {
             CreateAccountWindow createAcct = new CreateAccountWindow();
@@ -78,34 +82,59 @@ public class BarkApplication extends Application {
 
     }
 
-
     public static void main(String[] args) {
         launch(args);
     }
-    
-    public void sendDBCommand(String sqlQuery) {
+
+    // Method to read volunteer data from database
+    public void readVolunteerData() {
         Connection dbConn;
         Statement commStmt;
-        ResultSet dbResults;
         // Set up connection strings
         String URL = "jdbc:oracle:thin:@localhost:1521:XE";
-        String userID = "javauser"; // Change to YOUR Oracle username
-        String userPASS = "javapass"; // Change to YOUR Oracle password
+        String userID = "javauser";
+        String userPASS = "javapass";
         OracleDataSource ds;
 
-        // Print each query to check SQL syntax sent to this method.
-        System.out.println(sqlQuery);
-
-        // Try to connect
+        // try to connect
         try {
             ds = new OracleDataSource();
             ds.setURL(URL);
             dbConn = ds.getConnection(userID, userPASS);
             commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            dbResults = commStmt.executeQuery(sqlQuery);
+
+            // Reading Volunteer data into Volunteer objects
+            String volunteerQuery = "SELECT VOLUNTEERID,FIRSTNAME,LASTNAME,DATEOFBIRTH,"
+                    + "EMAIL,PHONENUMBER,SPECIALIZATION,VOLUNTEERSTREET,VOLUNTEERCITY,"
+                    + "VOLUNTEERSTATE,VOLUNTEERZIP,PERSONALINFO,EXPERIENCE,STATUS,"
+                    + "PASSWORD FROM VOLUNTEER";
+            ResultSet dbVolunteers = commStmt.executeQuery(volunteerQuery);
+            System.out.println(volunteerQuery);
+            while (dbVolunteers.next()) {
+                Volunteer dbVolunteer = new Volunteer(
+                        dbVolunteers.getNString("VOLUNTEERID"),
+                        dbVolunteers.getNString("FIRSTNAME"),
+                        dbVolunteers.getNString("LASTNAME"),
+                        dbVolunteers.getNString("DATEOFBIRTH"),
+                        dbVolunteers.getNString("EMAIL"),
+                        dbVolunteers.getNString("PHONENUMBER"),
+                        dbVolunteers.getNString("SPECIALIZATION"),
+                        dbVolunteers.getNString("VOLUNTEERSTREET"),
+                        dbVolunteers.getNString("VOLUNTEERCITY"),
+                        dbVolunteers.getNString("VOLUNTEERSTATE"),
+                        dbVolunteers.getInt("VOLUNTEERZIP"),
+                        dbVolunteers.getNString("PERSONALINFO"),
+                        dbVolunteers.getNString("EXPERIENCE"),
+                        dbVolunteers.getNString("STATUS"),
+                        dbVolunteers.getNString("PASSWORD")
+                );
+                volunteerList.add(dbVolunteer);
+                System.out.println(dbVolunteer.firstName + " " + dbVolunteer.lastName + " " + dbVolunteer.status);
+            }
+            
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
-    }
 
+    }
 }

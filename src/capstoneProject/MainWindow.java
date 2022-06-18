@@ -1,5 +1,6 @@
 package capstoneProject;
 
+import java.sql.*;
 import javafx.geometry.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,41 +12,53 @@ import javafx.collections.*;
 import java.util.*;
 import javafx.scene.control.cell.*;
 import javafx.scene.control.TabPane.*;
+import oracle.jdbc.pool.OracleDataSource;
 
 public class MainWindow {
 
     // Data Fields
     BarkApplication signInForm;
     String volunteerID;
+
     
     // Storing data in memory
-    ArrayList<Event> eventList = new ArrayList<>();
+    ArrayList<Volunteer> volunteerList = new ArrayList<>();
     ArrayList<Job> jobList = new ArrayList<>();
+    ArrayList<Event> eventList = new ArrayList<>();
+    ArrayList<Animal> animalList = new ArrayList<>();
+    ArrayList<Location> locationList = new ArrayList<>();
+    ArrayList<Drives> drivesList = new ArrayList<>();
+    ArrayList<Work> workList = new ArrayList<>();
+    ArrayList<Shift> shiftList = new ArrayList<>();
 
 //     JavaFX Controls
-    
     // Labels, TableView, and Button for Jobs Pane
     Label lblJobs = new Label("Jobs for Today");
     Button btnSelectJob = new Button("Select Job");
     TableView<Job> jobTable = new TableView<>();
     ObservableList<Job> jobTableData = FXCollections.observableArrayList();
     VBox jobVBox = new VBox();
-    
+
     // Labels, TableView, and Button for Events Pane
     Label lblEvents = new Label("Upcoming Events");
     Button btnSelectEvent = new Button("Register for Selected Event");
     TableView<Event> eventTable = new TableView<>();
     ObservableList<Event> eventTableData = FXCollections.observableArrayList();
     VBox eventVBox = new VBox();
-    
-    // Tabs for admin pane
+
+    // Tabs and controls for admin pane
     TabPane tbPaneAdmin = new TabPane();
     Tab tab6 = new Tab("Reports");
     Tab tab7 = new Tab("Add/Edit Jobs");
     Tab tab8 = new Tab("Add/Edit Events");
     Tab tab9 = new Tab("Manage Volunteers");
+    Tab tab10 = new Tab("Animals");
     ComboBox selectEditJob = new ComboBox<>();
     VBox adminVBox = new VBox();
+    ObservableList<Volunteer> conditionalVolunteers = FXCollections.observableArrayList();
+    ObservableList<Volunteer> currentVolunteers = FXCollections.observableArrayList();
+    ListView<Volunteer> conditionalVolList = new ListView<>(conditionalVolunteers);
+    ListView<Volunteer> currentVolList = new ListView<>(currentVolunteers);
 
     // Create GridPanes for all tabs
     GridPane overallPane = new GridPane(); // holds menuBar and tab pane
@@ -57,7 +70,8 @@ public class MainWindow {
     GridPane adminReportsPane = new GridPane();
     GridPane adminJobsPane = new GridPane();
     GridPane adminEventsPane = new GridPane();
-    GridPane adminApplyPane = new GridPane();
+    GridPane adminVolunteerPane = new GridPane();
+    GridPane adminAnimalPane = new GridPane();
 
     // Create Menu Bar
     MenuBar menuBar = new MenuBar();
@@ -90,23 +104,21 @@ public class MainWindow {
         menuMyAccount.getItems().addAll(miEditAccount, miCheckOut);
         menuBar.getMenus().add(menuMyAccount);
         overallPane.add(menuBar, 0, 0);
-        
+
         // Home Pane
-        
         // Jobs Pane
         jobPane.add(jobVBox, 0, 0);
         jobVBox.setSpacing(10);
         jobVBox.setPadding(new Insets(10, 20, 10, 20));
         jobVBox.getChildren().addAll(lblJobs, jobTable, btnSelectJob);
-        
+
         // Events Pane
         eventPane.add(eventVBox, 0, 0);
         eventVBox.setSpacing(10);
         eventVBox.setPadding(new Insets(10, 20, 10, 20));
         eventVBox.getChildren().addAll(lblEvents, eventTable, btnSelectEvent);
-        
-        // Volunteer Summary Pane
 
+        // Volunteer Summary Pane
         // Admin Pane
         //So tabs cannot close
         tbPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
@@ -116,10 +128,13 @@ public class MainWindow {
         tab6.setContent(adminReportsPane);
         tab7.setContent(adminJobsPane);
         tab8.setContent(adminEventsPane);
-        tab9.setContent(adminApplyPane);
-        tbPaneAdmin.getTabs().addAll(tab6,tab7,tab8,tab9);
+        tab9.setContent(adminVolunteerPane);
+        tab10.setContent(adminAnimalPane);
+        tbPaneAdmin.getTabs().addAll(tab6, tab7, tab8, tab9, tab10);
         addJobTab();
         addEventsTab();
+        manageVolunteersTab();
+        animalsTab();
 
         // Placing tabs in overallPane and setting content of tabs to correspoding panes
         overallPane.add(tbPane, 0, 1);
@@ -143,10 +158,11 @@ public class MainWindow {
         tbPaneAdmin.setMinWidth(primaryScene.getWidth());
         jobTable.setMinWidth(primaryScene.getWidth());
         eventTable.setMinWidth(primaryScene.getWidth());
-        
+
+        readDatabaseData();
         // Populate Event table data
         eventTable.setItems(eventTableData);
-        TableColumn tblcEventID= new TableColumn("ID");
+        TableColumn tblcEventID = new TableColumn("ID");
         TableColumn tblcEventName = new TableColumn("Name");
         TableColumn tblcEventDate = new TableColumn("Date");
         TableColumn tblcEventTime = new TableColumn("Time");
@@ -154,7 +170,7 @@ public class MainWindow {
         TableColumn tblcMaxVolunteers = new TableColumn("Max Volunteers");
         TableColumn tblcSpotsLeft = new TableColumn("Spots Left");
         TableColumn tblcEventDescription = new TableColumn("Description");
-        
+
         tblcEventID.setCellValueFactory(new PropertyValueFactory<Event, String>("eventID"));
         tblcEventName.setCellValueFactory(new PropertyValueFactory<Event, String>("eventName"));
         tblcEventDate.setCellValueFactory(new PropertyValueFactory<Event, String>("eventDate"));
@@ -163,13 +179,12 @@ public class MainWindow {
         tblcMaxVolunteers.setCellValueFactory(new PropertyValueFactory<Event, Integer>("maxVolunteers"));
         tblcSpotsLeft.setCellValueFactory(new PropertyValueFactory<Event, Integer>("spotsLeft"));
         tblcEventDescription.setCellValueFactory(new PropertyValueFactory<Event, String>("eventDescription"));
-        
+
         eventTable.getColumns().addAll(tblcEventID, tblcEventName, tblcEventDate, tblcEventTime, tblcMaxVolunteers, tblcSpotsLeft, tblcEventDescription);
-        
+
         tblcEventName.setMinWidth(150);
         tblcEventDescription.setMinWidth(200);
-        
-        
+
         // Populate job table data
         jobTable.setItems(jobTableData);
         TableColumn tblcJobID = new TableColumn("ID");
@@ -177,30 +192,29 @@ public class MainWindow {
         TableColumn tblcJobType = new TableColumn("Type");
         TableColumn tblcJobLocation = new TableColumn("Location");
         TableColumn tblcJobNotes = new TableColumn("Notes");
-        
+
         tblcJobID.setCellValueFactory(new PropertyValueFactory<Job, String>("jobID"));
         tblcJobName.setCellValueFactory(new PropertyValueFactory<Job, String>("jobName"));
         tblcJobType.setCellValueFactory(new PropertyValueFactory<Job, Double>("jobType"));
         tblcJobLocation.setCellValueFactory(new PropertyValueFactory<Job, String>("jobLocation"));
         tblcJobNotes.setCellValueFactory(new PropertyValueFactory<Job, String>("jobNotes"));
-        
+
         tblcJobName.setMinWidth(150);
         tblcJobType.setMinWidth(150);
         tblcJobLocation.setMinWidth(150);
-        tblcJobNotes.setMinWidth(150);
-        
+        tblcJobNotes.setMinWidth(200);
+
         jobTable.getColumns().addAll(tblcJobID, tblcJobName, tblcJobType, tblcJobLocation, tblcJobNotes);
-        
+
         tblcMaxVolunteers.setMinWidth(120);
-        
-        
+
         // Menu Bar item actions
         miEditAccount.setOnAction(e -> {
-            editAccountWindow();
+//            editAccountWindow();
         });
-       
+
     }
-    
+
     public void addJobTab() {
         Label lblJobID = new Label("Job ID:");
         Label lblJobName = new Label("Name:");
@@ -220,35 +234,35 @@ public class MainWindow {
         HBox typeHBox = new HBox(lblJobType, txtJobType);
         HBox locationHBox = new HBox(lblJoblocation, txtJoblocation);
         HBox notesHBox = new HBox(lblJobNotes, txtJobNotes);
-        
+
         adminJobsPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_CENTER);
         rightVBox.setAlignment(Pos.TOP_CENTER);
-        
+
         adminJobsPane.add(leftVBox, 0, 0);
         adminJobsPane.add(rightVBox, 1, 0);
         adminJobsPane.add(btnAddNewJob, 1, 4);
-        
+
         idHBox.setSpacing(10);
         nameHBox.setSpacing(10);
         typeHBox.setSpacing(10);
         locationHBox.setSpacing(10);
         notesHBox.setSpacing(10);
-        
+
         leftVBox.setSpacing(10);
         leftVBox.setPadding(new Insets(10, 20, 10, 20));
         leftVBox.getChildren().addAll(idHBox, nameHBox, typeHBox);
-        
+
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
         rightVBox.getChildren().addAll(locationHBox, notesHBox);
-        
+
         // Add Job button action
         btnAddNewJob.setOnAction(e -> {
             Job tempJob = new Job();
             jobList.add(tempJob);
             jobTableData.clear();
-            for (Job j: jobList) {
+            for (Job j : jobList) {
                 jobTableData.add(j);
             }
             Alert confirmAddJob = new Alert(Alert.AlertType.CONFIRMATION,
@@ -256,9 +270,9 @@ public class MainWindow {
                     ButtonType.OK);
             confirmAddJob.show();
         });
-        
+
     }
-    
+
     public void addEventsTab() {
         Label lblEventID = new Label("Event ID:");
         Label lblEventName = new Label("Name:");
@@ -284,15 +298,15 @@ public class MainWindow {
         HBox maxVolHBox = new HBox(lblMaxVolunteers, txtMaxVolunteers);
         HBox descHBox = new HBox(lblEventDescription, txtEventDescription);
         HBox locationHBox = new HBox(lblLocation, txtLocation);
-        
+
         adminEventsPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_CENTER);
         rightVBox.setAlignment(Pos.TOP_CENTER);
-        
+
         adminEventsPane.add(leftVBox, 0, 0);
         adminEventsPane.add(rightVBox, 1, 0);
         adminEventsPane.add(btnAddNewEvent, 1, 4);
-        
+
         idHBox.setSpacing(10);
         nameHBox.setSpacing(10);
         dateHBox.setSpacing(10);
@@ -300,22 +314,22 @@ public class MainWindow {
         maxVolHBox.setSpacing(10);
         descHBox.setSpacing(10);
         locationHBox.setSpacing(10);
-        
+
         leftVBox.setSpacing(10);
         leftVBox.setPadding(new Insets(10, 20, 10, 20));
         leftVBox.getChildren().addAll(idHBox, nameHBox, dateHBox, timeHBox);
-        
+
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
         rightVBox.getChildren().addAll(maxVolHBox, descHBox, locationHBox);
-        
+
         // Add Job button action
         btnAddNewEvent.setOnAction(e -> {
-            Event tempEvent = new Event("event0","ButterBeer Festival","6/15/2022",
-                    "5:00pm",4,"We will have a booth at the festival.","location0",2); // THIS IS A PLACEHOLDER EVENT
+            Event tempEvent = new Event("event0", "ButterBeer Festival", "6/15/2022",
+                    1200, 4, "We will have a booth at the festival.", "location0"); // THIS IS A PLACEHOLDER EVENT
             eventList.add(tempEvent);
             eventTableData.clear();
-            for (Event ev: eventList) {
+            for (Event ev : eventList) {
                 eventTableData.add(ev);
             }
             Alert confirmAddEvent = new Alert(Alert.AlertType.CONFIRMATION,
@@ -350,13 +364,69 @@ public class MainWindow {
         btnViewHours.setOnAction(e -> {
             // displays report of volunteer hours
         });
-        
+
         btnViewRegistered.setOnAction(e -> {
             // displays report of volunteers registered for events
         });
     }
-    
-    public void editAccountWindow() {
+
+    public void manageVolunteersTab() {
+
+        // FX Controls
+        Label lblConditional = new Label("Volunteers Awaiting Approval:");
+        Button btnReview = new Button("Review Selected Applicant");
+        Label lblCurrent = new Label("Current Volunteers:");
+        Button btnEdit = new Button("Edit Selected Volunteer");
+        Button btnDelete = new Button("Remove Selected Volunteer");
+
+        VBox leftVBox = new VBox();
+        VBox rightVBox = new VBox();
+        HBox currentHBox = new HBox(btnEdit, btnDelete);
+
+        adminVolunteerPane.setAlignment(Pos.CENTER);
+        leftVBox.setAlignment(Pos.TOP_CENTER);
+        rightVBox.setAlignment(Pos.TOP_CENTER);
+
+        adminVolunteerPane.add(conditionalVolList, 0, 0);
+        adminVolunteerPane.add(leftVBox, 0, 0);
+        adminVolunteerPane.add(rightVBox, 1, 0);
+        adminVolunteerPane.add(btnReview, 0, 10);
+        adminVolunteerPane.add(currentHBox, 1, 10);
+
+        currentHBox.setSpacing(10);
+
+        leftVBox.setSpacing(10);
+        leftVBox.setPadding(new Insets(10, 20, 10, 20));
+        leftVBox.getChildren().addAll(lblConditional, conditionalVolList, btnReview);
+
+        rightVBox.setSpacing(10);
+        rightVBox.setPadding(new Insets(10, 20, 10, 20));
+        rightVBox.getChildren().addAll(lblCurrent, currentVolList, currentHBox);
+
+        // Review Button action
+        btnReview.setOnAction(e -> {
+
+        });
+
+        // Delete Button action
+        btnDelete.setOnAction(e -> {
+            Volunteer selectedVolunteer = currentVolList.getSelectionModel().getSelectedItem();
+            currentVolunteers.remove(selectedVolunteer);
+            volunteerList.remove(selectedVolunteer);
+        });
+
+        // Edit Button actions
+        btnEdit.setOnAction(e -> {
+            Volunteer selectedVolunteer = currentVolList.getSelectionModel().getSelectedItem();
+            editAccountWindow(selectedVolunteer);
+        });
+    }
+
+    public void animalsTab() {
+
+    }
+
+    public void editAccountWindow(Volunteer volunteer) {
         //     JavaFX Controls
 
         // Create GridPane
@@ -388,6 +458,18 @@ public class MainWindow {
         TextField txtState = new TextField();
         TextField txtZip = new TextField();
         TextField txtInfo = new TextField();
+        
+        txtvolunteerID.setText(volunteer.getVolunteerID());
+        txtFirstName.setText(volunteer.getFirstName());
+        txtLastName.setText(volunteer.getLastName());
+        txtDateOfBirth.setText(volunteer.getDateOfBirth());
+        txtEmail.setText(volunteer.getEmail());
+        txtPhone.setText(volunteer.getPhone());
+        txtStreet.setText(volunteer.getStreet());
+        txtCity.setText(volunteer.getCity());
+        txtState.setText(volunteer.getState());
+        txtZip.setText(String.valueOf(volunteer.getZip()));
+        txtInfo.setText(volunteer.getPersonalInfo());
 
         ComboBox<String> comboSpecialization = new ComboBox<>();
 
@@ -444,13 +526,12 @@ public class MainWindow {
         rightVBox.getChildren().addAll(lblExperience, txtExperience);
 
 //        txtvolunteerID.setText(volunteer.getVolunteerID());
-        
         Stage primaryStage = new Stage();
         Scene primaryScene = new Scene(editPane, 900, 550);
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("Edit Account");
         primaryStage.show();
-        
+
         submit.setOnAction(e -> {
             Alert confirmChanges = new Alert(Alert.AlertType.CONFIRMATION,
                     "Account changes have been saved.",
@@ -458,7 +539,107 @@ public class MainWindow {
             confirmChanges.show();
         });
     }
-    
-  
+
+    // Method to read volunteer data from database
+    public void readDatabaseData() {
+        Connection dbConn;
+        Statement commStmt;
+        // Set up connection strings
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser";
+        String userPASS = "javapass";
+        OracleDataSource ds;
+
+        // try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            // Reading Volunteer data into Volunteer objects
+            String volunteerQuery = "SELECT VOLUNTEERID,FIRSTNAME,LASTNAME,DATEOFBIRTH,"
+                    + "EMAIL,PHONENUMBER,SPECIALIZATION,VOLUNTEERSTREET,VOLUNTEERCITY,"
+                    + "VOLUNTEERSTATE,VOLUNTEERZIP,PERSONALINFO,EXPERIENCE,STATUS,"
+                    + "PASSWORD FROM VOLUNTEER";
+            ResultSet dbVolunteers = commStmt.executeQuery(volunteerQuery);
+            System.out.println(volunteerQuery);
+            while (dbVolunteers.next()) {
+                Volunteer dbVolunteer = new Volunteer(
+                        dbVolunteers.getNString("VOLUNTEERID"),
+                        dbVolunteers.getNString("FIRSTNAME"),
+                        dbVolunteers.getNString("LASTNAME"),
+                        dbVolunteers.getNString("DATEOFBIRTH"),
+                        dbVolunteers.getNString("EMAIL"),
+                        dbVolunteers.getNString("PHONENUMBER"),
+                        dbVolunteers.getNString("SPECIALIZATION"),
+                        dbVolunteers.getNString("VOLUNTEERSTREET"),
+                        dbVolunteers.getNString("VOLUNTEERCITY"),
+                        dbVolunteers.getNString("VOLUNTEERSTATE"),
+                        dbVolunteers.getInt("VOLUNTEERZIP"),
+                        dbVolunteers.getNString("PERSONALINFO"),
+                        dbVolunteers.getNString("EXPERIENCE"),
+                        dbVolunteers.getNString("STATUS"),
+                        dbVolunteers.getNString("PASSWORD")
+                );
+
+                volunteerList.add(dbVolunteer);
+                if (dbVolunteer.status.equals("conditional")) {
+                    conditionalVolunteers.add(dbVolunteer);
+                }
+                else {
+                    currentVolunteers.add(dbVolunteer);
+                }
+            }
+            conditionalVolList.setItems(conditionalVolunteers);
+            currentVolList.setItems(currentVolunteers);
+
+            // Reading Job data into Job objects
+            String jobQuery = "SELECT JOBID,JOBNAME,JOBTYPE,LOCATIONID,JOBNOTES FROM JOB";
+            ResultSet dbJobs = commStmt.executeQuery(jobQuery);
+            System.out.println(jobQuery);
+            while (dbJobs.next()) {
+                Job dbJob = new Job(
+                        dbJobs.getNString("JOBID"),
+                        dbJobs.getNString("JOBNAME"),
+                        dbJobs.getNString("JOBTYPE"),
+                        dbJobs.getNString("LOCATIONID"),
+                        dbJobs.getNString("JOBNOTES")
+                );
+                jobList.add(dbJob);
+                jobTableData.clear();
+                for (Job j : jobList) {
+                    jobTableData.add(j);
+                    System.out.println(j.jobID);
+                }
+            }
+
+            // Reading Event data into Event objects
+            String eventQuery = "SELECT EVENTID,EVENTNAME,EVENTDATE,TIME,MAXVOLUNTEERS,EVENTDESCRIPTION,LOCATIONID FROM EVENT";
+            ResultSet dbEvents = commStmt.executeQuery(eventQuery);
+            System.out.println(eventQuery);
+            while (dbEvents.next()) {
+                Event dbEvent = new Event(
+                        dbEvents.getNString("EVENTID"),
+                        dbEvents.getNString("EVENTNAME"),
+                        dbEvents.getNString("EVENTDATE"),
+                        dbEvents.getInt("TIME"),
+                        dbEvents.getInt("MAXVOLUNTEERS"),
+                        dbEvents.getNString("EVENTDESCRIPTION"),
+                        dbEvents.getNString("LOCATIONID")
+                );
+                eventList.add(dbEvent);
+                eventTableData.clear();
+                for (Event e : eventList) {
+                    eventTableData.add(e);
+                    System.out.println(e.eventID);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+
+    }
 
 }

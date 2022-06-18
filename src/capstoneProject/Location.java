@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package CapstoneProject;
+package capstoneProject;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -29,7 +29,7 @@ public class Location {
     static int locationCount = 0;
 
     public Location() {
-        this.locationID = "Location" + locationCount;
+        this.locationID = "location" + locationCount;
         this.name = "Default";
         this.street = "Default";
         this.city = "Default";

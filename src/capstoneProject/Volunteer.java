@@ -276,4 +276,9 @@ public class Volunteer {
         }
         return myObject = volunteerArrayList.get(index);
     }
+    
+    // method to return full name of volunteer
+    public String toString() {
+        return firstName + " " + lastName;
+    } 
 }

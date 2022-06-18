@@ -17,16 +17,17 @@ public class Event {
     String eventID;
     String eventName;
     String eventDate;
-    String eventTime;
+    int eventTime;
     int maxVolunteers;
     int spotsLeft;
     String eventDescription;
     String locationID;
-    int registeredVolunteers;
+    
+    int registeredVolunteers = 0;
     
     static int eventCount = 0;
     
-    public Event(String eventID, String eventName, String eventDate, String eventTime, int maxVolunteers, String eventDescription, String locationID, int registeredVolunteers) {
+    public Event(String eventID, String eventName, String eventDate, int eventTime, int maxVolunteers, String eventDescription, String locationID) {
         this.eventID = "event" + eventCount;
         this.eventName = eventName;
         this.eventDate = eventDate;
@@ -64,11 +65,11 @@ public class Event {
         this.eventDate = eventDate;
     }
     
-    public String getEventTime() {
+    public int getEventTime() {
         return this.eventTime;
     }
     
-    public void setEventTime(String eventTime) {
+    public void setEventTime(int eventTime) {
         this.eventTime = eventTime;
     }
     
