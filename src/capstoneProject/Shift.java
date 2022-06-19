@@ -15,8 +15,8 @@ public class Shift {
 
     // Class variables
     private String shiftID;
-    private double clockIn;
-    private double clockOut; // Should probably add a total time in system variable to track the total
+    private int clockIn;
+    private int clockOut; // Should probably add a total time in system variable to track the total
     private String volunteerID;
     
     static int shiftCount;
@@ -24,13 +24,13 @@ public class Shift {
     // Default constructor
     public Shift() {
         this.shiftID = "Default Shift ID";
-        this.clockIn = 00.00;
-        this.clockOut = 00.00;
+        this.clockIn = 00;
+        this.clockOut = 00;
         this.volunteerID = "Default Volunteer ID";
     }
 
     // Overloaded constructor
-    public Shift(String shiftID, double clockIn, double clockOut, String volunteerID) {
+    public Shift(String shiftID, int clockIn, int clockOut, String volunteerID) {
         this.shiftID = "shift" + shiftCount;
         this.clockIn = clockIn;
         this.clockOut = clockOut;
@@ -55,7 +55,7 @@ public class Shift {
     }
 
     // @param clockIn the clockIn to set
-    public void setClockIn(double clockIn) {
+    public void setClockIn(int clockIn) {
         this.clockIn = clockIn;
     }
 
@@ -65,7 +65,7 @@ public class Shift {
     }
 
     // @param clockOut the clockOut to set
-    public void setClockOut(double clockOut) {
+    public void setClockOut(int clockOut) {
         this.clockOut = clockOut;
     }
 

@@ -17,7 +17,7 @@ public class Event {
     String eventID;
     String eventName;
     String eventDate;
-    int eventTime;
+    String eventTime;
     int maxVolunteers;
     int spotsLeft;
     String eventDescription;
@@ -27,7 +27,7 @@ public class Event {
     
     static int eventCount = 0;
     
-    public Event(String eventID, String eventName, String eventDate, int eventTime, int maxVolunteers, String eventDescription, String locationID) {
+    public Event(String eventID, String eventName, String eventDate, String eventTime, int maxVolunteers, int registeredVolunteers, String eventDescription, String locationID) {
         this.eventID = "event" + eventCount;
         this.eventName = eventName;
         this.eventDate = eventDate;
@@ -65,11 +65,11 @@ public class Event {
         this.eventDate = eventDate;
     }
     
-    public int getEventTime() {
+    public String getEventTime() {
         return this.eventTime;
     }
     
-    public void setEventTime(int eventTime) {
+    public void setEventTime(String eventTime) {
         this.eventTime = eventTime;
     }
     
@@ -119,7 +119,6 @@ public class Event {
         insertEvent += "'" + this.getEventName() + "',";
         insertEvent += " " + this.getMaxVolunteers() + ",";
         insertEvent += " " + this.getRegisteredVolunteers() + ",";
-        insertEvent += " " + this.getSpotsLeft() + ",";
         insertEvent += "'" + this.getEventTime() + "',";
         insertEvent += "'" + this.getEventDate() + "',";
         insertEvent += "'" + this.getEventDescription() + "',";

@@ -11,7 +11,7 @@ public class Job {
     String jobID;
     String jobName;
     String jobType;
-    String location;
+    String locationID;
     String jobNotes;
 
     static int jobCount = 0;
@@ -21,18 +21,18 @@ public class Job {
         this.jobID = "job" + jobCount;
         this.jobName = "Clean Holding Area";
         this.jobType = "Enclosure Care";
-        this.location = "BARK";
+        this.locationID = "BARK";
         this.jobNotes = null;
 
         jobCount++;
     }
 
     // Overloaded constructor
-    public Job(String jobID, String jobName, String jobType, String location, String jobNotes) {
+    public Job(String jobID, String jobName, String jobType, String locationID, String jobNotes) {
         this.jobID = "job" + jobCount;
         this.jobName = jobName;
         this.jobType = jobType;
-        this.location = location;
+        this.locationID = locationID;
         this.jobNotes = jobNotes;
 
         jobCount++;
@@ -62,12 +62,12 @@ public class Job {
         this.jobType = jobType;
     }
 
-    public String getLocation() {
-        return this.location;
+    public String getLocationID() {
+        return this.locationID;
     }
 
-    public void setLocationID(String location) {
-        this.location = location;
+    public void setLocationID(String locationID) {
+        this.locationID = locationID;
     }
 
     public String getJobNotes() {
@@ -85,7 +85,7 @@ public class Job {
         insertJob += "'" + this.getJobName() + "',";
         insertJob += "'" + this.getJobNotes() + "',";
         insertJob += "'" + this.getJobType() + "',";
-        insertJob += "'" + this.getLocation() + "')";
+        insertJob += "'" + this.getLocationID() + "')";
         sendDBCommand(insertJob);
     }
 

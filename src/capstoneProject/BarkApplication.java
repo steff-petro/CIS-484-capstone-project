@@ -17,9 +17,6 @@ import javafx.stage.*;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class BarkApplication extends Application {
-
-    // Volunteer ArrayList
-//    ArrayList<Volunteer> volunteerList = new ArrayList<>();
     
 //     JavaFX Controls for Sign In page
 //    // Create GridPanes for all tabs
@@ -72,6 +69,7 @@ public class BarkApplication extends Application {
             String volunteerID = textVolunteerID.getText();
             String password = textPassword.getText();
 
+//            MainWindow mainW = new MainWindow(this, volunteerID);
             // Login verification
             boolean userExists = Volunteer.verifyLogin(volunteerID, password);
             if (userExists) {
@@ -141,7 +139,7 @@ public class BarkApplication extends Application {
 //                System.out.println(dbVolunteer.firstName + " " + dbVolunteer.lastName + " " + dbVolunteer.status);
             }
             for (Volunteer v: Volunteer.volunteerArrayList) {
-                System.out.println(v.firstName + " " + v.lastName + " " + v.volunteerID + " " + v.password);
+                System.out.println(v.firstName + " " + v.lastName + " " + v.volunteerID + " " + v.password + " " + v.status);
             }
             
         } catch (SQLException e) {
