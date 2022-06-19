@@ -84,7 +84,7 @@ public class Job {
         insertJob += "'" + this.getJobID() + "',";
         insertJob += "'" + this.getJobName() + "',";
         insertJob += "'" + this.getJobType() + "',";
-        insertJob += "'" + this.getLocationID() + "',";
+        insertJob += "'" + this.getLocation() + "',";
         insertJob += "'" + this.getJobNotes() + "')";
         sendDBCommand(insertJob);
     }
