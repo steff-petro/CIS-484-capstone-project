@@ -93,8 +93,112 @@ public class BarkApplication extends Application {
         launch(args);
     }
     
+    //Method runs when program is closed
     @Override
     public void stop(){
+        //Clear all tables out
+        sendDBCommand("DROP TABLE Work;\n" +
+"DROP TABLE Drives;\n" +
+"DROP TABLE Event;\n" +
+"DROP TABLE Job;\n" +
+"DROP TABLE Location;\n" +
+"DROP TABLE Animal;\n" +
+"DROP TABLE Shift;\n" +
+"DROP TABLE Volunteer;\n" +
+"\n" +
+"\n" +
+"\n" +
+"CREATE TABLE Volunteer(\n" +
+"VolunteerID VARCHAR(10) PRIMARY KEY,\n" +
+"FirstName VARCHAR(20),\n" +
+"LastName VARCHAR(20),\n" +
+"DateOfBirth VARCHAR(10),\n" +
+"VolunteerStreet VARCHAR(40),\n" +
+"VolunteerCity VARCHAR(20),\n" +
+"VolunteerState VARCHAR(2),\n" +
+"VolunteerZip INTEGER,\n" +
+"Email VARCHAR(50),\n" +
+"PhoneNumber VARCHAR(12),\n" +
+"Experience VARCHAR(250),\n" +
+"Status VARCHAR(20),\n" +
+"Password VARCHAR(32),\n" +
+"Specialization VARCHAR(20),\n" +
+"PersonalInfo VARCHAR(300)\n" +
+");\n" +
+"\n" +
+"\n" +
+"\n" +
+"CREATE TABLE Shift(\n" +
+"ShiftID VARCHAR(10) PRIMARY KEY,\n" +
+"ClockIn INTEGER, /*Military Time?*/\n" +
+"ClockOut INTEGER,\n" +
+"VolunteerID VARCHAR(10) REFERENCES Volunteer(VolunteerID)\n" +
+");\n" +
+"\n" +
+"\n" +
+"\n" +
+"\n" +
+"\n" +
+"CREATE TABLE Animal(\n" +
+"AnimalID VARCHAR(10) PRIMARY KEY,\n" +
+"AnimalName VARCHAR(20),\n" +
+"AnimalSpecies VARCHAR(20),\n" +
+"AnimalBreed VARCHAR(20),\n" +
+"AnimalAge INTEGER\n" +
+");\n" +
+"\n" +
+"\n" +
+"\n" +
+"CREATE TABLE Location(\n" +
+"LocationID VARCHAR(10) PRIMARY KEY,\n" +
+"LocationName VARCHAR(20),\n" +
+"LocationStreet VARCHAR(20),\n" +
+"LocationCity VARCHAR(20),\n" +
+"LocationState VARCHAR(2),\n" +
+"LocationZip INTEGER,\n" +
+"LocationType VARCHAR(20)\n" +
+");\n" +
+"\n" +
+"\n" +
+"CREATE TABLE Job(\n" +
+"JobID VARCHAR(10) PRIMARY KEY,\n" +
+"JobName VARCHAR(50),\n" +
+"JobType VARCHAR(25),\n" +
+"LocationID VARCHAR(10) REFERENCES Location(LocationID),\n" +
+"JobNotes VARCHAR(100)\n" +
+");\n" +
+"\n" +
+"\n" +
+"CREATE TABLE Event(\n" +
+"EventID VARCHAR(10) PRIMARY KEY,\n" +
+"EventName VARCHAR(20),\n" +
+"MaxVolunteers INTEGER,\n" +
+"RegisteredVolunteers INTEGER,\n" +
+"EventTime VARCHAR(7), \n" +
+"EventDate VARCHAR(10),\n" +
+"EventDescription VARCHAR(100),\n" +
+"LocationID VARCHAR(10) REFERENCES Location(LocationID)\n" +
+");\n" +
+"\n" +
+"\n" +
+"CREATE TABLE Drives(\n" +
+"DriveID VARCHAR(10) PRIMARY KEY,\n" +
+"VolunteerID VARCHAR(10) REFERENCES Volunteer(VolunteerID),\n" +
+"LocationID VARCHAR(10) REFERENCES Location(LocationID),\n" +
+"Miles NUMERIC(3),\n" +
+"DriveDate VARCHAR(10),\n" +
+"DriveNotes VARCHAR(100)\n" +
+");\n" +
+"\n" +
+"\n" +
+"CREATE TABLE Work(\n" +
+"WorkID VARCHAR(10),\n" +
+"WorkStatus VARCHAR(20),\n" +
+"VolunteerID VARCHAR(10) REFERENCES Volunteer(VolunteerID),\n" +
+"JobID VARCHAR(10) REFERENCES Job(JobID),\n" +
+"EventID VARCHAR(10) REFERENCES Event(EventID),\n" +
+"AnimalID VARCHAR(10) REFERENCES Animal(AnimalID)\n" +
+");");
         //Write all Animal instances on close
         for(Animal a: MainWindow.animalList){
             a.writeAnimal();
@@ -188,5 +292,30 @@ public class BarkApplication extends Application {
             System.out.println(e.toString());
         }
 
+    }
+    
+    public void sendDBCommand(String sqlQuery) {
+        Connection dbConn;
+        Statement commStmt;
+        ResultSet dbResults;
+        // Set up connection strings
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser"; // Change to YOUR Oracle username
+        String userPASS = "javapass"; // Change to YOUR Oracle password
+        OracleDataSource ds;
+
+        // Print each query to check SQL syntax sent to this method.
+        System.out.println(sqlQuery);
+
+        // Try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            dbResults = commStmt.executeQuery(sqlQuery);
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
     }
 }
