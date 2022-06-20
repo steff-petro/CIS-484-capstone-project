@@ -17,7 +17,7 @@ import javafx.stage.*;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class BarkApplication extends Application {
-    
+
 //     JavaFX Controls for Sign In page
 //    // Create GridPanes for all tabs
     GridPane overallPane = new GridPane();
@@ -60,7 +60,7 @@ public class BarkApplication extends Application {
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("BARK Volunteer Information System");
         primaryStage.show();
-        
+
         readVolunteerData();
 
         // Actions to open main form when user logs in or open create account form
@@ -77,9 +77,9 @@ public class BarkApplication extends Application {
                 primaryStage.close();
             } else {
                 Alert invalidInput = new Alert(Alert.AlertType.ERROR,
-                    "Incorrect user credentials.",
-                    ButtonType.OK);
-            invalidInput.show();
+                        "Incorrect user credentials.",
+                        ButtonType.OK);
+                invalidInput.show();
             }
 
         });
@@ -88,153 +88,139 @@ public class BarkApplication extends Application {
         });
 
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
-    
+
     //Method runs when program is closed
     @Override
-    public void stop(){
+    public void stop() {
         //Clear all tables out
-        sendDBCommand("DROP TABLE Work;\n" +
-"DROP TABLE Drives;\n" +
-"DROP TABLE Event;\n" +
-"DROP TABLE Job;\n" +
-"DROP TABLE Location;\n" +
-"DROP TABLE Animal;\n" +
-"DROP TABLE Shift;\n" +
-"DROP TABLE Volunteer;\n" +
-"\n" +
-"\n" +
-"\n" +
-"CREATE TABLE Volunteer(\n" +
-"VolunteerID VARCHAR(10) PRIMARY KEY,\n" +
-"FirstName VARCHAR(20),\n" +
-"LastName VARCHAR(20),\n" +
-"DateOfBirth VARCHAR(10),\n" +
-"VolunteerStreet VARCHAR(40),\n" +
-"VolunteerCity VARCHAR(20),\n" +
-"VolunteerState VARCHAR(2),\n" +
-"VolunteerZip INTEGER,\n" +
-"Email VARCHAR(50),\n" +
-"PhoneNumber VARCHAR(12),\n" +
-"Experience VARCHAR(250),\n" +
-"Status VARCHAR(20),\n" +
-"Password VARCHAR(32),\n" +
-"Specialization VARCHAR(20),\n" +
-"PersonalInfo VARCHAR(300)\n" +
-");\n" +
-"\n" +
-"\n" +
-"\n" +
-"CREATE TABLE Shift(\n" +
-"ShiftID VARCHAR(10) PRIMARY KEY,\n" +
-"ClockIn INTEGER, /*Military Time?*/\n" +
-"ClockOut INTEGER,\n" +
-"VolunteerID VARCHAR(10) REFERENCES Volunteer(VolunteerID)\n" +
-");\n" +
-"\n" +
-"\n" +
-"\n" +
-"\n" +
-"\n" +
-"CREATE TABLE Animal(\n" +
-"AnimalID VARCHAR(10) PRIMARY KEY,\n" +
-"AnimalName VARCHAR(20),\n" +
-"AnimalSpecies VARCHAR(20),\n" +
-"AnimalBreed VARCHAR(20),\n" +
-"AnimalAge INTEGER\n" +
-");\n" +
-"\n" +
-"\n" +
-"\n" +
-"CREATE TABLE Location(\n" +
-"LocationID VARCHAR(10) PRIMARY KEY,\n" +
-"LocationName VARCHAR(20),\n" +
-"LocationStreet VARCHAR(20),\n" +
-"LocationCity VARCHAR(20),\n" +
-"LocationState VARCHAR(2),\n" +
-"LocationZip INTEGER,\n" +
-"LocationType VARCHAR(20)\n" +
-");\n" +
-"\n" +
-"\n" +
-"CREATE TABLE Job(\n" +
-"JobID VARCHAR(10) PRIMARY KEY,\n" +
-"JobName VARCHAR(50),\n" +
-"JobType VARCHAR(25),\n" +
-"LocationID VARCHAR(10) REFERENCES Location(LocationID),\n" +
-"JobNotes VARCHAR(100)\n" +
-");\n" +
-"\n" +
-"\n" +
-"CREATE TABLE Event(\n" +
-"EventID VARCHAR(10) PRIMARY KEY,\n" +
-"EventName VARCHAR(20),\n" +
-"MaxVolunteers INTEGER,\n" +
-"RegisteredVolunteers INTEGER,\n" +
-"EventTime VARCHAR(7), \n" +
-"EventDate VARCHAR(10),\n" +
-"EventDescription VARCHAR(100),\n" +
-"LocationID VARCHAR(10) REFERENCES Location(LocationID)\n" +
-");\n" +
-"\n" +
-"\n" +
-"CREATE TABLE Drives(\n" +
-"DriveID VARCHAR(10) PRIMARY KEY,\n" +
-"VolunteerID VARCHAR(10) REFERENCES Volunteer(VolunteerID),\n" +
-"LocationID VARCHAR(10) REFERENCES Location(LocationID),\n" +
-"Miles NUMERIC(3),\n" +
-"DriveDate VARCHAR(10),\n" +
-"DriveNotes VARCHAR(100)\n" +
-");\n" +
-"\n" +
-"\n" +
-"CREATE TABLE Work(\n" +
-"WorkID VARCHAR(10),\n" +
-"WorkStatus VARCHAR(20),\n" +
-"VolunteerID VARCHAR(10) REFERENCES Volunteer(VolunteerID),\n" +
-"JobID VARCHAR(10) REFERENCES Job(JobID),\n" +
-"EventID VARCHAR(10) REFERENCES Event(EventID),\n" +
-"AnimalID VARCHAR(10) REFERENCES Animal(AnimalID)\n" +
-");");
+        sendDBCommand("DROP TABLE Work");
+        sendDBCommand("DROP TABLE Drives");
+        sendDBCommand("DROP TABLE Event");
+        sendDBCommand("DROP TABLE Job");
+        sendDBCommand("DROP TABLE Location");
+        sendDBCommand("DROP TABLE Animal");
+        sendDBCommand("DROP TABLE Shift");
+        sendDBCommand("DROP TABLE Volunteer");
+
+        //Create Volunteer Table
+        sendDBCommand("CREATE TABLE Volunteer(\n"
+                + "VolunteerID VARCHAR(10) PRIMARY KEY,\n"
+                + "FirstName VARCHAR(20),\n"
+                + "LastName VARCHAR(20),\n"
+                + "DateOfBirth VARCHAR(10),\n"
+                + "VolunteerStreet VARCHAR(40),\n"
+                + "VolunteerCity VARCHAR(20),\n"
+                + "VolunteerState VARCHAR(2),\n"
+                + "VolunteerZip INTEGER,\n"
+                + "Email VARCHAR(50),\n"
+                + "PhoneNumber VARCHAR(12),\n"
+                + "Experience VARCHAR(250),\n"
+                + "Status VARCHAR(20),\n"
+                + "Password VARCHAR(32),\n"
+                + "Specialization VARCHAR(20),\n"
+                + "PersonalInfo VARCHAR(300))");
+
+        //Create Shift Table
+        sendDBCommand("CREATE TABLE Shift(\n"
+                + "ShiftID VARCHAR(10) PRIMARY KEY,\n"
+                + "ClockIn INTEGER, /*Military Time?*/\n"
+                + "ClockOut INTEGER,\n"
+                + "VolunteerID VARCHAR(10) REFERENCES Volunteer(VolunteerID))");
+
+        //Create Animal Table
+        sendDBCommand("CREATE TABLE Animal(\n"
+                + "AnimalID VARCHAR(10) PRIMARY KEY,\n"
+                + "AnimalName VARCHAR(20),\n"
+                + "AnimalSpecies VARCHAR(20),\n"
+                + "AnimalBreed VARCHAR(20),\n"
+                + "AnimalAge INTEGER)");
+
+        //Create Location Table
+        sendDBCommand("CREATE TABLE Location(\n"
+                + "LocationID VARCHAR(10) PRIMARY KEY,\n"
+                + "LocationName VARCHAR(20),\n"
+                + "LocationStreet VARCHAR(20),\n"
+                + "LocationCity VARCHAR(20),\n"
+                + "LocationState VARCHAR(2),\n"
+                + "LocationZip INTEGER,\n"
+                + "LocationType VARCHAR(20))");
+
+        //Create Job Table
+        sendDBCommand("CREATE TABLE Job(\n"
+                + "JobID VARCHAR(10) PRIMARY KEY,\n"
+                + "JobName VARCHAR(50),\n"
+                + "JobType VARCHAR(25),\n"
+                + "LocationID VARCHAR(10) REFERENCES Location(LocationID),\n"
+                + "JobNotes VARCHAR(100))");
+
+        //Create Event Table
+        sendDBCommand("CREATE TABLE Event(\n"
+                + "EventID VARCHAR(10) PRIMARY KEY,\n"
+                + "EventName VARCHAR(20),\n"
+                + "MaxVolunteers INTEGER,\n"
+                + "RegisteredVolunteers INTEGER,\n"
+                + "EventTime VARCHAR(7), \n"
+                + "EventDate VARCHAR(10),\n"
+                + "EventDescription VARCHAR(100),\n"
+                + "LocationID VARCHAR(10) REFERENCES Location(LocationID))");
+
+        //Create Drives Table
+        sendDBCommand("CREATE TABLE Drives(\n"
+                + "DriveID VARCHAR(10) PRIMARY KEY,\n"
+                + "VolunteerID VARCHAR(10) REFERENCES Volunteer(VolunteerID),\n"
+                + "LocationID VARCHAR(10) REFERENCES Location(LocationID),\n"
+                + "Miles NUMERIC(3),\n"
+                + "DriveDate VARCHAR(10),\n"
+                + "DriveNotes VARCHAR(100))");
+
+        //Create Work Table
+        sendDBCommand("CREATE TABLE Work(\n"
+                + "WorkID VARCHAR(10),\n"
+                + "WorkStatus VARCHAR(20),\n"
+                + "VolunteerID VARCHAR(10) REFERENCES Volunteer(VolunteerID),\n"
+                + "JobID VARCHAR(10) REFERENCES Job(JobID),\n"
+                + "EventID VARCHAR(10) REFERENCES Event(EventID),\n"
+                + "AnimalID VARCHAR(10) REFERENCES Animal(AnimalID))");
         //Write all Animal instances on close
-        for(Animal a: MainWindow.animalList){
+        for (Animal a : MainWindow.animalList) {
             a.writeAnimal();
         }
-        
+
         //Write all Drive instances on close
-        for(Drives d: MainWindow.drivesList){
+        for (Drives d : MainWindow.drivesList) {
             d.writeDrives();
         }
-        
+
         //Write all Event instances on close
-        for(Event e: MainWindow.eventList){
+        for (Event e : MainWindow.eventList) {
             e.writeEvent();
         }
-        
+
         //Write all Job instances on close
-        for(Job j: MainWindow.jobList){
+        for (Job j : MainWindow.jobList) {
             j.writeJob();
         }
-        
+
         //Write all Location instances on close
-        for(Location l: MainWindow.locationList){
+        for (Location l : MainWindow.locationList) {
             l.writeLocation();
         }
-        
+
         //Write all Shift instances on close
-        for(Shift s: MainWindow.shiftList){
+        for (Shift s : MainWindow.shiftList) {
             s.writeShift();
         }
-        
+
         //Write all Volunteer instances on close
-        for(Volunteer v: Volunteer.volunteerArrayList){
+        for (Volunteer v : Volunteer.volunteerArrayList) {
             v.writeVolunteer();
         }
         //Write all Work instances on close
-        for(Work w: MainWindow.workList){
+        for (Work w : MainWindow.workList) {
             w.writeWork();
         }
     }
@@ -284,16 +270,16 @@ public class BarkApplication extends Application {
                 Volunteer.volunteerArrayList.add(dbVolunteer);
 //                System.out.println(dbVolunteer.firstName + " " + dbVolunteer.lastName + " " + dbVolunteer.status);
             }
-            for (Volunteer v: Volunteer.volunteerArrayList) {
+            for (Volunteer v : Volunteer.volunteerArrayList) {
                 System.out.println(v.firstName + " " + v.lastName + " " + v.volunteerID + " " + v.password + " " + v.status);
             }
-            
+
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
 
     }
-    
+
     public void sendDBCommand(String sqlQuery) {
         Connection dbConn;
         Statement commStmt;
