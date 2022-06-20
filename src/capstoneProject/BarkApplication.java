@@ -88,9 +88,51 @@ public class BarkApplication extends Application {
         });
 
     }
-
+    
     public static void main(String[] args) {
         launch(args);
+    }
+    
+    @Override
+    public void stop(){
+        //Write all Animal instances on close
+        for(Animal a: MainWindow.animalList){
+            a.writeAnimal();
+        }
+        
+        //Write all Drive instances on close
+        for(Drives d: MainWindow.drivesList){
+            d.writeDrives();
+        }
+        
+        //Write all Event instances on close
+        for(Event e: MainWindow.eventList){
+            e.writeEvent();
+        }
+        
+        //Write all Job instances on close
+        for(Job j: MainWindow.jobList){
+            j.writeJob();
+        }
+        
+        //Write all Location instances on close
+        for(Location l: MainWindow.locationList){
+            l.writeLocation();
+        }
+        
+        //Write all Shift instances on close
+        for(Shift s: MainWindow.shiftList){
+            s.writeShift();
+        }
+        
+        //Write all Volunteer instances on close
+        for(Volunteer v: Volunteer.volunteerArrayList){
+            v.writeVolunteer();
+        }
+        //Write all Work instances on close
+        for(Work w: MainWindow.workList){
+            w.writeWork();
+        }
     }
 
     // Method to read volunteer data from database

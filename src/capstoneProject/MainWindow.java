@@ -21,13 +21,13 @@ public class MainWindow {
     String volunteerID;
 
     // Storing data in memory
-    ArrayList<Job> jobList = new ArrayList<>();
-    ArrayList<Event> eventList = new ArrayList<>();
-    ArrayList<Animal> animalList = new ArrayList<>();
-    ArrayList<Location> locationList = new ArrayList<>();
-    ArrayList<Drives> drivesList = new ArrayList<>();
-    ArrayList<Work> workList = new ArrayList<>();
-    ArrayList<Shift> shiftList = new ArrayList<>();
+    static ArrayList<Job> jobList = new ArrayList<>();
+    static ArrayList<Event> eventList = new ArrayList<>();
+    static ArrayList<Animal> animalList = new ArrayList<>();
+    static ArrayList<Location> locationList = new ArrayList<>();
+    static ArrayList<Drives> drivesList = new ArrayList<>();
+    static ArrayList<Work> workList = new ArrayList<>();
+    static ArrayList<Shift> shiftList = new ArrayList<>();
 
 //     JavaFX Controls
     // Labels, TableView, and Button for Jobs Pane
