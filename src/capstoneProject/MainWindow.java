@@ -576,6 +576,8 @@ public class MainWindow {
             Alert confirmChanges = new Alert(Alert.AlertType.CONFIRMATION,
                     "Account changes have been saved.",
                     ButtonType.OK);
+            confirmChanges.show();
+            //send query to update to DB
             sendDBCommand("UPDATE Volunteer "
                     + "SET FirstName = '" + txtFirstName.getText() + "', "
                     + "LastName = '" + txtLastName.getText() + "', "
@@ -588,9 +590,8 @@ public class MainWindow {
                     + "VolunteerState = '" + txtState.getText() + "', "
                     + "VolunteerZip = '" + Integer.parseInt(txtZip.getText()) + "', "
                     + "PersonalInfo = '" + txtInfo.getText() + "', "
-                    + "VolunteerState = '" + txtExperience.getText() + "' "
+                    + "Experience = '" + txtExperience.getText() + "' "
                     + "WHERE VolunteerID = '" + volunteer.getVolunteerID() + "'");
-            confirmChanges.show();
         });
     }
 
