@@ -586,9 +586,9 @@ public class MainWindow {
                     + "VolunteerStreet = '" + txtStreet.getText() + "', "
                     + "VolunteerCity = '" + txtCity.getText() + "', "
                     + "VolunteerState = '" + txtState.getText() + "', "
-                    + "VolunteerZip = '" + Double.parseDouble(txtZip.getText()) + "', "
+                    + "VolunteerZip = '" + Integer.parseInt(txtZip.getText()) + "', "
                     + "PersonalInfo = '" + txtInfo.getText() + "', "
-                    + "VolunteerState = '" + txtExperience.getText() + "', "
+                    + "VolunteerState = '" + txtExperience.getText() + "' "
                     + "WHERE VolunteerID = '" + volunteer.getVolunteerID() + "'");
             confirmChanges.show();
         });
