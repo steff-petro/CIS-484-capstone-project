@@ -592,6 +592,20 @@ public class MainWindow {
                     + "PersonalInfo = '" + txtInfo.getText() + "', "
                     + "Experience = '" + txtExperience.getText() + "' "
                     + "WHERE VolunteerID = '" + volunteer.getVolunteerID() + "'");
+            
+            //Update the instance object
+            volunteer.setFirstName(txtFirstName.getText());
+            volunteer.setLastName(txtLastName.getText());
+            volunteer.setDateOfBirth(txtDateOfBirth.getText());
+            volunteer.setEmail(txtEmail.getText());
+            volunteer.setPhone(txtPhone.getText());
+            volunteer.setSpecialization(comboSpecialization.getSelectionModel().getSelectedItem());
+            volunteer.setStreet(txtStreet.getText());
+            volunteer.setCity(txtCity.getText());
+            volunteer.setState(txtState.getText());
+            volunteer.setZip(Integer.parseInt(txtZip.getText()));
+            volunteer.setPersonalInfo(txtInfo.getText());
+            volunteer.setExperience(txtExperience.getText());
         });
     }
 
