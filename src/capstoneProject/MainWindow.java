@@ -90,7 +90,6 @@ public class MainWindow {
 
     public MainWindow(BarkApplication signInForm, String volunteerID) {
 //        this.signInForm = signInForm;
-        
 
         // Class wide variable that can be used to display content related to the logged in user
         currentLoggedInUser = volunteerID;
@@ -149,13 +148,12 @@ public class MainWindow {
         tab3.setContent(eventPane);
         tab4.setContent(volunteerPane);
         tab5.setContent(adminPane);
-        
+
         // Display tabs based on user status
         Volunteer currentUser = Volunteer.returnVolunteerObject(currentLoggedInUser);
         if (currentUser.status.equalsIgnoreCase("admin")) {
             tbPane.getTabs().addAll(tab1, tab2, tab3, tab4, tab5);
-        }
-        else {
+        } else {
             tbPane.getTabs().addAll(tab1, tab2, tab3, tab4);
         }
 
@@ -271,7 +269,7 @@ public class MainWindow {
         rightVBox.getChildren().addAll(locationHBox, notesHBox);
 
         txtJobID.setText("job" + Job.jobCount);
-        
+
         // Add Job button action
         btnAddNewJob.setOnAction(e -> {
             Job tempJob = new Job(
@@ -320,8 +318,6 @@ public class MainWindow {
         HBox maxVolHBox = new HBox(lblMaxVolunteers, txtMaxVolunteers);
         HBox descHBox = new HBox(lblEventDescription, txtEventDescription);
         HBox locationHBox = new HBox(lblLocation, txtLocation);
-        
-        
 
         adminEventsPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_CENTER);
@@ -346,7 +342,7 @@ public class MainWindow {
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
         rightVBox.getChildren().addAll(maxVolHBox, descHBox, locationHBox);
-        
+
         txtEventID.setText("event" + Event.eventCount);
 
         // Add Event button action
@@ -360,7 +356,7 @@ public class MainWindow {
                     0,
                     txtEventDescription.getText(),
                     txtLocation.getText()
-            ); 
+            );
             eventList.add(tempEvent);
             eventTableData.clear();
             for (Event ev : eventList) {
@@ -436,17 +432,17 @@ public class MainWindow {
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
         rightVBox.getChildren().addAll(lblCurrent, currentVolList, currentHBox);
-        
+
         // adding each volunteer to correspoding list
-            for (Volunteer v : Volunteer.volunteerArrayList) {
-                if (v.status.equals("conditional")) {
-                    conditionalVolunteers.add(v);
-                } else {
-                    currentVolunteers.add(v);
-                }
+        for (Volunteer v : Volunteer.volunteerArrayList) {
+            if (v.status.equals("conditional")) {
+                conditionalVolunteers.add(v);
+            } else {
+                currentVolunteers.add(v);
             }
-            conditionalVolList.setItems(conditionalVolunteers);
-            currentVolList.setItems(currentVolunteers);
+        }
+        conditionalVolList.setItems(conditionalVolunteers);
+        currentVolList.setItems(currentVolunteers);
 
         // Review Button action
         btnReview.setOnAction(e -> {
@@ -510,7 +506,7 @@ public class MainWindow {
         TextArea txtExperience = new TextArea();
 
         Button submit = new Button("Save Changes");
-        
+
         txtvolunteerID.setText(volunteer.getVolunteerID());
         txtFirstName.setText(volunteer.getFirstName());
         txtLastName.setText(volunteer.getLastName());
@@ -580,10 +576,24 @@ public class MainWindow {
             Alert confirmChanges = new Alert(Alert.AlertType.CONFIRMATION,
                     "Account changes have been saved.",
                     ButtonType.OK);
+            sendDBCommand("UPDATE Volunteer "
+                    + "SET FirstName = '" + txtFirstName.getText() + "', "
+                    + "LastName = '" + txtLastName.getText() + "', "
+                    + "DateOfBirth = '" + txtDateOfBirth.getText() + "', "
+                    + "Email = '" + txtEmail.getText() + "', "
+                    + "PhoneNumber = '" + txtPhone.getText() + "', "
+                    + "Specialization = '" + comboSpecialization.getSelectionModel().getSelectedItem() + "', "
+                    + "VolunteerStreet = '" + txtStreet.getText() + "', "
+                    + "VolunteerCity = '" + txtCity.getText() + "', "
+                    + "VolunteerState = '" + txtState.getText() + "', "
+                    + "VolunteerZip = '" + Double.parseDouble(txtZip.getText()) + "', "
+                    + "PersonalInfo = '" + txtInfo.getText() + "', "
+                    + "VolunteerState = '" + txtExperience.getText() + "', "
+                    + "WHERE VolunteerID = '" + volunteer.getVolunteerID());
             confirmChanges.show();
         });
     }
-    
+
     // Method for reviewing applications window
     public void reviewApplication(Volunteer volunteer) {
         //     JavaFX Controls
@@ -617,14 +627,14 @@ public class MainWindow {
         Text txtState = new Text();
         Text txtZip = new Text();
         Text txtInfo = new Text();
-        
+
         ComboBox<String> comboSpecialization = new ComboBox<>();
-     
+
         Text txtExperience = new Text();
 
         Button approve = new Button("Approve Volunteer");
         Button deny = new Button("Deny Volunteer");
-        
+
         txtvolunteerID.setText(volunteer.getVolunteerID());
         txtFirstName.setText(volunteer.getFirstName());
         txtLastName.setText(volunteer.getLastName());
@@ -685,7 +695,7 @@ public class MainWindow {
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
         rightVBox.getChildren().addAll(lblExperience, txtExperience);
-        
+
         bottomHBox.setSpacing(10);
         bottomHBox.setPadding(new Insets(10, 20, 10, 20));
         bottomHBox.getChildren().addAll(approve, deny);
@@ -695,7 +705,7 @@ public class MainWindow {
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("Review Application");
         primaryStage.show();
-        
+
         // Approve / Deny button actions
         approve.setOnAction(e -> {
             Alert confirmApprove = new Alert(Alert.AlertType.CONFIRMATION,
@@ -727,7 +737,7 @@ public class MainWindow {
             confirmDeny.show();
             primaryStage.close();
         });
-    
+
     }
 
     // Method to read volunteer data from database
@@ -891,7 +901,7 @@ public class MainWindow {
             System.out.println(e.toString());
         }
     }
-    
+
     public void sendDBCommand(String sqlQuery) {
         Connection dbConn;
         Statement commStmt;
