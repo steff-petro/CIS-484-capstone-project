@@ -60,8 +60,9 @@ public class Volunteer {
     public Volunteer(String volunteerID, String firstName, String lastName, String dateOfBirth,
             String email, String phone, String specialization, String street, String city,
             String state, int zip, String personalInfo, String experience, String status, String password) {
-
-        this.volunteerID = "volunteer" + volunteerCount;
+        
+        this.volunteerID = volunteerID;
+        //this.volunteerID = "volunteer" + volunteerCount;
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;

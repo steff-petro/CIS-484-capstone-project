@@ -702,6 +702,7 @@ public class MainWindow {
                     "Volunteer application has been approved.",
                     ButtonType.OK);
             volunteer.setStatus("Volunteer in Training");
+            sendDBCommand("UPDATE Volunteer SET status = 'Volunteer in Training' WHERE volunteerID = '" + volunteer.getVolunteerID() + "'");
             confirmApprove.show();
             primaryStage.close();
             conditionalVolList.getItems().clear();
@@ -721,6 +722,8 @@ public class MainWindow {
                     "Volunteer application has been denied.",
                     ButtonType.OK);
             Volunteer.volunteerArrayList.remove(volunteer);
+            conditionalVolunteers.remove(volunteer);
+            sendDBCommand("DELETE FROM Volunteer WHERE volunteerID = '" + volunteer.getVolunteerID() + "'");
             confirmDeny.show();
             primaryStage.close();
         });
@@ -884,6 +887,31 @@ public class MainWindow {
                 System.out.println(s.getShiftID());
             }
 
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+    }
+    
+    public void sendDBCommand(String sqlQuery) {
+        Connection dbConn;
+        Statement commStmt;
+        ResultSet dbResults;
+        // Set up connection strings
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser"; // Change to YOUR Oracle username
+        String userPASS = "javapass"; // Change to YOUR Oracle password
+        OracleDataSource ds;
+
+        // Print each query to check SQL syntax sent to this method.
+        System.out.println(sqlQuery);
+
+        // Try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            dbResults = commStmt.executeQuery(sqlQuery);
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
