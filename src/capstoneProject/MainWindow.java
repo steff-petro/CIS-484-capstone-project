@@ -589,7 +589,7 @@ public class MainWindow {
                     + "VolunteerZip = '" + Double.parseDouble(txtZip.getText()) + "', "
                     + "PersonalInfo = '" + txtInfo.getText() + "', "
                     + "VolunteerState = '" + txtExperience.getText() + "', "
-                    + "WHERE VolunteerID = '" + volunteer.getVolunteerID());
+                    + "WHERE VolunteerID = '" + volunteer.getVolunteerID() + "'");
             confirmChanges.show();
         });
     }
