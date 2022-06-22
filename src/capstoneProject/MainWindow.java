@@ -194,6 +194,7 @@ public class MainWindow {
         btnSelectJob.setOnAction(e -> {
             // Creates a works object and adds it to the works array, eventid is going to be null
             // Some works objects will have animalid and some will not
+            Work myObject = new Work();
             
             
         });
