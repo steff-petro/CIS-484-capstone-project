@@ -37,7 +37,7 @@ public class Job {
         this.jobType = jobType;
         this.locationID = locationID;
         this.jobNotes = jobNotes;
-        this.locationName = Location.reutrnLocationName(locationID);
+//        this.locationName = Location.reutrnLocationName(locationID);
 
         jobCount++;
     }

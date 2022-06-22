@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class Event {
@@ -23,6 +24,7 @@ public class Event {
     String eventDescription;
     String locationID;
     String locationName;
+    static ArrayList<Event> eventList = new ArrayList<>();
     
     int registeredVolunteers = 0;
     
@@ -36,7 +38,7 @@ public class Event {
         this.maxVolunteers = maxVolunteers;
         this.eventDescription = eventDescription;
         this.locationID = locationID;
-        this.locationName = Location.reutrnLocationName(locationID);;
+//        this.locationName = Location.reutrnLocationName(locationID);;
         
         this.spotsLeft = maxVolunteers - registeredVolunteers;
         

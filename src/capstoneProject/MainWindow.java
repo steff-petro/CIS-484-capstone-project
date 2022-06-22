@@ -24,7 +24,6 @@ public class MainWindow {
     String volunteerID;
 
     // Storing data in memory
-    ArrayList<Event> eventList = new ArrayList<>();
     ArrayList<Drives> drivesList = new ArrayList<>();
     ArrayList<Work> workList = new ArrayList<>();
     ArrayList<Shift> shiftList = new ArrayList<>();
@@ -406,10 +405,11 @@ public class MainWindow {
                     txtEventDescription.getText(),
                     txtLocation.getText()
             );
-            eventList.add(tempEvent);
+            Event.eventList.add(tempEvent);
             eventTableData.clear();
-            for (Event ev : eventList) {
+            for (Event ev : Event.eventList) {
                 eventTableData.add(ev);
+                currentEvents.add(ev);
             }
             txtEventID.setText("event" + Event.eventCount);
             txtEventName.clear();
@@ -640,10 +640,10 @@ public class MainWindow {
         Label lblAnimalBreed = new Label("Breed:");
         Label lblAnimalAge = new Label("Age:");
         Text txtAnimalID = new Text("Animal ID:");
-        TextField txtAnimalName = new TextField("Name:");
-        TextField txtAnimalSpecies = new TextField("Species:");
-        TextField txtAnimalBreed = new TextField("Breed:");
-        TextField txtAnimalAge = new TextField("Age:");
+        TextField txtAnimalName = new TextField();
+        TextField txtAnimalSpecies = new TextField();
+        TextField txtAnimalBreed = new TextField();
+        TextField txtAnimalAge = new TextField();
         Button btnAdd = new Button("Add New Animal");
         Button btnEdit = new Button("Edit Selected Animal");
         
@@ -655,13 +655,13 @@ public class MainWindow {
         HBox breedHBox = new HBox(lblAnimalBreed, txtAnimalBreed);
         HBox ageHBox = new HBox(lblAnimalAge, txtAnimalAge);
 
-        adminEventsPane.setAlignment(Pos.CENTER);
+        adminAnimalPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_CENTER);
         rightVBox.setAlignment(Pos.TOP_CENTER);
 
-        adminEventsPane.add(leftVBox, 0, 0);
-        adminEventsPane.add(rightVBox, 1, 0);
-        adminEventsPane.add(btnAdd, 1, 4);
+        adminAnimalPane.add(leftVBox, 0, 0);
+        adminAnimalPane.add(rightVBox, 1, 0);
+        adminAnimalPane.add(btnAdd, 1, 4);
 
         idHBox.setSpacing(10);
         nameHBox.setSpacing(10);
@@ -1070,13 +1070,14 @@ public class MainWindow {
                         dbEvents.getNString("EVENTDESCRIPTION"),
                         dbEvents.getNString("LOCATIONID")
                 );
-                eventList.add(dbEvent);
+                Event.eventList.add(dbEvent);
                 eventTableData.clear();
-                for (Event e : eventList) {
+                for (Event e : Event.eventList) {
                     eventTableData.add(e);
+                    currentEvents.add(e);
                 }
             }
-            for (Event e : eventList) {
+            for (Event e : Event.eventList) {
                 System.out.println(e.eventID);
             }
 
@@ -1095,6 +1096,7 @@ public class MainWindow {
                 Animal.animalList.add(dbAnimal);
             }
             for (Animal a : Animal.animalList) {
+                currentAnimals.add(a);
                 System.out.println(a.getAnimalID());
             }
 
@@ -1115,6 +1117,7 @@ public class MainWindow {
                 Location.locationList.add(dbLocation);
             }
             for (Location l : Location.locationList) {
+                currentLocations.add(l);
                 System.out.println(l.getLocationID());
             }
 

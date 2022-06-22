@@ -72,10 +72,6 @@ public class BarkApplication extends Application {
             boolean userExists = Volunteer.verifyLogin("volunteer2", "AdminPassword12!");
 
             if (userExists) {
-                Alert confirmAddAnimal = new Alert(Alert.AlertType.CONFIRMATION,
-                    "New animal has been added to the list.",
-                    ButtonType.OK);
-            confirmAddAnimal.show();
                 MainWindow mainW = new MainWindow(this, "volunteer2");
                 primaryStage.close();
             } else {
