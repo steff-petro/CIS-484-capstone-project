@@ -26,7 +26,7 @@ public class MainWindow {
     static ArrayList<Animal> animalList = new ArrayList<>();
     static ArrayList<Location> locationList = new ArrayList<>();
     static ArrayList<Drives> drivesList = new ArrayList<>();
-    static ArrayList<Work> workList = new ArrayList<>();
+    static ArrayList<Work> workList = new ArrayList<>(); // put this in the works array
     static ArrayList<Shift> shiftList = new ArrayList<>();
 
 //     JavaFX Controls
@@ -218,6 +218,21 @@ public class MainWindow {
         jobTable.getColumns().addAll(tblcJobID, tblcJobName, tblcJobType, tblcJobLocation, tblcJobNotes);
 
         tblcMaxVolunteers.setMinWidth(120);
+        
+        // Button select event and select job events handling
+        btnSelectJob.setOnAction(e -> {
+            // Creates a works object and adds it to the works array, eventid is going to be null
+            // Some works objects will have animalid and some will not
+            
+            
+        });
+        
+        btnSelectEvent.setOnAction(e -> {
+            // Creates a works object and adds it to the works array, jobid is going to be null
+            // Some works objects will have animalid and some will not
+            
+        });
+        
 
         // Menu Bar item actions
         miEditAccount.setOnAction(e -> {
