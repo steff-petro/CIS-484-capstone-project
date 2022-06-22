@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class Drives {
@@ -20,6 +21,7 @@ public class Drives {
     private double miles;
     private String driveDate;
     private String driveNotes;
+    static ArrayList<Drives> drivesList = new ArrayList<>();
     
     static int driveCount;
 

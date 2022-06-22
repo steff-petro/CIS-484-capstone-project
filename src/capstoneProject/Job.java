@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class Job {
@@ -13,6 +14,8 @@ public class Job {
     String jobType;
     String locationID;
     String jobNotes;
+    String locationName;
+    static ArrayList<Job> jobList = new ArrayList<>();
 
     static int jobCount = 0;
 
@@ -21,7 +24,7 @@ public class Job {
         this.jobID = "job" + jobCount;
         this.jobName = "Clean Holding Area";
         this.jobType = "Enclosure Care";
-        this.locationID = "BARK";
+        this.locationID = "location1";
         this.jobNotes = null;
 
         jobCount++;
@@ -34,6 +37,7 @@ public class Job {
         this.jobType = jobType;
         this.locationID = locationID;
         this.jobNotes = jobNotes;
+//        this.locationName = Location.reutrnLocationName(locationID);
 
         jobCount++;
     }
@@ -77,6 +81,14 @@ public class Job {
     public void setJobNotes(String jobNotes) {
         this.jobNotes = jobNotes;
     }
+    
+    public String getLocationName() {
+        return this.locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
 
     //Writes animal to DB
     public void writeJob() {
@@ -112,6 +124,11 @@ public class Job {
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
+    }
+    
+    @Override
+    public String toString() {
+        return jobName;
     }
 
 }

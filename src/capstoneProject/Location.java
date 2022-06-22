@@ -1,20 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package capstoneProject;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.*;
 import oracle.jdbc.pool.OracleDataSource;
 
-/**
- *
- * @author emmagriffith
- */
 public class Location {
 
     //Data fields
@@ -25,6 +18,7 @@ public class Location {
     String state;
     int zip;
     String type;
+    static ArrayList<Location> locationList = new ArrayList<>();
 
     static int locationCount = 0;
 
@@ -40,7 +34,7 @@ public class Location {
         locationCount++;
     }
 
-    public Location(String location, String name, String street, String city, String state, int zip, String type) {
+    public Location(String locationID, String name, String street, String city, String state, int zip, String type) {
         this.locationID = "location" + locationCount;
         this.name = name;
         this.street = street;
@@ -144,5 +138,33 @@ public class Location {
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
+    }
+    
+    // Method to return name of location based on locationID
+    public static String reutrnLocationName(String locationID) {
+        Location currentLocation = returnLocationObject(locationID);
+        String name = "Shelter";
+            if (currentLocation.locationID.equals(locationID)) {
+                name = currentLocation.name;
+            }
+        
+        return name;
+    }
+    
+    public static Location returnLocationObject(String locationID) {
+        Location currentLocation;
+        int index = 0;
+        for (int i = 0; i < locationList.size(); i++) {
+            currentLocation = locationList.get(i);
+            if (currentLocation.locationID.equals(locationID)) {
+                index = i;
+            }
+        }
+        return currentLocation = locationList.get(index);
+    }
+    
+    @Override
+    public String toString() {
+        return name;
     }
 }

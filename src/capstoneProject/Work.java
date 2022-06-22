@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class Work {
@@ -20,6 +21,7 @@ public class Work {
     private String jobID;
     private String eventID;
     private String animalID;
+    static ArrayList<Work> workList = new ArrayList<>();
     
     static int workCount;
 

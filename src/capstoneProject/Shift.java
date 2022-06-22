@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class Shift {
@@ -18,6 +19,7 @@ public class Shift {
     private int clockIn;
     private int clockOut; // Should probably add a total time in system variable to track the total
     private String volunteerID;
+    static ArrayList<Shift> shiftList = new ArrayList<>();
     
     static int shiftCount;
     

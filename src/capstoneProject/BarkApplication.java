@@ -4,13 +4,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
 import javafx.application.Application;
-import javafx.event.*;
 import javafx.geometry.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.text.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
@@ -27,7 +24,7 @@ public class BarkApplication extends Application {
     Label volunteerIDLabel = new Label("VolunteerID:");
     TextField textVolunteerID = new TextField();
     Label passwordLabel = new Label("Password:");
-    TextField textPassword = new TextField();
+    PasswordField textPassword = new PasswordField();
     Button btnCheckIn = new Button("Check In");
     Label noAccountLabel = new Label("Don't have an account?");
     Button btnApplyHere = new Button("Apply Here!");
@@ -71,9 +68,11 @@ public class BarkApplication extends Application {
 
 //            MainWindow mainW = new MainWindow(this, volunteerID);
             // Login verification
-            boolean userExists = Volunteer.verifyLogin(volunteerID, password);
+//            boolean userExists = Volunteer.verifyLogin(volunteerID, password);
+            boolean userExists = Volunteer.verifyLogin("volunteer2", "AdminPassword12!");
+
             if (userExists) {
-                MainWindow mainW = new MainWindow(this, volunteerID);
+                MainWindow mainW = new MainWindow(this, "volunteer2");
                 primaryStage.close();
             } else {
                 Alert invalidInput = new Alert(Alert.AlertType.ERROR,
@@ -86,7 +85,6 @@ public class BarkApplication extends Application {
         btnApplyHere.setOnAction(e -> {
             CreateAccountWindow createAcct = new CreateAccountWindow();
         });
-
     }
 
     public static void main(String[] args) {
@@ -97,32 +95,32 @@ public class BarkApplication extends Application {
     @Override
     public void stop(){
         //Write all Animal instances on close
-        for (Animal a : MainWindow.animalList) {
+        for (Animal a : Animal.animalList) {
             a.writeAnimal();
         }
 
         //Write all Drive instances on close
-        for (Drives d : MainWindow.drivesList) {
+        for (Drives d : Drives.drivesList) {
             d.writeDrives();
         }
 
         //Write all Event instances on close
-        for (Event e : MainWindow.eventList) {
+        for (Event e : Event.eventList) {
             e.writeEvent();
         }
 
         //Write all Job instances on close
-        for (Job j : MainWindow.jobList) {
+        for (Job j : Job.jobList) {
             j.writeJob();
         }
 
         //Write all Location instances on close
-        for (Location l : MainWindow.locationList) {
+        for (Location l : Location.locationList) {
             l.writeLocation();
         }
 
         //Write all Shift instances on close
-        for (Shift s : MainWindow.shiftList) {
+        for (Shift s : Shift.shiftList) {
             s.writeShift();
         }
 
@@ -131,7 +129,7 @@ public class BarkApplication extends Application {
             v.writeVolunteer();
         }
         //Write all Work instances on close
-        for (Work w : MainWindow.workList) {
+        for (Work w : Work.workList) {
             w.writeWork();
         }
     }

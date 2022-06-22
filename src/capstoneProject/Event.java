@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class Event {
@@ -22,6 +23,8 @@ public class Event {
     int spotsLeft;
     String eventDescription;
     String locationID;
+    String locationName;
+    static ArrayList<Event> eventList = new ArrayList<>();
     
     int registeredVolunteers = 0;
     
@@ -35,6 +38,7 @@ public class Event {
         this.maxVolunteers = maxVolunteers;
         this.eventDescription = eventDescription;
         this.locationID = locationID;
+//        this.locationName = Location.reutrnLocationName(locationID);;
         
         this.spotsLeft = maxVolunteers - registeredVolunteers;
         
@@ -113,6 +117,14 @@ public class Event {
         this.spotsLeft = spotsLeft;
     }
     
+    public String getLocationName() {
+        return this.locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+    
     public void writeEvent() {
         String insertEvent = "INSERT INTO Event VALUES (";
         insertEvent += "'" + this.getEventID() + "',";
@@ -151,4 +163,8 @@ public class Event {
         }
     }
     
+    @Override
+    public String toString() {
+        return eventName;
+    }
 }

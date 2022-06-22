@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class Animal {
@@ -19,6 +20,7 @@ public class Animal {
     private String animalSpecies;
     private String animalBreed;
     private int animalAge;
+    static ArrayList<Animal> animalList = new ArrayList<>();
     
     static int animalCount = 0;
 
@@ -125,6 +127,11 @@ public class Animal {
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
+    }
+    
+    @Override
+    public String toString() {
+        return "Name: " + animalName + "\tSpecies: " + animalSpecies;
     }
 
 }
