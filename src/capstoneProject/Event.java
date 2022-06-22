@@ -22,6 +22,7 @@ public class Event {
     int spotsLeft;
     String eventDescription;
     String locationID;
+    String locationName;
     
     int registeredVolunteers = 0;
     
@@ -35,6 +36,7 @@ public class Event {
         this.maxVolunteers = maxVolunteers;
         this.eventDescription = eventDescription;
         this.locationID = locationID;
+        this.locationName = Location.reutrnLocationName(locationID);;
         
         this.spotsLeft = maxVolunteers - registeredVolunteers;
         
@@ -113,6 +115,14 @@ public class Event {
         this.spotsLeft = spotsLeft;
     }
     
+    public String getLocationName() {
+        return this.locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+    
     public void writeEvent() {
         String insertEvent = "INSERT INTO Event VALUES (";
         insertEvent += "'" + this.getEventID() + "',";
@@ -151,4 +161,8 @@ public class Event {
         }
     }
     
+    @Override
+    public String toString() {
+        return eventName;
+    }
 }

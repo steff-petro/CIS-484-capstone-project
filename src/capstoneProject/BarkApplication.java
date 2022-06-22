@@ -4,13 +4,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
 import javafx.application.Application;
-import javafx.event.*;
 import javafx.geometry.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.text.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
@@ -27,7 +24,7 @@ public class BarkApplication extends Application {
     Label volunteerIDLabel = new Label("VolunteerID:");
     TextField textVolunteerID = new TextField();
     Label passwordLabel = new Label("Password:");
-    TextField textPassword = new TextField();
+    PasswordField textPassword = new PasswordField();
     Button btnCheckIn = new Button("Check In");
     Label noAccountLabel = new Label("Don't have an account?");
     Button btnApplyHere = new Button("Apply Here!");
@@ -71,22 +68,27 @@ public class BarkApplication extends Application {
 
 //            MainWindow mainW = new MainWindow(this, volunteerID);
             // Login verification
-            boolean userExists = Volunteer.verifyLogin(volunteerID, password);
+//            boolean userExists = Volunteer.verifyLogin(volunteerID, password);
+            boolean userExists = Volunteer.verifyLogin("volunteer2", "AdminPassword12!");
+
             if (userExists) {
-                MainWindow mainW = new MainWindow(this, volunteerID);
+                Alert confirmAddAnimal = new Alert(Alert.AlertType.CONFIRMATION,
+                    "New animal has been added to the list.",
+                    ButtonType.OK);
+            confirmAddAnimal.show();
+                MainWindow mainW = new MainWindow(this, "volunteer2");
                 primaryStage.close();
             } else {
                 Alert invalidInput = new Alert(Alert.AlertType.ERROR,
-                    "Incorrect user credentials.",
-                    ButtonType.OK);
-            invalidInput.show();
+                        "Incorrect user credentials.",
+                        ButtonType.OK);
+                invalidInput.show();
             }
 
         });
         btnApplyHere.setOnAction(e -> {
             CreateAccountWindow createAcct = new CreateAccountWindow();
         });
-
     }
 
     public static void main(String[] args) {

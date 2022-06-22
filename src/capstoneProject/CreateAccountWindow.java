@@ -44,7 +44,7 @@ public class CreateAccountWindow {
     TextField txtZip = new TextField();
     TextField txtInfo = new TextField();
 
-    ComboBox<String> comboSpecialization = new ComboBox<>();
+    ComboBox<String> comboSpecialization = new ComboBox<>(MainWindow.specializations);
 
     TextArea txtExperience = new TextArea();
 
