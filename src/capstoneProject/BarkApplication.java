@@ -14,7 +14,7 @@ import javafx.stage.*;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class BarkApplication extends Application {
-    
+
 //     JavaFX Controls for Sign In page
 //    // Create GridPanes for all tabs
     GridPane overallPane = new GridPane();
@@ -57,7 +57,7 @@ public class BarkApplication extends Application {
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("BARK Volunteer Information System");
         primaryStage.show();
-        
+
         readVolunteerData();
 
         // Actions to open main form when user logs in or open create account form
@@ -89,6 +89,49 @@ public class BarkApplication extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    //Method runs when program is closed
+    @Override
+    public void stop(){
+        //Write all Animal instances on close
+        for (Animal a : Animal.animalList) {
+            a.writeAnimal();
+        }
+
+        //Write all Drive instances on close
+        for (Drives d : Drives.drivesList) {
+            d.writeDrives();
+        }
+
+        //Write all Event instances on close
+        for (Event e : Event.eventList) {
+            e.writeEvent();
+        }
+
+        //Write all Job instances on close
+        for (Job j : Job.jobList) {
+            j.writeJob();
+        }
+
+        //Write all Location instances on close
+        for (Location l : Location.locationList) {
+            l.writeLocation();
+        }
+
+        //Write all Shift instances on close
+        for (Shift s : Shift.shiftList) {
+            s.writeShift();
+        }
+
+        //Write all Volunteer instances on close
+        for (Volunteer v : Volunteer.volunteerArrayList) {
+            v.writeVolunteer();
+        }
+        //Write all Work instances on close
+        for (Work w : Work.workList) {
+            w.writeWork();
+        }
     }
 
     // Method to read volunteer data from database
@@ -136,13 +179,38 @@ public class BarkApplication extends Application {
                 Volunteer.volunteerArrayList.add(dbVolunteer);
 //                System.out.println(dbVolunteer.firstName + " " + dbVolunteer.lastName + " " + dbVolunteer.status);
             }
-            for (Volunteer v: Volunteer.volunteerArrayList) {
+            for (Volunteer v : Volunteer.volunteerArrayList) {
                 System.out.println(v.firstName + " " + v.lastName + " " + v.volunteerID + " " + v.password + " " + v.status);
             }
-            
+
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
 
+    }
+
+    public void sendDBCommand(String sqlQuery) {
+        Connection dbConn;
+        Statement commStmt;
+        ResultSet dbResults;
+        // Set up connection strings
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser"; // Change to YOUR Oracle username
+        String userPASS = "javapass"; // Change to YOUR Oracle password
+        OracleDataSource ds;
+
+        // Print each query to check SQL syntax sent to this method.
+        System.out.println(sqlQuery);
+
+        // Try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            dbResults = commStmt.executeQuery(sqlQuery);
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
     }
 }

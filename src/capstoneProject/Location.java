@@ -162,4 +162,9 @@ public class Location {
         }
         return currentLocation = locationList.get(index);
     }
+    
+    @Override
+    public String toString() {
+        return name;
+    }
 }

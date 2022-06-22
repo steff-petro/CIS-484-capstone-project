@@ -23,11 +23,6 @@ public class MainWindow {
     BarkApplication signInForm;
     String volunteerID;
 
-    // Storing data in memory
-    ArrayList<Drives> drivesList = new ArrayList<>();
-    ArrayList<Work> workList = new ArrayList<>();
-    ArrayList<Shift> shiftList = new ArrayList<>();
-
 //     JavaFX Controls
     // Labels, TableView, and Button for Jobs Pane
     Label lblJobs = new Label("Jobs for Today");
@@ -869,6 +864,35 @@ public class MainWindow {
                     "Account changes have been saved.",
                     ButtonType.OK);
             confirmChanges.show();
+            //send query to update to DB
+            sendDBCommand("UPDATE Volunteer "
+                    + "SET FirstName = '" + txtFirstName.getText() + "', "
+                    + "LastName = '" + txtLastName.getText() + "', "
+                    + "DateOfBirth = '" + txtDateOfBirth.getText() + "', "
+                    + "Email = '" + txtEmail.getText() + "', "
+                    + "PhoneNumber = '" + txtPhone.getText() + "', "
+                    + "Specialization = '" + comboSpecialization.getSelectionModel().getSelectedItem() + "', "
+                    + "VolunteerStreet = '" + txtStreet.getText() + "', "
+                    + "VolunteerCity = '" + txtCity.getText() + "', "
+                    + "VolunteerState = '" + txtState.getText() + "', "
+                    + "VolunteerZip = '" + Integer.parseInt(txtZip.getText()) + "', "
+                    + "PersonalInfo = '" + txtInfo.getText() + "', "
+                    + "Experience = '" + txtExperience.getText() + "' "
+                    + "WHERE VolunteerID = '" + volunteer.getVolunteerID() + "'");
+            
+            //Update the instance object
+            volunteer.setFirstName(txtFirstName.getText());
+            volunteer.setLastName(txtLastName.getText());
+            volunteer.setDateOfBirth(txtDateOfBirth.getText());
+            volunteer.setEmail(txtEmail.getText());
+            volunteer.setPhone(txtPhone.getText());
+            volunteer.setSpecialization(comboSpecialization.getSelectionModel().getSelectedItem());
+            volunteer.setStreet(txtStreet.getText());
+            volunteer.setCity(txtCity.getText());
+            volunteer.setState(txtState.getText());
+            volunteer.setZip(Integer.parseInt(txtZip.getText()));
+            volunteer.setPersonalInfo(txtInfo.getText());
+            volunteer.setExperience(txtExperience.getText());
         });
     }
 
@@ -990,6 +1014,7 @@ public class MainWindow {
                     "Volunteer application has been approved.",
                     ButtonType.OK);
             volunteer.setStatus("Volunteer in Training");
+            sendDBCommand("UPDATE Volunteer SET status = 'Volunteer in Training' WHERE volunteerID = '" + volunteer.getVolunteerID() + "'");
             confirmApprove.show();
             primaryStage.close();
             conditionalVolList.getItems().clear();
@@ -1009,6 +1034,8 @@ public class MainWindow {
                     "Volunteer application has been denied.",
                     ButtonType.OK);
             Volunteer.volunteerArrayList.remove(volunteer);
+            conditionalVolunteers.remove(volunteer);
+            sendDBCommand("DELETE FROM Volunteer WHERE volunteerID = '" + volunteer.getVolunteerID() + "'");
             confirmDeny.show();
             primaryStage.close();
         });
@@ -1134,9 +1161,9 @@ public class MainWindow {
                         dbDrives.getNString("DRIVEDATE"),
                         dbDrives.getNString("DRIVENOTES")
                 );
-                drivesList.add(dbDrive);
+                Drives.drivesList.add(dbDrive);
             }
-            for (Drives d : drivesList) {
+            for (Drives d : Drives.drivesList) {
                 System.out.println(d.getDriveID());
             }
 
@@ -1153,9 +1180,9 @@ public class MainWindow {
                         dbWorks.getNString("EVENTID"),
                         dbWorks.getNString("ANIMALID")
                 );
-                workList.add(dbWork);
+                Work.workList.add(dbWork);
             }
-            for (Work w : workList) {
+            for (Work w : Work.workList) {
                 System.out.println(w.getWorkID());
             }
 
@@ -1170,12 +1197,37 @@ public class MainWindow {
                         dbShifts.getInt("CLOCKOUT"),
                         dbShifts.getNString("VOLUNTEERID")
                 );
-                shiftList.add(dbShift);
+                Shift.shiftList.add(dbShift);
             }
-            for (Shift s : shiftList) {
+            for (Shift s : Shift.shiftList) {
                 System.out.println(s.getShiftID());
             }
 
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    public void sendDBCommand(String sqlQuery) {
+        Connection dbConn;
+        Statement commStmt;
+        ResultSet dbResults;
+        // Set up connection strings
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser"; // Change to YOUR Oracle username
+        String userPASS = "javapass"; // Change to YOUR Oracle password
+        OracleDataSource ds;
+
+        // Print each query to check SQL syntax sent to this method.
+        System.out.println(sqlQuery);
+
+        // Try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            dbResults = commStmt.executeQuery(sqlQuery);
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
