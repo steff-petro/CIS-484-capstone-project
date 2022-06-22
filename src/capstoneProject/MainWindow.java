@@ -304,6 +304,7 @@ public class MainWindow {
             );
             Job.jobList.add(tempJob);
             jobTableData.clear();
+            currentJobs.clear();
             for (Job j : Job.jobList) {
                 jobTableData.add(j);
                 currentJobs.add(j);
