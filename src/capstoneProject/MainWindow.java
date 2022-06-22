@@ -402,6 +402,7 @@ public class MainWindow {
             );
             Event.eventList.add(tempEvent);
             eventTableData.clear();
+            currentEvents.clear();
             for (Event ev : Event.eventList) {
                 eventTableData.add(ev);
                 currentEvents.add(ev);
@@ -420,7 +421,7 @@ public class MainWindow {
             confirmAddEvent.show();
             btnAddNewEvent.setText("Add Event");
         });
-        
+
         // Edit Button actions
         btnEdit.setOnAction(e -> {
             Event selectedEvent = currentEventsList.getSelectionModel().getSelectedItem();
@@ -517,7 +518,7 @@ public class MainWindow {
             confirmAddLocation.show();
             btnAddLocation.setText("Add New Location");
         });
-        
+
         // Edit Button actions
         btnEdit.setOnAction(e -> {
             Location selectedLocation = currentLocationsList.getSelectionModel().getSelectedItem();
@@ -641,7 +642,7 @@ public class MainWindow {
         TextField txtAnimalAge = new TextField();
         Button btnAdd = new Button("Add New Animal");
         Button btnEdit = new Button("Edit Selected Animal");
-        
+
         VBox leftVBox = new VBox();
         VBox rightVBox = new VBox();
         HBox idHBox = new HBox(lblAnimalID, txtAnimalID);
@@ -673,7 +674,7 @@ public class MainWindow {
         rightVBox.getChildren().addAll(lblCurrentAnimals, currentAnimalsList);
 
         txtAnimalID.setText("animal" + Animal.animalCount);
-        
+
         // Add Job button action
         btnAdd.setOnAction(e -> {
             Animal tempAnimal = new Animal(
@@ -684,7 +685,7 @@ public class MainWindow {
                     Integer.valueOf(txtAnimalAge.getText())
             );
             Animal.animalList.add(tempAnimal);
-            jobTableData.clear();
+            currentAnimals.clear();
             for (Animal a : Animal.animalList) {
                 currentAnimals.add(a);
             }
@@ -879,7 +880,7 @@ public class MainWindow {
                     + "PersonalInfo = '" + txtInfo.getText() + "', "
                     + "Experience = '" + txtExperience.getText() + "' "
                     + "WHERE VolunteerID = '" + volunteer.getVolunteerID() + "'");
-            
+
             //Update the instance object
             volunteer.setFirstName(txtFirstName.getText());
             volunteer.setLastName(txtLastName.getText());
@@ -1073,12 +1074,10 @@ public class MainWindow {
                 );
                 Job.jobList.add(dbJob);
                 jobTableData.clear();
-                for (Job j : Job.jobList) {
-                    jobTableData.add(j);
-                    currentJobs.add(j);
-                }
             }
             for (Job j : Job.jobList) {
+                jobTableData.add(j);
+                currentJobs.add(j);
                 System.out.println(j.jobID + " " + j.locationName);
             }
 
@@ -1099,12 +1098,10 @@ public class MainWindow {
                 );
                 Event.eventList.add(dbEvent);
                 eventTableData.clear();
-                for (Event e : Event.eventList) {
-                    eventTableData.add(e);
-                    currentEvents.add(e);
-                }
             }
             for (Event e : Event.eventList) {
+                eventTableData.add(e);
+                currentEvents.add(e);
                 System.out.println(e.eventID);
             }
 
