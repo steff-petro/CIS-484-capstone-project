@@ -189,6 +189,20 @@ public class MainWindow {
 
         populateEventsTable();
         populateJobsTable();
+        
+                // Button select event and select job events handling
+        btnSelectJob.setOnAction(e -> {
+            // Creates a works object and adds it to the works array, eventid is going to be null
+            // Some works objects will have animalid and some will not
+            
+            
+        });
+        
+        btnSelectEvent.setOnAction(e -> {
+            // Creates a works object and adds it to the works array, jobid is going to be null
+            // Some works objects will have animalid and some will not
+            
+        });
 
         // Menu Bar item actions
         miEditAccount.setOnAction(e -> {
@@ -246,20 +260,7 @@ public class MainWindow {
         tblcEventName.setMinWidth(150);
         tblcEventDescription.setMinWidth(200);
         tblcMaxVolunteers.setMinWidth(120);
-        
-        // Button select event and select job events handling
-        btnSelectJob.setOnAction(e -> {
-            // Creates a works object and adds it to the works array, eventid is going to be null
-            // Some works objects will have animalid and some will not
-            
-            
-        });
-        
-        btnSelectEvent.setOnAction(e -> {
-            // Creates a works object and adds it to the works array, jobid is going to be null
-            // Some works objects will have animalid and some will not
-            
-        });
+       
         
 
     }
