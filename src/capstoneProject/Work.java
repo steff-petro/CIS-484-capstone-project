@@ -37,7 +37,7 @@ public class Work {
 
     // Overloaded constructor
     public Work(String workID, String workStatus, String volunteerID, String jobID, String eventID, String animalID) {
-        this.workID = "Work" + workCount;
+        this.workID = "work" + workCount;
         this.workStatus = workStatus;
         this.volunteerID = volunteerID;
         this.jobID = jobID;

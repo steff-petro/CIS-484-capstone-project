@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
 import java.util.ArrayList;
 import oracle.jdbc.pool.OracleDataSource;
 
@@ -16,23 +17,23 @@ public class Shift {
 
     // Class variables
     private String shiftID;
-    private int clockIn;
-    private int clockOut; // Should probably add a total time in system variable to track the total
+    private Instant clockIn;
+    private Instant clockOut; // Should probably add a total time in system variable to track the total
     private String volunteerID;
     static ArrayList<Shift> shiftList = new ArrayList<>();
     
     static int shiftCount;
     
-    // Default constructor
-    public Shift() {
-        this.shiftID = "Default Shift ID";
-        this.clockIn = 00;
-        this.clockOut = 00;
-        this.volunteerID = "Default Volunteer ID";
-    }
+//    // Default constructor
+//    public Shift() {
+//        this.shiftID = "Default Shift ID";
+//        this.clockIn = 00;
+//        this.clockOut = 00;
+//        this.volunteerID = "Default Volunteer ID";
+//    }
 
     // Overloaded constructor
-    public Shift(String shiftID, int clockIn, int clockOut, String volunteerID) {
+    public Shift(String shiftID, Instant clockIn, Instant clockOut, String volunteerID) {
         this.shiftID = "shift" + shiftCount;
         this.clockIn = clockIn;
         this.clockOut = clockOut;
@@ -52,22 +53,22 @@ public class Shift {
     }
 
     // @return the clockIn
-    public double getClockIn() {
+    public Instant getClockIn() {
         return clockIn;
     }
 
     // @param clockIn the clockIn to set
-    public void setClockIn(int clockIn) {
+    public void setClockIn(Instant clockIn) {
         this.clockIn = clockIn;
     }
 
     // @return the clockOut
-    public double getClockOut() {
+    public Instant getClockOut() {
         return clockOut;
     }
 
     // @param clockOut the clockOut to set
-    public void setClockOut(int clockOut) {
+    public void setClockOut(Instant clockOut) {
         this.clockOut = clockOut;
     }
 

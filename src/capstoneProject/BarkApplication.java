@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
 import javafx.application.Application;
 import javafx.geometry.*;
 import javafx.geometry.Pos;
@@ -72,7 +73,8 @@ public class BarkApplication extends Application {
             boolean userExists = Volunteer.verifyLogin("volunteer2", "AdminPassword12!");
 
             if (userExists) {
-                MainWindow mainW = new MainWindow(this, "volunteer2");
+                Instant checkIn = Instant.now();
+                MainWindow mainW = new MainWindow(this, checkIn, "volunteer2");
                 primaryStage.close();
             } else {
                 Alert invalidInput = new Alert(Alert.AlertType.ERROR,

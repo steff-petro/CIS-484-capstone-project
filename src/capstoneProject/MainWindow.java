@@ -1,6 +1,8 @@
 package capstoneProject;
 
 import java.sql.*;
+import java.time.Instant;
+import java.time.Duration;
 import javafx.geometry.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,8 +11,6 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.collections.*;
-import java.util.*;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.util.*;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -23,6 +23,7 @@ public class MainWindow {
     // Data Fields
     BarkApplication signInForm;
     String volunteerID;
+    Instant checkIn;
 
     // Obervable list to hold names of locations - used to populate comboboxes
     // so that when user enters a location, they select from existing locations
@@ -125,8 +126,8 @@ public class MainWindow {
     // Class wide variable that can be used to display content related to the logged in user
     String currentLoggedInUser;
 
-    public MainWindow(BarkApplication signInForm, String volunteerID) {
-//        this.signInForm = signInForm;
+    public MainWindow(BarkApplication signInForm, Instant checkIn, String volunteerID) {
+        this.checkIn = checkIn;
 
         // Class wide variable that can be used to display content related to the logged in user
         currentLoggedInUser = volunteerID;
@@ -270,11 +271,24 @@ public class MainWindow {
         });
 
         miCheckOut.setOnAction(e -> {
-            // CODE FOR TRACKING HOURS GOES HERE
-            Alert checkOut = new Alert(Alert.AlertType.CONFIRMATION,
+            Instant checkOut = Instant.now();
+            long timeElapsed = Duration.between(checkIn,checkOut).toMinutes();
+            System.out.println("Time Elapsed: " + timeElapsed);
+            
+            Shift tempShift = new Shift(
+                    "shift" + Shift.shiftCount,
+                    checkIn,
+                    checkOut,
+                    currentUser.getVolunteerID()
+            );
+            
+            // CALCULATE TOTAL QUARTER HOURS HERE - **you actually wont add timeElapsed...you'll end up adding the quarter hours for the shift
+            currentUser.setTotalHours(currentUser.getTotalHours() + timeElapsed);
+            
+            Alert confirmCheckOut = new Alert(Alert.AlertType.CONFIRMATION,
                     "You have checked out for today.",
                     ButtonType.OK);
-            checkOut.show();
+            confirmCheckOut.show();
             primaryStage.close();
         });
 
@@ -1563,14 +1577,14 @@ public class MainWindow {
             while (dbShifts.next()) {
                 Shift dbShift = new Shift(
                         dbShifts.getNString("SHIFTID"),
-                        dbShifts.getInt("CLOCKIN"),
-                        dbShifts.getInt("CLOCKOUT"),
+                        dbShifts.getObject("CLOCKIN", Instant.class),
+                        dbShifts.getObject("CLOCKOUT", Instant.class),
                         dbShifts.getNString("VOLUNTEERID")
                 );
                 Shift.shiftList.add(dbShift);
             }
             for (Shift s : Shift.shiftList) {
-                System.out.println(s.getShiftID());
+                System.out.println(s.getShiftID() + " " + s.getClockIn() + " " + s.getClockOut());
             }
 
         } catch (SQLException e) {
