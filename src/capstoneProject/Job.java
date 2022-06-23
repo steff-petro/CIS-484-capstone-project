@@ -37,8 +37,6 @@ public class Job {
         this.jobType = jobType;
         this.locationID = locationID;
         this.jobNotes = jobNotes;
-       
-       
 
         jobCount++;
     }

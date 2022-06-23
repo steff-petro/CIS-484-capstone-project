@@ -107,6 +107,17 @@ public class Drives {
         this.driveNotes = driveNotes;
     }
     
+    // Method to return total miles driven by specified volunteer
+    public static double returnTotalMiles(String volunteerID) {
+        double totalMiles = 0.0;
+        for (Drives d: drivesList) {
+            if (d.getVolunteerID().equalsIgnoreCase(volunteerID)) {
+                totalMiles += d.getMiles();
+            }
+        }
+        return totalMiles;
+    }
+    
     public void writeDrives() {
         String insertDrives = "INSERT INTO Drives VALUES (";
         insertDrives += "'" + this.getDriveID() + "',";
@@ -145,6 +156,6 @@ public class Drives {
     
     @Override
     public String toString() {
-        return driveID + "\t" + locationID + "\t\tDate: " + driveDate + "\t\tMiles: " + miles + "\t\tNotes: " + driveNotes;
+        return locationID + "\t\tDate: " + driveDate + "\t\tMiles: " + miles + "\t\tNotes: " + driveNotes;
     }
 }

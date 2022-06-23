@@ -149,6 +149,16 @@ public class Location {
         }
         return name;
     }
+    
+    public static String returnLocationID(String locationName) {
+        String locationID = "";
+        for (Location l : Location.locationList) {
+            if (l.getName().equalsIgnoreCase(locationName)) {
+                locationID = l.getLocationID();
+            }
+        }
+        return locationID;
+    }
 
     public static Location returnLocationObject(String locationID) {
         Location currentLocation;
@@ -160,16 +170,6 @@ public class Location {
             }
         }
         return currentLocation = locationList.get(index);
-    }
-
-    public static String returnLocationID(String locationName) {
-        String locationID = "";
-        for (Location l : Location.locationList) {
-            if (l.getName().equalsIgnoreCase(locationName)) {
-                locationID = l.getLocationID();
-            }
-        }
-        return locationID;
     }
 
     @Override

@@ -165,15 +165,15 @@ public class MainWindow {
         drivesPane.add(driveVBox, 0, 0);
         drivesPane.add(driveHistoryList, 1, 0);
         driveHistoryList.setPrefWidth(600);
-        driveIDHBox.setSpacing(10);
+//        driveIDHBox.setSpacing(10);
         locationHBox.setSpacing(10);
         milesHBox.setSpacing(10);
         dateHBox.setSpacing(10);
         notesHBox.setSpacing(10);
         driveVBox.setSpacing(10);
         driveVBox.setPadding(new Insets(10, 20, 10, 20));
-        driveVBox.getChildren().addAll(driveIDHBox, locationHBox, milesHBox, dateHBox, notesHBox, btnLogDrive);
-        txtDriveID.setText("drive" + Drives.driveCount);
+        driveVBox.getChildren().addAll(locationHBox, milesHBox, dateHBox, notesHBox, btnLogDrive);
+//        txtDriveID.setText("drive" + Drives.driveCount);
 
         // Admin Pane
         //So tabs cannot close
@@ -189,14 +189,7 @@ public class MainWindow {
         tab11.setContent(adminVolunteerPane);
         tab13.setContent(adminSpecializationsPane);
         tbPaneAdmin.getTabs().addAll(tab6, tab7, tab8, tab9, tab10, tab13, tab11);
-        readDatabaseData();
-        addJobTab();
-        addEventsTab();
-        addLocationsTab();
-        animalsTab();
-        specializationsTab();
-        manageVolunteersTab();
-
+        
         // Placing tabs in overallPane and setting content of tabs to correspoding panes
         overallPane.add(tbPane, 0, 1);
         tab1.setContent(homePane);
@@ -213,6 +206,14 @@ public class MainWindow {
         } else {
             tbPane.getTabs().addAll(tab1, tab2, tab3, tab4, tab5);
         }
+        
+        readDatabaseData(currentUser);
+        addJobTab();
+        addEventsTab();
+        addLocationsTab();
+        animalsTab();
+        specializationsTab();
+        manageVolunteersTab();
 
         Stage primaryStage = new Stage();
         Scene primaryScene = new Scene(overallPane, 900, 650);
@@ -230,17 +231,27 @@ public class MainWindow {
 
         populateEventsTable();
         populateJobsTable();
+        volunteerSummary();
 
         // Menu Bar item actions
         miEditAccount.setOnAction(e -> {
             editAccountWindow(currentUser);
         });
 
+        miCheckOut.setOnAction(e -> {
+            // CODE FOR TRACKING HOURS GOES HERE
+            Alert checkOut = new Alert(Alert.AlertType.CONFIRMATION,
+                    "You have checked out for today.",
+                    ButtonType.OK);
+            checkOut.show();
+            primaryStage.close();
+        });
+
         // Log Drive button action
         btnLogDrive.setOnAction(e -> {
             String driveLocationID = Location.returnLocationID((String) comboLocation.getValue());
             Drives tempDrive = new Drives(
-                    txtDriveID.getText(),
+                    "drive" + Drives.driveCount,
                     currentUser.getVolunteerID(),
                     driveLocationID,
                     Double.valueOf(txtMiles.getText()),
@@ -258,6 +269,85 @@ public class MainWindow {
 
     public void volunteerSummary() {
 
+        Label lblVolList = new Label("BARK Volunteers");
+        Button btnViewVol = new Button("View Details for Selected Volunteer");
+        ListView volunteerSumList = new ListView<>(currentVolunteers);
+        VBox volSumBox = new VBox();
+
+        volSumBox.setAlignment(Pos.CENTER);
+
+        volunteerPane.add(volSumBox, 0, 0);
+        volSumBox.setSpacing(10);
+        volSumBox.setPadding(new Insets(10, 20, 10, 20));
+        volSumBox.getChildren().addAll(lblVolList, volunteerSumList, btnViewVol);
+
+        btnViewVol.setOnAction(e -> {
+            GridPane viewSummaryPane = new GridPane();
+            Label lblName = new Label("Volunteer:");
+            Label lblSpecialization = new Label("Specialization:");
+            Label lblWorkHistory = new Label("Recent Work History:");
+            Label lblCompleteEvents = new Label("Recent BARK Events:");
+            Label lblMileage = new Label("Mileage:");
+            Label lblHours = new Label("Total Hours Worked To-Date:");
+            Text txtName = new Text();
+            Text txtSpecialization = new Text();
+            Text txtMileage = new Text();
+            Text txtHours = new Text();
+            ListView workHistoryList = new ListView<>();
+            ListView completeEventsList = new ListView<>();
+            HBox nameBox = new HBox(lblName, txtName);
+            HBox specialBox = new HBox(lblSpecialization, txtSpecialization);
+            HBox mileageBox = new HBox(lblMileage, txtMileage);
+            HBox hoursBox = new HBox(lblHours, txtHours);
+            VBox workHistoryBox = new VBox();
+            VBox eventHistoryBox = new VBox();
+            VBox leftVbox = new VBox();
+
+            viewSummaryPane.setAlignment(Pos.CENTER);
+            viewSummaryPane.add(leftVbox, 0, 0);
+            viewSummaryPane.add(workHistoryBox, 0, 1);
+            viewSummaryPane.add(eventHistoryBox, 1, 1);
+
+            workHistoryList.setPrefHeight(200);
+            eventHistoryBox.setPrefHeight(200);
+            nameBox.setSpacing(10);
+            specialBox.setSpacing(10);
+            mileageBox.setSpacing(10);
+            hoursBox.setSpacing(10);
+
+            // new Insets(top, left, bottom, right)
+            leftVbox.setSpacing(10);
+            leftVbox.setPadding(new Insets(10, 20, 30, 20));
+            leftVbox.getChildren().addAll(nameBox, specialBox, mileageBox, hoursBox);
+
+            workHistoryBox.setSpacing(10);
+            workHistoryBox.setPadding(new Insets(10, 20, 10, 20));
+            workHistoryBox.getChildren().addAll(lblWorkHistory, workHistoryList);
+
+            eventHistoryBox.setSpacing(10);
+            eventHistoryBox.setPadding(new Insets(10, 20, 10, 20));
+            eventHistoryBox.getChildren().addAll(lblCompleteEvents, completeEventsList);
+
+            Volunteer volunteer = (Volunteer) volunteerSumList.getSelectionModel().getSelectedItem();
+            try {
+                txtName.setText(volunteer.toString());
+                txtSpecialization.setText(volunteer.getSpecialization());
+                txtMileage.setText(String.valueOf(Drives.returnTotalMiles(volunteer.getVolunteerID())));
+                txtHours.setText(String.valueOf(volunteer.getTotalHours()));
+
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select a volunteer.",
+                        ButtonType.OK);
+                noSelection.show();
+            }
+
+            Stage primaryStage = new Stage();
+            Scene primaryScene = new Scene(viewSummaryPane, 900, 550);
+            primaryStage.setScene(primaryScene);
+            primaryStage.setTitle("Volunteer Summary for " + volunteer.toString());
+            primaryStage.show();
+        });
     }
 
     public void populateJobsTable() {
@@ -297,7 +387,6 @@ public class MainWindow {
                         "You must select a job.",
                         ButtonType.OK);
                 noSelection.show();
-                npe.toString();
             }
         });
     }
@@ -339,7 +428,7 @@ public class MainWindow {
 
             try {
                 if (selectedEvent.getSpotsLeft() != 0) {
-                    selectedEvent.setRegisteredVolunteers(selectedEvent.getRegisteredVolunteers()+1);
+                    selectedEvent.setRegisteredVolunteers(selectedEvent.getRegisteredVolunteers() + 1);
                     // CODE TO ASSOCIATE EVENT WITH CURRENT VOLUNTEER GOES HERE
 
                 } else {
@@ -1253,7 +1342,7 @@ public class MainWindow {
         Stage primaryStage = new Stage();
         Scene primaryScene = new Scene(reviewPane, 900, 550);
         primaryStage.setScene(primaryScene);
-        primaryStage.setTitle("Review Application");
+        primaryStage.setTitle("Review Volunteer");
         primaryStage.show();
 
         // Approve / Deny button actions
@@ -1267,6 +1356,7 @@ public class MainWindow {
             primaryStage.close();
             conditionalVolList.getItems().clear();
             currentVolList.getItems().clear();
+            inactiveVolList.getItems().clear();
             for (Volunteer v : Volunteer.volunteerArrayList) {
                 if (v.getStatus().equals("conditional")) {
                     conditionalVolunteers.add(v);
@@ -1294,7 +1384,7 @@ public class MainWindow {
     }
 
     // Method to read volunteer data from database
-    public void readDatabaseData() {
+    public void readDatabaseData(Volunteer currentUser) {
         Connection dbConn;
         Statement commStmt;
         // Set up connection strings
@@ -1411,7 +1501,9 @@ public class MainWindow {
             }
             driveHistoryList.getItems().clear();
             for (Drives d : Drives.drivesList) {
-                drivesData.add(d);
+                if (d.getVolunteerID().equalsIgnoreCase(currentUser.getVolunteerID())) {
+                    drivesData.add(d);
+                }
             }
 
             // Reading Work data into Work objects
