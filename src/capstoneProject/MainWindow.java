@@ -233,6 +233,37 @@ public class MainWindow {
         populateJobsTable();
         volunteerSummary();
 
+        // Select event button action
+        btnSelectEvent.setOnAction(e -> {
+            Event selectedEvent = eventTable.getSelectionModel().getSelectedItem();
+
+            try {
+                if (selectedEvent.getSpotsLeft() != 0) {
+                    selectedEvent.setRegisteredVolunteers(selectedEvent.getRegisteredVolunteers() + 1);
+                    // CODE TO ASSOCIATE EVENT WITH CURRENT VOLUNTEER GOES HERE
+                    Job currentObject = jobTable.getSelectionModel().getSelectedItem();
+                    String currentJobID = currentObject.getJobID();
+                    String workStatus = "In Progress";
+                    // AnimalID is can be null
+                    Work myObject = new Work("ID", workStatus, volunteerID, currentJobID, null, null);
+
+                } else {
+                    // Alerts user if the event is full
+                    Alert eventFull = new Alert(Alert.AlertType.ERROR,
+                            "Sorry, this event does not have any available spots left.",
+                            ButtonType.OK);
+                    eventFull.show();
+                }
+
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select an event.",
+                        ButtonType.OK);
+                noSelection.show();
+            }
+
+        });
+
         // Menu Bar item actions
         miEditAccount.setOnAction(e -> {
             editAccountWindow(currentUser);

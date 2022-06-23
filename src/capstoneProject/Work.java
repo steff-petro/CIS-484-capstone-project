@@ -37,12 +37,14 @@ public class Work {
 
     // Overloaded constructor
     public Work(String workID, String workStatus, String volunteerID, String jobID, String eventID, String animalID) {
-        this.workID = workID;
+        this.workID = "Work" + workCount;
         this.workStatus = workStatus;
         this.volunteerID = volunteerID;
         this.jobID = jobID;
         this.eventID = eventID;
         this.animalID = animalID;
+        
+        workCount++;
     }
 
     // @return the workID
@@ -101,7 +103,7 @@ public class Work {
     }
 
     // @param animalID the animalID to set
-    public void setAnimalID(String animalIdD) {
+    public void setAnimalID(String animalID) {
         this.animalID = animalID;
     }
     
