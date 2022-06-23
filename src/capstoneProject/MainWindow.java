@@ -194,14 +194,26 @@ public class MainWindow {
         btnSelectJob.setOnAction(e -> {
             // Creates a works object and adds it to the works array, eventid is going to be null
             // Some works objects will have animalid and some will not
-            Work myObject = new Work();
+            //volunteerID
             
+           Job currentObject =  jobTable.getSelectionModel().getSelectedItem();
+           String currentJobID = currentObject.getJobID();
+           String workStatus = "In Progress";
+           // AnimalID is can be null
+           Work myObject = new Work("ID", workStatus, volunteerID, currentJobID, null, null);
+           
+           
             
         });
         
         btnSelectEvent.setOnAction(e -> {
             // Creates a works object and adds it to the works array, jobid is going to be null
             // Some works objects will have animalid and some will not
+            // JobID is null
+            
+            
+            
+            Work myObject = new Work();
             
         });
 
