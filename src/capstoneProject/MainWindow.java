@@ -10,6 +10,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.collections.*;
 import java.util.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.util.*;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -23,20 +24,46 @@ public class MainWindow {
     BarkApplication signInForm;
     String volunteerID;
 
+    // Obervable list to hold names of locations - used to populate comboboxes
+    // so that when user enters a location, they select from existing locations
+    ObservableList<String> locationNames = FXCollections.observableArrayList();
+
 //     JavaFX Controls
     // Labels, TableView, and Button for Jobs Pane
     Label lblJobs = new Label("Jobs for Today");
     Button btnSelectJob = new Button("Select Job");
-    ObservableList<Job> jobTableData = FXCollections.observableArrayList();
-    TableView<Job> jobTable = new TableView<>(jobTableData);
+    ObservableList<Job> jobData = FXCollections.observableArrayList();
+    TableView<Job> jobTable = new TableView<>(jobData);
     VBox jobVBox = new VBox();
 
     // Labels, TableView, and Button for Events Pane
     Label lblEvents = new Label("Upcoming Events");
     Button btnSelectEvent = new Button("Register for Selected Event");
-    ObservableList<Event> eventTableData = FXCollections.observableArrayList();
-    TableView<Event> eventTable = new TableView<>(eventTableData);
+    ObservableList<Event> eventData = FXCollections.observableArrayList();
+    TableView<Event> eventTable = new TableView<>(eventData);
     VBox eventVBox = new VBox();
+
+    // Controls for drives pane
+    Label lblYourDrives = new Label("Your drive history:");
+    ObservableList<Drives> drivesData = FXCollections.observableArrayList();
+    ListView<Drives> driveHistoryList = new ListView<>(drivesData);
+    Label lblDriveID = new Label("Drive ID:");
+    Label lblLocation = new Label("Location:");
+    Label lblMiles = new Label("Miles Driven:");
+    Label lblDriveDate = new Label("Date:");
+    Label lblDriveNotes = new Label("Notes:");
+    Text txtDriveID = new Text();
+    ComboBox comboLocation = new ComboBox<>(locationNames);
+    TextField txtMiles = new TextField();
+    TextField txtDriveDate = new TextField();
+    TextField txtDriveNotes = new TextField();
+    Button btnLogDrive = new Button("Log Drive");
+    HBox driveIDHBox = new HBox(lblDriveID, txtDriveID);
+    HBox locationHBox = new HBox(lblLocation, comboLocation);
+    HBox milesHBox = new HBox(lblMiles, txtMiles);
+    HBox dateHBox = new HBox(lblDriveDate, txtDriveDate);
+    HBox notesHBox = new HBox(lblDriveNotes, txtDriveNotes);
+    VBox driveVBox = new VBox();
 
     // Tabs and controls for admin pane
     TabPane tbPaneAdmin = new TabPane();
@@ -51,14 +78,14 @@ public class MainWindow {
     VBox adminVBox = new VBox();
     ObservableList<Volunteer> conditionalVolunteers = FXCollections.observableArrayList();
     ObservableList<Volunteer> currentVolunteers = FXCollections.observableArrayList();
+    ObservableList<Volunteer> inactiveVolunteers = FXCollections.observableArrayList();
     ListView<Volunteer> conditionalVolList = new ListView<>(conditionalVolunteers);
     ListView<Volunteer> currentVolList = new ListView<>(currentVolunteers);
+    ListView<Volunteer> inactiveVolList = new ListView<>(inactiveVolunteers);
     static ObservableList<String> specializations = FXCollections.observableArrayList("Animal Health Care", "Feeding", "Enclosure Care", "Adopter Relations", "Event Volunteer");
     ListView<String> specializationList = new ListView<>(specializations);
-    ObservableList<Job> currentJobs = FXCollections.observableArrayList();
-    ListView<Job> currentJobsList = new ListView<>(currentJobs);
-    ObservableList<Event> currentEvents = FXCollections.observableArrayList();
-    ListView<Event> currentEventsList = new ListView<>(currentEvents);
+    ListView<Job> currentJobsList = new ListView<>(jobData);
+    ListView<Event> currentEventsList = new ListView<>(eventData);
     ObservableList<Location> currentLocations = FXCollections.observableArrayList();
     ListView<Location> currentLocationsList = new ListView<>(currentLocations);
     ObservableList<Animal> currentAnimals = FXCollections.observableArrayList();
@@ -134,6 +161,20 @@ public class MainWindow {
         eventVBox.getChildren().addAll(lblEvents, eventTable, btnSelectEvent);
 
         // Volunteer Summary Pane
+        // Log Drive Pane
+        drivesPane.add(driveVBox, 0, 0);
+        drivesPane.add(driveHistoryList, 1, 0);
+        driveHistoryList.setPrefWidth(600);
+        driveIDHBox.setSpacing(10);
+        locationHBox.setSpacing(10);
+        milesHBox.setSpacing(10);
+        dateHBox.setSpacing(10);
+        notesHBox.setSpacing(10);
+        driveVBox.setSpacing(10);
+        driveVBox.setPadding(new Insets(10, 20, 10, 20));
+        driveVBox.getChildren().addAll(driveIDHBox, locationHBox, milesHBox, dateHBox, notesHBox, btnLogDrive);
+        txtDriveID.setText("drive" + Drives.driveCount);
+
         // Admin Pane
         //So tabs cannot close
         tbPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
@@ -167,14 +208,14 @@ public class MainWindow {
 
         // Display tabs based on user status
         Volunteer currentUser = Volunteer.returnVolunteerObject(currentLoggedInUser);
-        if (currentUser.status.equalsIgnoreCase("admin")) {
+        if (currentUser.getStatus().equalsIgnoreCase("admin")) {
             tbPane.getTabs().addAll(tab1, tab2, tab3, tab4, tab5, tab12);
         } else {
             tbPane.getTabs().addAll(tab1, tab2, tab3, tab4, tab5);
         }
 
         Stage primaryStage = new Stage();
-        Scene primaryScene = new Scene(overallPane, 800, 650);
+        Scene primaryScene = new Scene(overallPane, 900, 650);
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("BARK Volunteer Information System");
         primaryStage.show();
@@ -189,32 +230,36 @@ public class MainWindow {
 
         populateEventsTable();
         populateJobsTable();
-        
-                // Button select event and select job events handling
-        btnSelectJob.setOnAction(e -> {
-            // Creates a works object and adds it to the works array, eventid is going to be null
-            // Some works objects will have animalid and some will not
-            //volunteerID
-            
-           Job currentObject =  jobTable.getSelectionModel().getSelectedItem();
-           String currentJobID = currentObject.getJobID();
-           String workStatus = "In Progress";
-           // AnimalID is can be null
-           Work myObject = new Work("ID", workStatus, volunteerID, currentJobID, null, null);
-           
-           
-            
-        });
-        
+
+        // Select event button action
         btnSelectEvent.setOnAction(e -> {
-            // Creates a works object and adds it to the works array, jobid is going to be null
-            // Some works objects will have animalid and some will not
-            // JobID is null
-            
-            
-            
-            Work myObject = new Work();
-            
+            Event selectedEvent = eventTable.getSelectionModel().getSelectedItem();
+
+            try {
+                if (selectedEvent.getSpotsLeft() != 0) {
+                    selectedEvent.setRegisteredVolunteers(selectedEvent.getRegisteredVolunteers() + 1);
+                    // CODE TO ASSOCIATE EVENT WITH CURRENT VOLUNTEER GOES HERE
+                    Job currentObject = jobTable.getSelectionModel().getSelectedItem();
+                    String currentJobID = currentObject.getJobID();
+                    String workStatus = "In Progress";
+                    // AnimalID is can be null
+                    Work myObject = new Work("ID", workStatus, volunteerID, currentJobID, null, null);
+
+                } else {
+                    // Alerts user if the event is full
+                    Alert eventFull = new Alert(Alert.AlertType.ERROR,
+                            "Sorry, this event does not have any available spots left.",
+                            ButtonType.OK);
+                    eventFull.show();
+                }
+
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select an event.",
+                        ButtonType.OK);
+                noSelection.show();
+            }
+
         });
 
         // Menu Bar item actions
@@ -222,11 +267,37 @@ public class MainWindow {
             editAccountWindow(currentUser);
         });
 
+        // Log Drive button action
+        btnLogDrive.setOnAction(e -> {
+            String driveLocationID = Location.returnLocationID((String) comboLocation.getValue());
+            Drives tempDrive = new Drives(
+                    txtDriveID.getText(),
+                    currentUser.getVolunteerID(),
+                    driveLocationID,
+                    Double.valueOf(txtMiles.getText()),
+                    txtDriveDate.getText(),
+                    txtDriveNotes.getText()
+            );
+            Drives.drivesList.add(tempDrive);
+            driveHistoryList.getItems().clear();
+            for (Drives d : Drives.drivesList) {
+                drivesData.add(d);
+            }
+            txtDriveID.setText("drive" + Drives.driveCount);
+        });
+    }
+
+    public void volunteerSummary() {
+
     }
 
     public void populateJobsTable() {
+        for (Job j : Job.jobList) {
+            j.setLocationName(Location.reutrnLocationName(j.getLocationID()));
+        }
+
         // Populate job table data
-        jobTable.setItems(jobTableData);
+        jobTable.setItems(jobData);
         TableColumn tblcJobID = new TableColumn("ID");
         TableColumn tblcJobName = new TableColumn("Name");
         TableColumn tblcJobType = new TableColumn("Type");
@@ -245,11 +316,30 @@ public class MainWindow {
         tblcJobNotes.setMinWidth(200);
 
         jobTable.getColumns().addAll(tblcJobID, tblcJobName, tblcJobType, tblcJobLocation, tblcJobNotes);
+
+        // Select job button action
+        btnSelectJob.setOnAction(e -> {
+            Job selectedJob = jobTable.getSelectionModel().getSelectedItem();
+            try {
+                // CODE TO ASSOCIATE JOB WITH CURRENT VOLUNTEER GOES HERE
+
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select a job.",
+                        ButtonType.OK);
+                noSelection.show();
+                npe.toString();
+            }
+        });
     }
 
     public void populateEventsTable() {
+        for (Event e : Event.eventList) {
+            e.setLocationName(Location.reutrnLocationName(e.getLocationID()));
+        }
+
         // Populate Event table data
-        eventTable.setItems(eventTableData);
+        eventTable.setItems(eventData);
         TableColumn tblcEventID = new TableColumn("ID");
         TableColumn tblcEventName = new TableColumn("Name");
         TableColumn tblcEventDate = new TableColumn("Date");
@@ -273,8 +363,6 @@ public class MainWindow {
         tblcEventName.setMinWidth(150);
         tblcEventDescription.setMinWidth(200);
         tblcMaxVolunteers.setMinWidth(120);
-       
-        
 
     }
 
@@ -288,7 +376,7 @@ public class MainWindow {
         Text txtJobID = new Text();
         TextField txtJobName = new TextField();
         TextField txtJobType = new TextField();
-        TextField txtJobLocation = new TextField();
+        ComboBox comboJobLocation = new ComboBox<>(locationNames);
         TextField txtJobNotes = new TextField();
         Button btnAddNewJob = new Button("Add Job");
         Button btnEditJob = new Button("Edit Selected Job");
@@ -297,8 +385,8 @@ public class MainWindow {
         HBox idHBox = new HBox(lblJobID, txtJobID);
         HBox nameHBox = new HBox(lblJobName, txtJobName);
         HBox typeHBox = new HBox(lblJobType, txtJobType);
-        HBox locationHBox = new HBox(lblJoblocation, txtJobLocation);
-        HBox notesHBox = new HBox(lblJobNotes, txtJobNotes);
+        HBox jobLocationHBox = new HBox(lblJoblocation, comboJobLocation);
+        HBox jobNotesHBox = new HBox(lblJobNotes, txtJobNotes);
 
         adminJobsPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.CENTER);
@@ -310,12 +398,12 @@ public class MainWindow {
         idHBox.setSpacing(10);
         nameHBox.setSpacing(10);
         typeHBox.setSpacing(10);
-        locationHBox.setSpacing(10);
-        notesHBox.setSpacing(10);
+        jobLocationHBox.setSpacing(10);
+        jobNotesHBox.setSpacing(10);
 
         leftVBox.setSpacing(10);
         leftVBox.setPadding(new Insets(10, 20, 10, 20));
-        leftVBox.getChildren().addAll(idHBox, nameHBox, typeHBox, locationHBox, notesHBox, btnAddNewJob);
+        leftVBox.getChildren().addAll(idHBox, nameHBox, typeHBox, jobLocationHBox, jobNotesHBox, btnAddNewJob);
 
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
@@ -325,30 +413,48 @@ public class MainWindow {
 
         // Add Job button action
         btnAddNewJob.setOnAction(e -> {
-            Job tempJob = new Job(
-                    txtJobID.getText(),
-                    txtJobName.getText(),
-                    txtJobType.getText(),
-                    txtJobLocation.getText(),
-                    txtJobNotes.getText()
-            );
-            Job.jobList.add(tempJob);
-            jobTableData.clear();
-            currentJobs.clear();
+            Job tempJob;
+            if (btnAddNewJob.getText().equalsIgnoreCase("Save Changes")) {
+                for (Job j : Job.jobList) {
+                    if (j.getJobID().equalsIgnoreCase(txtJobID.getText())) {
+                        tempJob = Job.returnJobObject(txtJobID.getText());
+                        tempJob.setJobName(txtJobName.getText());
+                        tempJob.setJobType(txtJobType.getText());
+                        tempJob.setLocationID(Location.returnLocationID((String) comboJobLocation.getValue()));
+                        tempJob.setJobNotes(txtJobNotes.getText());
+                    }
+                }
+            } else {
+                tempJob = new Job(
+                        txtJobID.getText(),
+                        txtJobName.getText(),
+                        txtJobType.getText(),
+                        Location.returnLocationID((String) comboJobLocation.getValue()),
+                        txtJobNotes.getText()
+                );
+                Job.jobList.add(tempJob);
+            }
+            jobData.clear();
+            currentJobsList.getItems().clear();
             for (Job j : Job.jobList) {
-                jobTableData.add(j);
-                currentJobs.add(j);
+                jobData.add(j);
             }
             txtJobID.setText("job" + Job.jobCount);
             txtJobName.clear();
             txtJobType.clear();
-            txtJobLocation.clear();
+            comboJobLocation.setValue("");
             txtJobNotes.clear();
-            tempJob.writeJob();
-            Alert confirmAddJob = new Alert(Alert.AlertType.CONFIRMATION,
-                    "New job has been added to the list.",
-                    ButtonType.OK);
-            confirmAddJob.show();
+            if (btnAddNewJob.getText().equalsIgnoreCase("Save Changes")) {
+                Alert confirmEditJob = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Changes to job have been saved.",
+                        ButtonType.OK);
+                confirmEditJob.show();
+            } else {
+                Alert confirmAddJob = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Jobs have been updated.",
+                        ButtonType.OK);
+                confirmAddJob.show();
+            }
             btnAddNewJob.setText("Add Job");
         });
 
@@ -358,7 +464,7 @@ public class MainWindow {
             txtJobID.setText(selectedJob.getJobID());
             txtJobName.setText(selectedJob.getJobName());
             txtJobType.setText(selectedJob.getJobType());
-            txtJobLocation.setText(selectedJob.getLocationName());
+            comboJobLocation.setValue(Location.reutrnLocationName(selectedJob.getLocationID()));
             txtJobNotes.setText(selectedJob.getJobNotes());
             btnAddNewJob.setText("Save Changes");
         });
@@ -374,25 +480,25 @@ public class MainWindow {
         Label lblEventTime = new Label("Time:");
         Label lblMaxVolunteers = new Label("Max Volunteers:");
         Label lblEventDescription = new Label("Description:");
-        Label lblLocation = new Label("Location:");
+        Label lblEventLocation = new Label("Location:");
         Text txtEventID = new Text();
         TextField txtEventName = new TextField();
         TextField txtEventDate = new TextField();
         TextField txtEventTime = new TextField();
         TextField txtMaxVolunteers = new TextField();
         TextField txtEventDescription = new TextField();
-        TextField txtLocation = new TextField();
+        ComboBox comboLocation = new ComboBox<>(locationNames);
         Button btnAddNewEvent = new Button("Add Event");
         Button btnEdit = new Button("Edit Selected Event");
         VBox leftVBox = new VBox();
         VBox rightVBox = new VBox();
         HBox idHBox = new HBox(lblEventID, txtEventID);
         HBox nameHBox = new HBox(lblEventName, txtEventName);
-        HBox dateHBox = new HBox(lblEventDate, txtEventDate);
+        HBox eventDateHBox = new HBox(lblEventDate, txtEventDate);
         HBox timeHBox = new HBox(lblEventTime, txtEventTime);
         HBox maxVolHBox = new HBox(lblMaxVolunteers, txtMaxVolunteers);
         HBox descHBox = new HBox(lblEventDescription, txtEventDescription);
-        HBox locationHBox = new HBox(lblLocation, txtLocation);
+        HBox eventLocationHBox = new HBox(lblEventLocation, comboLocation);
 
         adminEventsPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_CENTER);
@@ -403,15 +509,15 @@ public class MainWindow {
 
         idHBox.setSpacing(10);
         nameHBox.setSpacing(10);
-        dateHBox.setSpacing(10);
+        eventDateHBox.setSpacing(10);
         timeHBox.setSpacing(10);
         maxVolHBox.setSpacing(10);
         descHBox.setSpacing(10);
-        locationHBox.setSpacing(10);
+        eventLocationHBox.setSpacing(10);
 
         leftVBox.setSpacing(10);
         leftVBox.setPadding(new Insets(10, 20, 10, 20));
-        leftVBox.getChildren().addAll(idHBox, nameHBox, dateHBox, timeHBox, maxVolHBox, descHBox, locationHBox, btnAddNewEvent);
+        leftVBox.getChildren().addAll(idHBox, nameHBox, eventDateHBox, timeHBox, maxVolHBox, descHBox, eventLocationHBox, btnAddNewEvent);
 
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
@@ -421,22 +527,36 @@ public class MainWindow {
 
         // Add Event button action
         btnAddNewEvent.setOnAction(e -> {
-            Event tempEvent = new Event(
-                    txtEventID.getText(),
-                    txtEventName.getText(),
-                    txtEventDate.getText(),
-                    txtEventTime.getText(),
-                    Integer.valueOf(txtMaxVolunteers.getText()),
-                    0,
-                    txtEventDescription.getText(),
-                    txtLocation.getText()
-            );
-            Event.eventList.add(tempEvent);
-            eventTableData.clear();
-            currentEvents.clear();
+            Event tempEvent;
+            if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
+                for (Event ev : Event.eventList) {
+                    if (ev.getEventID().equalsIgnoreCase(txtEventID.getText())) {
+                        tempEvent = Event.returnEventObject(txtEventID.getText());
+                        tempEvent.setEventName(txtEventName.getText());
+                        tempEvent.setEventDate(txtEventDate.getText());
+                        tempEvent.setEventTime(txtEventTime.getText());
+                        tempEvent.setMaxVolunteers(Integer.valueOf(txtMaxVolunteers.getText()));
+                        tempEvent.setEventDescription(txtEventDescription.getText());
+                        tempEvent.setLocationID(Location.returnLocationID((String) comboLocation.getValue()));
+                    }
+                }
+            } else {
+                tempEvent = new Event(
+                        txtEventID.getText(),
+                        txtEventName.getText(),
+                        txtEventDate.getText(),
+                        txtEventTime.getText(),
+                        Integer.valueOf(txtMaxVolunteers.getText()),
+                        0,
+                        txtEventDescription.getText(),
+                        Location.returnLocationID((String) comboLocation.getValue())
+                );
+                Event.eventList.add(tempEvent);
+            }
+            eventData.clear();
+            currentEventsList.getItems().clear();
             for (Event ev : Event.eventList) {
-                eventTableData.add(ev);
-                currentEvents.add(ev);
+                eventData.add(ev);
             }
             txtEventID.setText("event" + Event.eventCount);
             txtEventName.clear();
@@ -444,12 +564,18 @@ public class MainWindow {
             txtEventTime.clear();
             txtMaxVolunteers.clear();
             txtEventDescription.clear();
-            txtLocation.clear();
-            tempEvent.writeEvent();
-            Alert confirmAddEvent = new Alert(Alert.AlertType.CONFIRMATION,
-                    "New event has been added to the list.",
-                    ButtonType.OK);
-            confirmAddEvent.show();
+            comboLocation.setValue("");
+            if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
+                Alert confirmEditEvent = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Changes to event have been saved.",
+                        ButtonType.OK);
+                confirmEditEvent.show();
+            } else {
+                Alert confirmAddEvent = new Alert(Alert.AlertType.CONFIRMATION,
+                        "New event has been added to the list.",
+                        ButtonType.OK);
+                confirmAddEvent.show();
+            }
             btnAddNewEvent.setText("Add Event");
         });
 
@@ -462,7 +588,7 @@ public class MainWindow {
             txtEventTime.setText(selectedEvent.getEventTime());
             txtMaxVolunteers.setText(String.valueOf(selectedEvent.getMaxVolunteers()));
             txtEventDescription.setText(selectedEvent.getEventDescription());
-            txtLocation.setText(selectedEvent.getLocationID());
+            comboLocation.setValue(Location.reutrnLocationName(selectedEvent.getLocationID()));
             btnAddNewEvent.setText("Save Changes");
         });
     }
@@ -503,7 +629,6 @@ public class MainWindow {
 
         adminLocationsPane.add(leftVBox, 0, 0);
         adminLocationsPane.add(rightVBox, 1, 0);
-        adminLocationsPane.add(btnAddLocation, 0, 4);
 
         idHBox.setSpacing(10);
         nameHBox.setSpacing(10);
@@ -515,7 +640,7 @@ public class MainWindow {
 
         leftVBox.setSpacing(10);
         leftVBox.setPadding(new Insets(10, 20, 10, 20));
-        leftVBox.getChildren().addAll(idHBox, nameHBox, typeHBox, streetHBox, cityHBox, stateHBox, zipHBox, btnEdit);
+        leftVBox.getChildren().addAll(idHBox, nameHBox, typeHBox, streetHBox, cityHBox, stateHBox, zipHBox, btnAddLocation);
 
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
@@ -525,16 +650,31 @@ public class MainWindow {
 
         // Add Location button action
         btnAddLocation.setOnAction(e -> {
-            Location tempLocation = new Location(
-                    txtLocationID.getText(),
-                    txtLocationName.getText(),
-                    txtLocationStreet.getText(),
-                    txtLocationCity.getText(),
-                    txtLocationState.getText(),
-                    Integer.valueOf(txtLocationZip.getText()),
-                    txtLocationType.getText()
-            );
-            Location.locationList.add(tempLocation);
+            Location tempLocation;
+            if (btnAddLocation.getText().equalsIgnoreCase("Save Changes")) {
+                for (Location l : Location.locationList) {
+                    if (l.getLocationID().equalsIgnoreCase(txtLocationID.getText())) {
+                        tempLocation = Location.returnLocationObject(txtLocationID.getText());
+                        tempLocation.setName(txtLocationName.getText());
+                        tempLocation.setStreet(txtLocationStreet.getText());
+                        tempLocation.setCity(txtLocationCity.getText());
+                        tempLocation.setState(txtLocationState.getText());
+                        tempLocation.setZip(Integer.valueOf(txtLocationZip.getText()));
+                        tempLocation.setLtype(txtLocationType.getText());
+                    }
+                }
+            } else {
+                tempLocation = new Location(
+                        txtLocationID.getText(),
+                        txtLocationName.getText(),
+                        txtLocationStreet.getText(),
+                        txtLocationCity.getText(),
+                        txtLocationState.getText(),
+                        Integer.valueOf(txtLocationZip.getText()),
+                        txtLocationType.getText()
+                );
+                Location.locationList.add(tempLocation);
+            }
 
             txtLocationID.setText("location" + Location.locationCount);
             txtLocationName.clear();
@@ -543,10 +683,17 @@ public class MainWindow {
             txtLocationState.clear();
             txtLocationZip.clear();
             txtLocationType.clear();
-            Alert confirmAddLocation = new Alert(Alert.AlertType.CONFIRMATION,
-                    "New Location has been added to the list.",
-                    ButtonType.OK);
-            confirmAddLocation.show();
+            if (btnAddLocation.getText().equalsIgnoreCase("Save Changes")) {
+                Alert confirmEditLocation = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Changes to location have been saved.",
+                        ButtonType.OK);
+                confirmEditLocation.show();
+            } else {
+                Alert confirmAddLocation = new Alert(Alert.AlertType.CONFIRMATION,
+                        "New Location has been added to the list.",
+                        ButtonType.OK);
+                confirmAddLocation.show();
+            }
             btnAddLocation.setText("Add New Location");
         });
 
@@ -602,60 +749,110 @@ public class MainWindow {
         Button btnReview = new Button("Review Selected Applicant");
         Label lblCurrent = new Label("Current Volunteers:");
         Button btnEdit = new Button("Edit Selected Volunteer");
-        Button btnDelete = new Button("Remove Selected Volunteer");
+        Label lblInactive = new Label("Inactive Volunteers:");
+        Button btnSetInactive = new Button("Set Selected Volunteer as Inactive");
+        Button btnDetails = new Button("View Details for\nSelected Volunteer");
 
         VBox leftVBox = new VBox();
+        VBox middleVBox = new VBox();
         VBox rightVBox = new VBox();
-        HBox currentHBox = new HBox(btnEdit, btnDelete);
+        VBox currentVBox = new VBox(btnEdit, btnSetInactive);
 
         adminVolunteerPane.setAlignment(Pos.CENTER);
-        leftVBox.setAlignment(Pos.TOP_CENTER);
-        rightVBox.setAlignment(Pos.TOP_CENTER);
+        leftVBox.setAlignment(Pos.CENTER);
+        middleVBox.setAlignment(Pos.CENTER);
+        rightVBox.setAlignment(Pos.CENTER);
 
         adminVolunteerPane.add(leftVBox, 0, 0);
-        adminVolunteerPane.add(rightVBox, 1, 0);
-//        adminVolunteerPane.add(btnReview, 0, 10);
-        adminVolunteerPane.add(currentHBox, 1, 10);
+        adminVolunteerPane.add(middleVBox, 1, 0);
+        adminVolunteerPane.add(rightVBox, 2, 0);
 
-        currentHBox.setSpacing(10);
+        currentVBox.setSpacing(10);
 
         leftVBox.setSpacing(10);
         leftVBox.setPadding(new Insets(10, 20, 10, 20));
         leftVBox.getChildren().addAll(lblConditional, conditionalVolList, btnReview);
 
+        middleVBox.setSpacing(10);
+        middleVBox.setPadding(new Insets(10, 20, 10, 20));
+        middleVBox.getChildren().addAll(lblCurrent, currentVolList, currentVBox);
+
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
-        rightVBox.getChildren().addAll(lblCurrent, currentVolList, currentHBox);
+        rightVBox.getChildren().addAll(lblInactive, inactiveVolList, btnDetails);
 
         // adding each volunteer to corresponding list
         for (Volunteer v : Volunteer.volunteerArrayList) {
-            if (v.status.equals("conditional")) {
+            if (v.getStatus().equals("conditional")) {
                 conditionalVolunteers.add(v);
+            } else if (v.getStatus().equals("inactive")) {
+                inactiveVolunteers.add(v);
             } else {
                 currentVolunteers.add(v);
             }
         }
         conditionalVolList.setItems(conditionalVolunteers);
         currentVolList.setItems(currentVolunteers);
+        inactiveVolList.setItems(inactiveVolunteers);
 
         // Review Button action
         btnReview.setOnAction(e -> {
             Volunteer selectedVolunteer = conditionalVolList.getSelectionModel().getSelectedItem();
-            reviewApplication(selectedVolunteer);
+            try {
+                reviewApplication(selectedVolunteer);
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select a volunteer.",
+                        ButtonType.OK);
+                noSelection.show();
+                npe.toString();
+            }
         });
 
-        // Delete Button action
-        btnDelete.setOnAction(e -> {
+        // Set Inactive Button action
+        btnSetInactive.setOnAction(e -> {
             Volunteer selectedVolunteer = currentVolList.getSelectionModel().getSelectedItem();
-            currentVolunteers.remove(selectedVolunteer);
-            Volunteer.volunteerArrayList.remove(selectedVolunteer);
+            try {
+                selectedVolunteer.setStatus("inactive");
+                currentVolunteers.remove(selectedVolunteer);
+                inactiveVolunteers.add(selectedVolunteer);
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select a volunteer.",
+                        ButtonType.OK);
+                noSelection.show();
+                npe.toString();
+            }
         });
 
         // Edit Button actions
         btnEdit.setOnAction(e -> {
             Volunteer selectedVolunteer = currentVolList.getSelectionModel().getSelectedItem();
-            editAccountWindow(selectedVolunteer);
+            try {
+                editAccountWindow(selectedVolunteer);
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select a volunteer.",
+                        ButtonType.OK);
+                noSelection.show();
+                npe.toString();
+            }
         });
+
+        // View Details for inactive volunteer action
+        btnDetails.setOnAction(e -> {
+            Volunteer selectedVolunteer = inactiveVolList.getSelectionModel().getSelectedItem();
+            try {
+                reviewApplication(selectedVolunteer);
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select a volunteer.",
+                        ButtonType.OK);
+                noSelection.show();
+                npe.toString();
+            }
+        });
+
     }
 
     public void animalsTab() {
@@ -702,21 +899,34 @@ public class MainWindow {
 
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
-        rightVBox.getChildren().addAll(lblCurrentAnimals, currentAnimalsList);
+        rightVBox.getChildren().addAll(lblCurrentAnimals, currentAnimalsList, btnEdit);
 
         txtAnimalID.setText("animal" + Animal.animalCount);
 
-        // Add Job button action
+        // Add Animal button action
         btnAdd.setOnAction(e -> {
-            Animal tempAnimal = new Animal(
-                    txtAnimalID.getText(),
-                    txtAnimalName.getText(),
-                    txtAnimalSpecies.getText(),
-                    txtAnimalBreed.getText(),
-                    Integer.valueOf(txtAnimalAge.getText())
-            );
-            Animal.animalList.add(tempAnimal);
-            currentAnimals.clear();
+            Animal tempAnimal;
+            if (btnAdd.getText().equalsIgnoreCase("Save Changes")) {
+                for (Animal a : Animal.animalList) {
+                    if (a.getAnimalID().equalsIgnoreCase(txtAnimalID.getText())) {
+                        tempAnimal = Animal.returnAnimalObject(txtAnimalID.getText());
+                        tempAnimal.setAnimalName(txtAnimalName.getText());
+                        tempAnimal.setAnimalSpecies(txtAnimalSpecies.getText());
+                        tempAnimal.setAnimalBreed(txtAnimalBreed.getText());
+                        tempAnimal.setAnimalAge(Integer.valueOf(txtAnimalAge.getText()));
+                    }
+                }
+            } else {
+                tempAnimal = new Animal(
+                        txtAnimalID.getText(),
+                        txtAnimalName.getText(),
+                        txtAnimalSpecies.getText(),
+                        txtAnimalBreed.getText(),
+                        Integer.valueOf(txtAnimalAge.getText())
+                );
+                Animal.animalList.add(tempAnimal);
+            }
+            jobData.clear();
             for (Animal a : Animal.animalList) {
                 currentAnimals.add(a);
             }
@@ -725,10 +935,17 @@ public class MainWindow {
             txtAnimalSpecies.clear();
             txtAnimalBreed.clear();
             txtAnimalAge.clear();
-            Alert confirmAddAnimal = new Alert(Alert.AlertType.CONFIRMATION,
-                    "New animal has been added to the list.",
-                    ButtonType.OK);
-            confirmAddAnimal.show();
+            if (btnAdd.getText().equalsIgnoreCase("Save Changes")) {
+                Alert confirmEditAnimal = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Changes to animal have been saved.",
+                        ButtonType.OK);
+                confirmEditAnimal.show();
+            } else {
+                Alert confirmAddAnimal = new Alert(Alert.AlertType.CONFIRMATION,
+                        "New animal has been added to the list.",
+                        ButtonType.OK);
+                confirmAddAnimal.show();
+            }
             btnAdd.setText("Add New Animal");
         });
 
@@ -807,6 +1024,7 @@ public class MainWindow {
         Label lblZip = new Label("Zip:");
         Label lblInfo = new Label("Personal Information:");
         Label lblExperience = new Label("Please describe your Animal Experience Here: ");
+        Label lblTotHours = new Label("Total Hours Worked To-Date:");
 
         Text txtvolunteerID = new Text();
         TextField txtFirstName = new TextField();
@@ -818,12 +1036,10 @@ public class MainWindow {
         TextField txtCity = new TextField();
         TextField txtState = new TextField();
         TextField txtZip = new TextField();
-        TextField txtInfo = new TextField();
-
+        TextArea txtInfo = new TextArea();
+        Text txtTotHours = new Text();
         ComboBox<String> comboSpecialization = new ComboBox<>(specializations);
-
         TextArea txtExperience = new TextArea();
-
         Button submit = new Button("Save Changes");
 
         txtvolunteerID.setText(volunteer.getVolunteerID());
@@ -839,6 +1055,7 @@ public class MainWindow {
         txtInfo.setText(volunteer.getPersonalInfo());
         comboSpecialization.valueProperty().setValue(volunteer.getSpecialization());
         txtExperience.setText(volunteer.getExperience());
+        txtTotHours.setText(String.valueOf(volunteer.getTotalHours()));
 
         VBox leftVBox = new VBox();
         VBox rightVBox = new VBox();
@@ -853,7 +1070,9 @@ public class MainWindow {
         HBox cityBox = new HBox(lblCity, txtCity);
         HBox stateBox = new HBox(lblState, txtState);
         HBox zipBox = new HBox(lblZip, txtZip);
-        HBox infoBox = new HBox(lblInfo, txtInfo);
+        VBox infoBox = new VBox(lblInfo, txtInfo);
+        VBox experienceBox = new VBox(lblExperience, txtExperience);
+        HBox hoursBox = new HBox(lblTotHours, txtTotHours);
 
         editPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_LEFT);
@@ -876,14 +1095,15 @@ public class MainWindow {
         stateBox.setSpacing(10);
         zipBox.setSpacing(10);
         infoBox.setSpacing(10);
+        hoursBox.setSpacing(10);
 
         leftVBox.setSpacing(10);
         leftVBox.setPadding(new Insets(10, 20, 10, 20));
-        leftVBox.getChildren().addAll(idBox, firstNameBox, lastNameBox, dateOfBirthBox, emailBox, phoneBox, specialBox, streetBox, cityBox, stateBox, zipBox, infoBox);
+        leftVBox.getChildren().addAll(idBox, firstNameBox, lastNameBox, dateOfBirthBox, emailBox, phoneBox, specialBox, streetBox, cityBox, stateBox, zipBox, hoursBox);
 
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
-        rightVBox.getChildren().addAll(lblExperience, txtExperience);
+        rightVBox.getChildren().addAll(experienceBox, infoBox);
 
         Stage primaryStage = new Stage();
         Scene primaryScene = new Scene(editPane, 900, 550);
@@ -1006,7 +1226,9 @@ public class MainWindow {
 
         reviewPane.add(leftVBox, 0, 0);
         reviewPane.add(rightVBox, 1, 0);
-        reviewPane.add(bottomHBox, 1, 20);
+        if (volunteer.getStatus().equalsIgnoreCase("conditional")) {
+            reviewPane.add(bottomHBox, 1, 20);
+        }
 
         // Set spacing on HBoxs/VBoxes and add content
         idBox.setSpacing(10);
@@ -1052,14 +1274,17 @@ public class MainWindow {
             conditionalVolList.getItems().clear();
             currentVolList.getItems().clear();
             for (Volunteer v : Volunteer.volunteerArrayList) {
-                if (v.status.equals("conditional")) {
+                if (v.getStatus().equals("conditional")) {
                     conditionalVolunteers.add(v);
+                } else if (v.getStatus().equals("inactive")) {
+                    inactiveVolunteers.add(v);
                 } else {
                     currentVolunteers.add(v);
                 }
             }
             conditionalVolList.setItems(conditionalVolunteers);
             currentVolList.setItems(currentVolunteers);
+            inactiveVolList.setItems(inactiveVolunteers);
         });
         deny.setOnAction(e -> {
             Alert confirmDeny = new Alert(Alert.AlertType.CONFIRMATION,
@@ -1104,12 +1329,11 @@ public class MainWindow {
                         dbJobs.getNString("JOBNOTES")
                 );
                 Job.jobList.add(dbJob);
-                jobTableData.clear();
-            }
-            for (Job j : Job.jobList) {
-                jobTableData.add(j);
-                currentJobs.add(j);
-                System.out.println(j.jobID + " " + j.locationName);
+                currentJobsList.getItems().clear();
+                jobData.clear();
+                for (Job j : Job.jobList) {
+                    jobData.add(j);
+                }
             }
 
             // Reading Event data into Event objects
@@ -1128,12 +1352,11 @@ public class MainWindow {
                         dbEvents.getNString("LOCATIONID")
                 );
                 Event.eventList.add(dbEvent);
-                eventTableData.clear();
-            }
-            for (Event e : Event.eventList) {
-                eventTableData.add(e);
-                currentEvents.add(e);
-                System.out.println(e.eventID);
+                eventData.clear();
+                currentEventsList.getItems().clear();
+                for (Event e : Event.eventList) {
+                    eventData.add(e);
+                }
             }
 
             // Reading Animal data into Animal objects
@@ -1150,9 +1373,9 @@ public class MainWindow {
                 );
                 Animal.animalList.add(dbAnimal);
             }
+            currentAnimalsList.getItems().clear();
             for (Animal a : Animal.animalList) {
                 currentAnimals.add(a);
-                System.out.println(a.getAnimalID());
             }
 
             // Reading Location data into Location objects
@@ -1171,9 +1394,10 @@ public class MainWindow {
                 );
                 Location.locationList.add(dbLocation);
             }
+            currentLocationsList.getItems().clear();
             for (Location l : Location.locationList) {
                 currentLocations.add(l);
-                System.out.println(l.getLocationID());
+                locationNames.add(l.getName());
             }
 
             // Reading Drive data into Drives objects
@@ -1191,8 +1415,9 @@ public class MainWindow {
                 );
                 Drives.drivesList.add(dbDrive);
             }
+            driveHistoryList.getItems().clear();
             for (Drives d : Drives.drivesList) {
-                System.out.println(d.getDriveID());
+                drivesData.add(d);
             }
 
             // Reading Work data into Work objects

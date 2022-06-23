@@ -93,7 +93,7 @@ public class BarkApplication extends Application {
 
     //Method runs when program is closed
     @Override
-    public void stop(){
+    public void stop() {
         //Write all Animal instances on close
         for (Animal a : Animal.animalList) {
             a.writeAnimal();
@@ -177,10 +177,6 @@ public class BarkApplication extends Application {
                         dbVolunteers.getNString("PASSWORD")
                 );
                 Volunteer.volunteerArrayList.add(dbVolunteer);
-//                System.out.println(dbVolunteer.firstName + " " + dbVolunteer.lastName + " " + dbVolunteer.status);
-            }
-            for (Volunteer v : Volunteer.volunteerArrayList) {
-                System.out.println(v.firstName + " " + v.lastName + " " + v.volunteerID + " " + v.password + " " + v.status);
             }
 
         } catch (SQLException e) {

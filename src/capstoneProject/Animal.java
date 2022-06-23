@@ -129,6 +129,18 @@ public class Animal {
         }
     }
     
+    public static Animal returnAnimalObject(String animalID) {
+        Animal myObject;
+        int index = 0;
+        for (int i = 0; i < animalList.size(); i++) {
+            myObject = animalList.get(i);
+            if (myObject.animalID.equals(animalID)) {
+                index = i;
+            }
+        }
+        return myObject = animalList.get(index);
+    }
+    
     @Override
     public String toString() {
         return "Name: " + animalName + "\tSpecies: " + animalSpecies;

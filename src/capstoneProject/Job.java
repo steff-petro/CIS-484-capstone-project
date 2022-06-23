@@ -9,12 +9,12 @@ import oracle.jdbc.pool.OracleDataSource;
 
 public class Job {
 
-    String jobID;
-    String jobName;
-    String jobType;
-    String locationID;
-    String jobNotes;
-    String locationName;
+    private String jobID;
+    private String jobName;
+    private String jobType;
+    private String locationID;
+    private String jobNotes;
+    private String locationName;
     static ArrayList<Job> jobList = new ArrayList<>();
 
     static int jobCount = 0;
@@ -37,7 +37,8 @@ public class Job {
         this.jobType = jobType;
         this.locationID = locationID;
         this.jobNotes = jobNotes;
-//        this.locationName = Location.reutrnLocationName(locationID);
+       
+       
 
         jobCount++;
     }
@@ -124,6 +125,18 @@ public class Job {
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
+    }
+    
+    public static Job returnJobObject(String jobID) {
+        Job myObject;
+        int index = 0;
+        for (int i = 0; i < jobList.size(); i++) {
+            myObject = jobList.get(i);
+            if (myObject.jobID.equals(jobID)) {
+                index = i;
+            }
+        }
+        return myObject = jobList.get(index);
     }
     
     @Override

@@ -142,5 +142,9 @@ public class Drives {
             System.out.println(e.toString());
         }
     }
-
+    
+    @Override
+    public String toString() {
+        return driveID + "\t" + locationID + "\t\tDate: " + driveDate + "\t\tMiles: " + miles + "\t\tNotes: " + driveNotes;
+    }
 }
