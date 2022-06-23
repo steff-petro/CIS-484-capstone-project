@@ -9,12 +9,12 @@ import oracle.jdbc.pool.OracleDataSource;
 
 public class Job {
 
-    String jobID;
-    String jobName;
-    String jobType;
-    String locationID;
-    String jobNotes;
-    String locationName;
+    private String jobID;
+    private String jobName;
+    private String jobType;
+    private String locationID;
+    private String jobNotes;
+    private String locationName;
     static ArrayList<Job> jobList = new ArrayList<>();
 
     static int jobCount = 0;

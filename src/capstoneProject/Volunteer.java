@@ -16,21 +16,22 @@ import oracle.jdbc.pool.OracleDataSource;
 public class Volunteer {
 
     // Data fields
-    String volunteerID;
-    String firstName;
-    String lastName;
-    String dateOfBirth;
-    String email;
-    String phone;
-    String specialization;
-    String street;
-    String city;
-    String state;
-    int zip;
-    String personalInfo;
-    String experience;
-    String status;
-    String password;
+    private String volunteerID;
+    private String firstName;
+    private String lastName;
+    private String dateOfBirth;
+    private String email;
+    private String phone;
+    private String specialization;
+    private String street;
+    private String city;
+    private String state;
+    private int zip;
+    private String personalInfo;
+    private String experience;
+    private String status;
+    private String password;
+    private double totalHours;
     static ArrayList<Volunteer> volunteerArrayList = new ArrayList<>();
 
     static int volunteerCount = 0;
@@ -199,6 +200,14 @@ public class Volunteer {
     
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public double getTotalHours() {
+        return this.totalHours;
+    }
+    
+    public void setTotalHours(double totalHours) {
+        this.totalHours = totalHours;
     }
     
     public void writeVolunteer() {

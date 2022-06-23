@@ -15,18 +15,17 @@ import oracle.jdbc.pool.OracleDataSource;
 public class Event {
 
     // Class variables
-    String eventID;
-    String eventName;
-    String eventDate;
-    String eventTime;
-    int maxVolunteers;
-    int spotsLeft;
-    String eventDescription;
-    String locationID;
-    String locationName;
+    private String eventID;
+    private String eventName;
+    private String eventDate;
+    private String eventTime;
+    private int maxVolunteers;
+    private int spotsLeft;
+    private String eventDescription;
+    private String locationID;
+    private String locationName;
+    private int registeredVolunteers = 0;
     static ArrayList<Event> eventList = new ArrayList<>();
-    
-    int registeredVolunteers = 0;
     
     static int eventCount = 0;
     

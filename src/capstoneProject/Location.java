@@ -10,13 +10,13 @@ import oracle.jdbc.pool.OracleDataSource;
 public class Location {
 
     //Data fields
-    String locationID;
-    String name;
-    String street;
-    String city;
-    String state;
-    int zip;
-    String type;
+    private String locationID;
+    private String name;
+    private String street;
+    private String city;
+    private String state;
+    private int zip;
+    private String type;
     static ArrayList<Location> locationList = new ArrayList<>();
 
     static int locationCount = 0;
