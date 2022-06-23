@@ -1,4 +1,3 @@
-
 package capstoneProject;
 
 import java.sql.Connection;
@@ -139,18 +138,18 @@ public class Location {
             System.out.println(e.toString());
         }
     }
-    
+
     // Method to return name of location based on locationID
     public static String reutrnLocationName(String locationID) {
-        Location currentLocation = returnLocationObject(locationID);
         String name = "Shelter";
-            if (currentLocation.locationID.equals(locationID)) {
-                name = currentLocation.name;
+        for (Location l : Location.locationList) {
+            if (l.getLocationID().equalsIgnoreCase(locationID)) {
+                name = l.getName();
             }
-        
+        }
         return name;
     }
-    
+
     public static Location returnLocationObject(String locationID) {
         Location currentLocation;
         int index = 0;
@@ -162,7 +161,17 @@ public class Location {
         }
         return currentLocation = locationList.get(index);
     }
-    
+
+    public static String returnLocationID(String locationName) {
+        String locationID = "";
+        for (Location l : Location.locationList) {
+            if (l.getName().equalsIgnoreCase(locationName)) {
+                locationID = l.getLocationID();
+            }
+        }
+        return locationID;
+    }
+
     @Override
     public String toString() {
         return name;

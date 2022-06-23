@@ -93,7 +93,7 @@ public class BarkApplication extends Application {
 
     //Method runs when program is closed
     @Override
-    public void stop(){
+    public void stop() {
         //Write all Animal instances on close
         for (Animal a : Animal.animalList) {
             a.writeAnimal();

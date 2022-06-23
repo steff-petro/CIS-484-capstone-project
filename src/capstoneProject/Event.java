@@ -38,7 +38,6 @@ public class Event {
         this.maxVolunteers = maxVolunteers;
         this.eventDescription = eventDescription;
         this.locationID = locationID;
-//        this.locationName = Location.reutrnLocationName(locationID);;
         
         this.spotsLeft = maxVolunteers - registeredVolunteers;
         
@@ -161,6 +160,18 @@ public class Event {
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
+    }
+    
+    public static Event returnEventObject(String eventID) {
+        Event myObject;
+        int index = 0;
+        for (int i = 0; i < eventList.size(); i++) {
+            myObject = eventList.get(i);
+            if (myObject.eventID.equals(eventID)) {
+                index = i;
+            }
+        }
+        return myObject = eventList.get(index);
     }
     
     @Override
