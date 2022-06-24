@@ -4,7 +4,6 @@ This is the Work class
 package capstoneProject;
 
 // Imports
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +21,7 @@ public class Work {
     private String eventID;
     private String animalID;
     static ArrayList<Work> workList = new ArrayList<>();
-    
+
     static int workCount;
 
     // Default constructor
@@ -43,7 +42,7 @@ public class Work {
         this.jobID = jobID;
         this.eventID = eventID;
         this.animalID = animalID;
-        
+
         workCount++;
     }
 
@@ -106,15 +105,15 @@ public class Work {
     public void setAnimalID(String animalID) {
         this.animalID = animalID;
     }
-    
+
     public void writeWork() {
         String insertAnimal = "INSERT INTO Work VALUES (";
-        insertAnimal += "'" + this.getWorkID()+ "',";
+        insertAnimal += "'" + this.getWorkID() + "',";
         insertAnimal += "'" + this.getWorkStatus() + "',";
-        insertAnimal += "'" + this.getVolunteerID()+ "',";
-        insertAnimal += "'" + this.getJobID()+ "',";
-        insertAnimal += "'" + this.getEventID()+ "',";
-        insertAnimal += "'" + this.getAnimalID()+ "')";
+        insertAnimal += "'" + this.getVolunteerID() + "',";
+        insertAnimal += "'" + this.getJobID() + "',";
+        insertAnimal += "'" + this.getEventID() + "',";
+        insertAnimal += "'" + this.getAnimalID() + "')";
         sendDBCommand(insertAnimal);
     }
 
@@ -142,4 +141,15 @@ public class Work {
             System.out.println(e.toString());
         }
     }
+
+    @Override
+    public String toString() {
+        if (jobID != null && eventID == null) {
+            return Job.returnJobName(jobID);
+        } else if (eventID != null && jobID == null) {
+            return Event.returnEventName(eventID);
+        }
+        return Job.returnJobName(jobID) + Event.returnEventName(eventID);
+    }
+
 }

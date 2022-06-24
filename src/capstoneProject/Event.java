@@ -173,6 +173,16 @@ public class Event {
         return myObject = eventList.get(index);
     }
     
+    public static String returnEventName(String eventID) {
+        String name = "";
+        for (Event e: eventList) {
+            if (e.getEventID().equalsIgnoreCase(eventID)) {
+                name = e.getEventName();
+            }
+        }
+        return name;
+    }
+    
     @Override
     public String toString() {
         return eventName;

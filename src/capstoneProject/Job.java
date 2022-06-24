@@ -137,6 +137,16 @@ public class Job {
         return myObject = jobList.get(index);
     }
     
+    public static String returnJobName(String jobID) {
+        String name = "";
+        for (Job j: jobList) {
+            if (j.getJobID().equalsIgnoreCase(jobID)) {
+                name = j.getJobName();
+            }
+        }
+        return name;
+    }
+    
     @Override
     public String toString() {
         return jobName;
