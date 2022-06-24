@@ -83,7 +83,7 @@ public class MainWindow {
     ListView<Volunteer> conditionalVolList = new ListView<>(conditionalVolunteers);
     ListView<Volunteer> currentVolList = new ListView<>(currentVolunteers);
     ListView<Volunteer> inactiveVolList = new ListView<>(inactiveVolunteers);
-    static ObservableList<String> specializations = FXCollections.observableArrayList("Animal Health Care", "Feeding", "Enclosure Care", "Adopter Relations", "Event Volunteer");
+    static ObservableList<String> specializations = FXCollections.observableArrayList(); //"Animal Health Care", "Feeding", "Enclosure Care", "Adopter Relations", "Event Volunteer"
     ListView<String> specializationList = new ListView<>(specializations);
     ListView<Job> currentJobsList = new ListView<>(jobData);
     ListView<Event> currentEventsList = new ListView<>(eventData);
@@ -125,6 +125,7 @@ public class MainWindow {
 
     // Class wide variable that can be used to display content related to the logged in user
     String currentLoggedInUser;
+    
 
     public MainWindow(BarkApplication signInForm, Instant checkIn, String volunteerID) {
         this.checkIn = checkIn;
@@ -1119,9 +1120,10 @@ public class MainWindow {
 
         // Add Button action
         btnAdd.setOnAction(e -> {
-            String newSpecial = txtAdd.getText();
-            specializations.addAll(newSpecial);
+            Specialization newSpecial = new Specialization(txtAdd.getText());
+            specializations.addAll(newSpecial.getSpecializationName());
             specializationList.setItems(specializations);
+            newSpecial.writeSpecialization();
             txtAdd.clear();
         });
 
@@ -1445,6 +1447,19 @@ public class MainWindow {
             dbConn = ds.getConnection(userID, userPASS);
             commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
+            //Read Specialization data into Specialization objects
+            String specializationQuery = "SELECT SPECIALIZATIONNAME FROM SPECIALIZATION";
+            ResultSet dbSpecializations = commStmt.executeQuery(specializationQuery);
+            while(dbSpecializations.next()){
+                Specialization dbSpecialization = new Specialization(
+                dbSpecializations.getNString("SPECIALIZATIONNAME"));
+                
+                Specialization.specializationList.add(dbSpecialization);
+            }
+            for(Specialization s : Specialization.specializationList){
+                specializations.add(s.getSpecializationName());
+            }
+            
             // Reading Job data into Job objects
             String jobQuery = "SELECT JOBID,JOBNAME,JOBTYPE,LOCATIONID,JOBNOTES FROM JOB";
             ResultSet dbJobs = commStmt.executeQuery(jobQuery);
