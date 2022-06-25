@@ -108,12 +108,21 @@ public class Work {
 
     public void writeWork() {
         String insertAnimal = "INSERT INTO Work VALUES (";
+        if(jobID == null && eventID != null){
         insertAnimal += "'" + this.getWorkID() + "',";
         insertAnimal += "'" + this.getWorkStatus() + "',";
         insertAnimal += "'" + this.getVolunteerID() + "',";
-        insertAnimal += "'" + this.getJobID() + "',";
+        insertAnimal += "" + this.getJobID() + ",";
         insertAnimal += "'" + this.getEventID() + "',";
         insertAnimal += "'" + this.getAnimalID() + "')";
+        } else if(eventID == null && jobID != null){
+        insertAnimal += "'" + this.getWorkID() + "',";
+        insertAnimal += "'" + this.getWorkStatus() + "',";
+        insertAnimal += "'" + this.getVolunteerID() + "',";
+        insertAnimal += "" + this.getJobID() + ",";
+        insertAnimal += "" + this.getEventID() + ",";
+        insertAnimal += "'" + this.getAnimalID() + "')";
+        }
         sendDBCommand(insertAnimal);
     }
 
