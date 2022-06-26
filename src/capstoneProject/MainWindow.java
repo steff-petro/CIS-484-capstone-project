@@ -318,7 +318,8 @@ public class MainWindow {
             Drives.drivesList.add(tempDrive);
             driveHistoryList.getItems().clear();
             for (Drives d : Drives.drivesList) {
-                drivesData.add(d);
+                if(d.getVolunteerID().equals(currentUser.getVolunteerID()))
+                    drivesData.add(d);
             }
             txtDriveID.setText("drive" + Drives.driveCount);
         });
