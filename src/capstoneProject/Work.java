@@ -124,6 +124,7 @@ public class Work {
         insertAnimal += "'" + this.getAnimalID() + "')";
         }
         sendDBCommand(insertAnimal);
+        
     }
 
     public void sendDBCommand(String sqlQuery) {

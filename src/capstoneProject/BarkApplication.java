@@ -130,6 +130,13 @@ public class BarkApplication extends Application {
         for (Volunteer v : Volunteer.volunteerArrayList) {
             v.writeVolunteer();
         }
+        
+        //Fixes problem where if application is closed without logging in, all work is deleted
+        if(!Work.workList.isEmpty()){
+            //Fixes duplication of work
+            sendDBCommand("DELETE FROM Work");
+        }
+        
         //Write all Work instances on close
         for (Work w : Work.workList) {
             w.writeWork();
