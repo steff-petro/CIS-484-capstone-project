@@ -119,7 +119,7 @@ public class Work {
         insertAnimal += "'" + this.getWorkID() + "',";
         insertAnimal += "'" + this.getWorkStatus() + "',";
         insertAnimal += "'" + this.getVolunteerID() + "',";
-        insertAnimal += "" + this.getJobID() + ",";
+        insertAnimal += "'" + this.getJobID() + "',";
         insertAnimal += "" + this.getEventID() + ",";
         insertAnimal += "'" + this.getAnimalID() + "')";
         }
