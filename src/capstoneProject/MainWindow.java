@@ -12,6 +12,8 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.collections.*;
+import javafx.scene.*;
+import javafx.scene.chart.*;
 import javafx.util.*;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -137,7 +139,7 @@ public class MainWindow {
 
     public MainWindow(BarkApplication signInForm, Instant checkIn, String volunteerID) {
         this.checkIn = checkIn;
-
+        
         // Class wide variable that can be used to display content related to the logged in user
         currentLoggedInUser = volunteerID;
 
@@ -157,6 +159,7 @@ public class MainWindow {
         menuMyWork.getItems().addAll(miMyJobs, miMyEvents);
         menuBar.getMenus().addAll(menuMyAccount, menuMyWork);
         overallPane.add(menuBar, 0, 0);
+        menuBar.setPadding(new Insets(20,0,0,0));
 
         // Home Pane
         // Jobs Pane
@@ -226,7 +229,7 @@ public class MainWindow {
         reportsTab();
 
         Stage primaryStage = new Stage();
-        Scene primaryScene = new Scene(overallPane, 900, 650);
+        Scene primaryScene = new Scene(overallPane, 950, 650);
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("BARK Volunteer Information System");
         primaryStage.show();
@@ -1212,6 +1215,8 @@ public class MainWindow {
         // FX Controls
         Button btnViewHours = new Button("View Volunteer Hours");
         Button btnViewRegistered = new Button("View Volunteers Registered for Events");
+        Button btnViewMileage = new Button("View Volunteer Mileage");
+        Button btnViewSpecialization = new Button("View Volunteer Specializations");
         VBox reportButtonVBox = new VBox();
 
         adminReportsPane.setAlignment(Pos.CENTER);
@@ -1220,15 +1225,27 @@ public class MainWindow {
         adminReportsPane.add(reportButtonVBox, 0, 0);
         reportButtonVBox.setSpacing(10);
         reportButtonVBox.setPadding(new Insets(10, 20, 10, 20));
-        reportButtonVBox.getChildren().addAll(btnViewHours, btnViewRegistered);
+        reportButtonVBox.getChildren().addAll(btnViewHours, btnViewRegistered, btnViewMileage, btnViewSpecialization);
 
         btnViewHours.setOnAction(e -> {
             // displays report of volunteer hours
+            totalHoursReport();
         });
 
         btnViewRegistered.setOnAction(e -> {
             // displays report of volunteers registered for events
             eventVolunteerReport();
+        });
+
+        btnViewMileage.setOnAction(e -> {
+            //displays report of volunteer mileage
+            mileageReport();
+
+        });
+
+        btnViewSpecialization.setOnAction(e -> {
+            //displays report on volunteer specializations
+            specializationReport();
         });
     }
 
@@ -1275,6 +1292,169 @@ public class MainWindow {
 
     }
 
+    public void totalHoursReport() {
+        Stage stage = new Stage();
+        stage.setTitle("Volunteers Total Hours Report");
+        GridPane pane = new GridPane();
+        Label volunteerLBL = new Label("Select Volunteer: ");
+        Label totalHoursLBL = new Label("Total Hours Worked To-Date:");
+        Label totalHoursCalculated = new Label("0");
+        ComboBox<Volunteer> volunteerCB = new ComboBox<>(FXCollections.observableList(Volunteer.volunteerArrayList));
+        VBox hoursVB = new VBox();
+        HBox titleHB = new HBox();
+        HBox hoursHB = new HBox();
+
+        hoursVB.setAlignment(Pos.CENTER);
+        pane.setAlignment(Pos.CENTER);
+        titleHB.setAlignment(Pos.CENTER);
+        hoursHB.setAlignment(Pos.CENTER);
+
+        //Table for Volunteer Hours
+        TableView volunteerTable = new TableView();
+        TableColumn dateCol = new TableColumn("Date");
+        TableColumn checkInCol = new TableColumn("Check In");
+        TableColumn checkOutCol = new TableColumn("Check Out");
+        TableColumn hoursCol = new TableColumn("Total Hours");
+        volunteerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);//Makes it so the user cannot make the columns bigger/smaller
+        volunteerTable.setPrefWidth(500);
+        volunteerTable.getColumns().addAll(dateCol, checkInCol, checkOutCol, hoursCol);
+
+        pane.add(hoursVB, 0, 0);
+
+        //VBox for grouping
+        hoursVB.setSpacing(20);
+        hoursVB.setPadding(new Insets(10, 10, 10, 10));
+        hoursVB.getChildren().addAll(titleHB, volunteerTable, hoursHB);
+
+        //HBox for title
+        titleHB.getChildren().addAll(volunteerLBL, volunteerCB);
+        titleHB.setSpacing(20);
+
+        //HBox for Hours Calculated
+        hoursHB.getChildren().addAll(totalHoursLBL, totalHoursCalculated);
+        hoursHB.setSpacing(20);
+
+        Scene scene = new Scene(pane, 600, 500);
+        stage.setScene(scene);
+        stage.show();
+
+    }
+
+    public void mileageReport() {
+        Stage stage = new Stage();
+        stage.setTitle("Volunteers Mileage Report");
+        GridPane pane = new GridPane();
+        Label volunteerLBL = new Label("Select Volunteer: ");
+        Label totalMileageLBL = new Label("Total Mileage To-Date:");
+        Label totalMileageCalculated = new Label("0");
+        ComboBox<Volunteer> volunteerCB = new ComboBox<>(FXCollections.observableList(Volunteer.volunteerArrayList));
+        VBox mileVB = new VBox();
+        HBox titleHB = new HBox();
+        HBox mileHB = new HBox();
+
+        mileVB.setAlignment(Pos.CENTER);
+        pane.setAlignment(Pos.CENTER);
+        titleHB.setAlignment(Pos.CENTER);
+        mileHB.setAlignment(Pos.CENTER);
+
+        //Table for Volunteer Mileage
+        TableView volunteerTable = new TableView();
+        TableColumn dateCol = new TableColumn("Date");
+        TableColumn locationCol = new TableColumn("Location");
+        TableColumn mileageCol = new TableColumn("Mileage Driven");
+        volunteerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);//Makes it so the user cannot make the columns bigger/smaller
+        volunteerTable.setPrefWidth(500);
+        volunteerTable.getColumns().addAll(dateCol, locationCol, mileageCol);
+
+        pane.add(mileVB, 0, 0);
+
+        //VBox for grouping
+        mileVB.setSpacing(20);
+        mileVB.setPadding(new Insets(10, 10, 10, 10));
+        mileVB.getChildren().addAll(titleHB, volunteerTable, mileHB);
+
+        //HBox for title
+        titleHB.getChildren().addAll(volunteerLBL, volunteerCB);
+        titleHB.setSpacing(20);
+
+        //HBox for Hours Calculated
+        mileHB.getChildren().addAll(totalMileageLBL, totalMileageCalculated);
+        mileHB.setSpacing(20);
+
+        Scene scene = new Scene(pane, 600, 500);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void specializationReport() {
+        Stage stage = new Stage();
+        stage.setTitle("Volunteers Specialization Report");
+        Label specialLBL = new Label("Select Specialization:");
+        ComboBox<String> specialCB = new ComboBox<>(specializations);
+        Label volunteerLBL = new Label("Volunteers:");
+        ListView volunteerList = new ListView();//Have a list of volunteers that have selected specialization
+
+        GridPane pane = new GridPane();
+        HBox specialHB = new HBox();
+        VBox specialVB = new VBox();
+        specialVB.setAlignment(Pos.CENTER_LEFT);
+
+        //HBox for Title Left Hand
+        specialHB.getChildren().addAll(specialLBL, specialCB);
+        specialHB.setSpacing(20);
+
+        //VBox for grouping
+        specialVB.getChildren().addAll(specialHB, volunteerLBL, volunteerList);
+        specialVB.setPadding(new Insets(20, 20, 20, 20));
+
+//"Animal Health Care", "Feeding", "Enclosure Care", "Adopter Relations", "Event Volunteer"
+        //Bar Graph
+        String animalHC = "Animal Health Care";
+        String feeding = "Feeding";
+        String enclosureCare = "Enclosure Care";
+        String adopterRel = "Adopter Relations";
+        String eventVol = "Event Volunteer";
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setCategories(specializations);
+        NumberAxis yAxis = new NumberAxis();
+        BarChart<String, Number> bc
+                = new BarChart<String, Number>(xAxis, yAxis);
+        bc.setTitle("Specialization Summary");
+        xAxis.setLabel("Specialization");
+        yAxis.setLabel("# of Volunteers");
+            
+        //Number of volunteers will need to be changed to match accurate results
+        XYChart.Series series = new XYChart.Series();
+        series.getData().add(new XYChart.Data(animalHC, 2));
+        series.getData().add(new XYChart.Data(feeding, 5));
+        series.getData().add(new XYChart.Data(enclosureCare, 7));
+        series.getData().add(new XYChart.Data(adopterRel, 3));
+        series.getData().add(new XYChart.Data(eventVol, 10));
+
+        bc.getData().addAll(series);
+
+        //Changes the color of the bars
+        Node n = bc.lookup(".data0.chart-bar");
+        n.setStyle("-fx-bar-fill: CADETBLUE");
+        n = bc.lookup(".data1.chart-bar");
+        n.setStyle("-fx-bar-fill:DARKGRAY");
+        n = bc.lookup(".data2.chart-bar");
+        n.setStyle("-fx-bar-fill: CADETBLUE");
+        n = bc.lookup(".data3.chart-bar");
+        n.setStyle("-fx-bar-fill: DARKGRAY");
+        n = bc.lookup(".data4.chart-bar");
+        n.setStyle("-fx-bar-fill: CADETBLUE");
+        
+        bc.setLegendVisible(false);
+
+        pane.add(specialVB, 0, 0);
+        pane.add(bc, 6, 0);
+
+        Scene scene = new Scene(pane, 900, 500);
+        stage.setScene(scene);
+        stage.show();
+
+    }
     public void manageVolunteersTab() {
 
         // FX Controls
