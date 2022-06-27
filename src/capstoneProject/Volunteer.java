@@ -62,7 +62,6 @@ public class Volunteer {
     public Volunteer(String volunteerID, String firstName, String lastName, String dateOfBirth,
             String email, String phone, String specialization, String street, String city,
             String state, int zip, String personalInfo, String experience, String status, String password, int totalQHours) {
-        
         this.volunteerID = "volunteer" + volunteerCount;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -79,7 +78,7 @@ public class Volunteer {
         this.status = status;
         this.password = password;
         this.totalQHours = totalQHours;
-
+        
         volunteerCount++;
     }
 
@@ -226,7 +225,11 @@ public class Volunteer {
         insertVolunteer += "'" + this.getExperience() + "',";
         insertVolunteer += "'" + this.getStatus() + "',";
         insertVolunteer += "'" + this.getPassword() + "',";
+        if(this.specialization == null){
+            insertVolunteer += " " + null + ",";
+        } else{
         insertVolunteer += "'" + this.getSpecialization() + "',";
+        }
         insertVolunteer += "'" + this.getPersonalInfo() + "',";
         insertVolunteer += "" + this.getTotalQHours() + ")";
         sendDBCommand(insertVolunteer);

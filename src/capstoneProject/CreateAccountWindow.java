@@ -116,7 +116,7 @@ public class CreateAccountWindow {
 
             Integer zipInt = Integer.parseInt(txtZip.getText());
             
-            //NEED TO TEST! COULD WRITE VOL TO DB?
+            
             Volunteer tempVolunteer = new Volunteer("volunteer" + Volunteer.volunteerCount, txtFirstName.getText(), txtLastName.getText(), txtDateOfBirth.getText(),
             txtEmail.getText(), txtPhone.getText(), comboSpecialization.getSelectionModel().getSelectedItem(), txtStreet.getText(), txtCity.getText(),
             txtState.getText(), zipInt, txtInfo.getText(), txtExperience.getText(), "conditional", "Password123", 0);

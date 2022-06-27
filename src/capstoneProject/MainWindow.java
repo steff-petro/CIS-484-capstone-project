@@ -1574,6 +1574,7 @@ public class MainWindow {
                 selectedVolunteer.setStatus("active");
                 inactiveVolunteers.remove(selectedVolunteer);
                 currentVolunteers.add(selectedVolunteer);
+                sendDBCommand("UPDATE VOLUNTEER SET STATUS = 'active' WHERE VOLUNTEERID = '" + selectedVolunteer.getVolunteerID() + "'");
             } catch (NullPointerException npe) {
                 Alert noSelection = new Alert(Alert.AlertType.ERROR,
                         "You must select a volunteer.",
@@ -2032,7 +2033,8 @@ public class MainWindow {
                     ButtonType.OK);
             Volunteer.volunteerArrayList.remove(volunteer);
             conditionalVolunteers.remove(volunteer);
-            sendDBCommand("DELETE FROM Volunteer WHERE volunteerID = '" + volunteer.getVolunteerID() + "'");
+            sendDBCommand("UPDATE VOLUNTEER SET STATUS = 'inactive' WHERE volunteerID = '" + volunteer.getVolunteerID() + "'");
+            inactiveVolunteers.add(volunteer);
             confirmDeny.show();
             primaryStage.close();
         });
