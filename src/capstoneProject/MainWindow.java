@@ -222,6 +222,7 @@ public class MainWindow {
         animalsTab();
         specializationsTab();
         manageVolunteersTab();
+        reportsTab();
 
         Stage primaryStage = new Stage();
         Scene primaryScene = new Scene(overallPane, 900, 650);
@@ -999,27 +1000,20 @@ public class MainWindow {
         });
     }
 
-    public void reportsWindow() {
+    public void reportsTab() {
 
         // FX Controls
         Button btnViewHours = new Button("View Volunteer Hours");
         Button btnViewRegistered = new Button("View Volunteers Registered for Events");
         VBox reportButtonVBox = new VBox();
 
-        GridPane reportsPane = new GridPane();
-        reportsPane.setAlignment(Pos.CENTER);
+        adminReportsPane.setAlignment(Pos.CENTER);
         reportButtonVBox.setAlignment(Pos.CENTER);
 
-        reportsPane.add(reportButtonVBox, 0, 0);
+        adminReportsPane.add(reportButtonVBox, 0, 0);
         reportButtonVBox.setSpacing(10);
         reportButtonVBox.setPadding(new Insets(10, 20, 10, 20));
         reportButtonVBox.getChildren().addAll(btnViewHours, btnViewRegistered);
-
-        Stage primaryStage = new Stage();
-        Scene primaryScene = new Scene(reportsPane, 400, 200);
-        primaryStage.setScene(primaryScene);
-        primaryStage.setTitle("View Reports");
-        primaryStage.show();
 
         btnViewHours.setOnAction(e -> {
             // displays report of volunteer hours
@@ -1027,7 +1021,52 @@ public class MainWindow {
 
         btnViewRegistered.setOnAction(e -> {
             // displays report of volunteers registered for events
+            eventVolunteerReport();
         });
+    }
+
+    public void eventVolunteerReport() {
+
+        Label eventLBL = new Label("Event Name(s):");
+        Label volunteerLBL = new Label("Volunteer Name(s)");
+        ObservableList<Event> eventNames = FXCollections.observableArrayList(Event.eventList);
+        ObservableList<Event> volunteerNames = FXCollections.observableArrayList();
+        ListView eventLV = new ListView<>(eventNames);
+        ListView volunteerLV = new ListView<>(volunteerNames);
+        Button showVolunteersBT = new Button("Show Volunteer(s)");
+        VBox eventVB = new VBox();
+        VBox volunteerVB = new VBox();
+        HBox buttonHB = new HBox();
+
+        Stage stage = new Stage();
+        stage.setTitle("Volunteers Registered for Events Report");
+        GridPane reportEVPane = new GridPane();
+
+        reportEVPane.add(eventVB, 0, 0);
+        eventVB.setAlignment(Pos.CENTER);
+        eventVB.setPadding(new Insets(10, 10, 0, 20));
+        eventVB.getChildren().addAll(eventLBL, eventLV);
+
+        reportEVPane.add(volunteerVB, 4, 0);
+        volunteerVB.setAlignment(Pos.CENTER);
+        volunteerVB.setPadding(new Insets(22, 20, 20, 10));
+        volunteerVB.getChildren().addAll(volunteerLBL, volunteerLV);
+
+        reportEVPane.add(buttonHB, 0, 6);
+        buttonHB.setAlignment(Pos.CENTER);
+        buttonHB.setPadding(new Insets(0, 20, 20, 20));
+        buttonHB.getChildren().addAll(showVolunteersBT);
+
+        //2):Populate Corresponding Volunteer Name
+        showVolunteersBT.setOnAction(e->{
+        
+        });
+        
+        
+        Scene scene = new Scene(reportEVPane, 500, 500);
+        stage.setScene(scene);
+        stage.show();
+
     }
 
     public void manageVolunteersTab() {
