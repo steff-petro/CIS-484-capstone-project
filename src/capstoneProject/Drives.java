@@ -156,6 +156,6 @@ public class Drives {
     
     @Override
     public String toString() {
-        return locationID + "\t\tDate: " + driveDate + "\t\tMiles: " + miles + "\t\tNotes: " + driveNotes;
+        return Location.reutrnLocationName(locationID) + "\t\tDate: " + driveDate + "\t\tMiles: " + miles + "\t\tNotes: " + driveNotes;
     }
 }

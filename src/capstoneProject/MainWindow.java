@@ -294,7 +294,8 @@ public class MainWindow {
 
         miCheckOut.setOnAction(e -> {
             Instant checkOut = Instant.now();
-            long timeElapsed = Duration.between(checkIn, checkOut).toMinutes();
+            double timeElapsed = Duration.between(checkIn, checkOut).toMinutes();
+            int quarterHours = (int)timeElapsed / 15;
             System.out.println("Time Elapsed: " + timeElapsed);
 
             Shift tempShift = new Shift(
