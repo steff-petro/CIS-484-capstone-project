@@ -1530,6 +1530,7 @@ public class MainWindow {
                 selectedVolunteer.setStatus("inactive");
                 currentVolunteers.remove(selectedVolunteer);
                 inactiveVolunteers.add(selectedVolunteer);
+                sendDBCommand("UPDATE VOLUNTEER SET STATUS = 'inactive' WHERE VOLUNTEERID = '" + selectedVolunteer.getVolunteerID() + "'");
             } catch (NullPointerException npe) {
                 Alert noSelection = new Alert(Alert.AlertType.ERROR,
                         "You must select a volunteer.",
