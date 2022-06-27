@@ -32,8 +32,8 @@ public class MainWindow {
     ObservableList<String> locationNames = FXCollections.observableArrayList();
 
     // Observable list and ListView for home page
-    ObservableList<Work> workInProgress = FXCollections.observableArrayList();
-    ListView inProgressList = new ListView<>(workInProgress);
+    ObservableList<Work> homePageOL = FXCollections.observableArrayList();
+    ListView homePageList = new ListView<>(homePageOL);
 
 //     JavaFX Controls
     // Labels, TableView, and Button for Jobs Pane
@@ -119,6 +119,9 @@ public class MainWindow {
     Menu menuMyAccount = new Menu("My Account");
     MenuItem miEditAccount = new MenuItem("Edit Account");
     MenuItem miCheckOut = new MenuItem("Check Out");
+    Menu menuMyWork = new Menu("My Jobs and Events");
+    MenuItem miMyJobs = new MenuItem("My Jobs");
+    MenuItem miMyEvents = new MenuItem("My Events");
 
     // Create tab pane object and create 5 tabs
     TabPane tbPane = new TabPane();
@@ -131,7 +134,6 @@ public class MainWindow {
 
     // Class wide variable that can be used to display content related to the logged in user
     String currentLoggedInUser;
-    
 
     public MainWindow(BarkApplication signInForm, Instant checkIn, String volunteerID) {
         this.checkIn = checkIn;
@@ -152,7 +154,8 @@ public class MainWindow {
 
         // Set up MenuBar and add to overallPane
         menuMyAccount.getItems().addAll(miEditAccount, miCheckOut);
-        menuBar.getMenus().add(menuMyAccount);
+        menuMyWork.getItems().addAll(miMyJobs, miMyEvents);
+        menuBar.getMenus().addAll(menuMyAccount, menuMyWork);
         overallPane.add(menuBar, 0, 0);
 
         // Home Pane
@@ -173,7 +176,6 @@ public class MainWindow {
         drivesPane.add(driveVBox, 0, 0);
         drivesPane.add(driveHistoryList, 1, 0);
         driveHistoryList.setPrefWidth(600);
-//        driveIDHBox.setSpacing(10);
         locationHBox.setSpacing(10);
         milesHBox.setSpacing(10);
         dateHBox.setSpacing(10);
@@ -181,7 +183,6 @@ public class MainWindow {
         driveVBox.setSpacing(10);
         driveVBox.setPadding(new Insets(10, 20, 10, 20));
         driveVBox.getChildren().addAll(locationHBox, milesHBox, dateHBox, notesHBox, btnLogDrive);
-//        txtDriveID.setText("drive" + Drives.driveCount);
 
         // Admin Pane
         //So tabs cannot close
@@ -235,8 +236,8 @@ public class MainWindow {
         tbPane.setMinWidth(primaryScene.getWidth());
         tbPaneAdmin.setMinHeight(primaryScene.getHeight());
         tbPaneAdmin.setMinWidth(primaryScene.getWidth());
-        jobTable.setMinWidth(primaryScene.getWidth());
-        eventTable.setMinWidth(primaryScene.getWidth());
+        jobTable.setMinWidth(700);
+        eventTable.setMinWidth(820);
 
         populateEventsTable(currentUser);
         populateJobsTable(currentUser);
@@ -283,6 +284,14 @@ public class MainWindow {
             editAccountWindow(currentUser);
         });
 
+        miMyJobs.setOnAction(e -> {
+            myJobsMenuItem(currentUser);
+        });
+
+        miMyEvents.setOnAction(e -> {
+            myEventsMenuItem(currentUser);
+        });
+
         miCheckOut.setOnAction(e -> {
             Instant checkOut = Instant.now();
             long timeElapsed = Duration.between(checkIn, checkOut).toMinutes();
@@ -319,8 +328,9 @@ public class MainWindow {
             Drives.drivesList.add(tempDrive);
             driveHistoryList.getItems().clear();
             for (Drives d : Drives.drivesList) {
-                if(d.getVolunteerID().equals(currentUser.getVolunteerID()))
+                if (d.getVolunteerID().equals(currentUser.getVolunteerID())) {
                     drivesData.add(d);
+                }
             }
             txtDriveID.setText("drive" + Drives.driveCount);
         });
@@ -339,15 +349,12 @@ public class MainWindow {
                         null
                 );
                 Work.workList.add(tempWork);
-                inProgressList.getItems().clear();
+                homePageList.getItems().clear();
                 for (Work w : Work.workList) {
-                    if (w.getWorkStatus().equalsIgnoreCase("in progress")) {
-                        workInProgress.add(w);
-                    }
+                        homePageOL.add(w);
                 }
                 jobData.remove(selectedJob);
-                inProgressList.setItems(workInProgress);
-                
+                homePageList.setItems(homePageOL);
 
                 Alert comfirmSelectJob = new Alert(Alert.AlertType.CONFIRMATION,
                         "Job has been associated to your account.",
@@ -379,13 +386,11 @@ public class MainWindow {
                             null
                     );
                     Work.workList.add(tempWork);
-                    inProgressList.getItems().clear();
+                    homePageList.getItems().clear();
                     for (Work w : Work.workList) {
-                        if (w.getWorkStatus().equalsIgnoreCase("in progress")) {
-                            workInProgress.add(w);
-                        }
+                            homePageOL.add(w);
                     }
-                    inProgressList.setItems(workInProgress);
+                    homePageList.setItems(homePageOL);
                     eventTable.refresh();
 
                     Alert comfirmSelectEvent = new Alert(Alert.AlertType.CONFIRMATION,
@@ -412,6 +417,170 @@ public class MainWindow {
 
     }
 
+    public void myJobsMenuItem(Volunteer currentUser) {
+        GridPane myJobsPane = new GridPane();
+        Label myIPJobs = new Label("Jobs in Progress");
+        Label myCompletedJobs = new Label("Completed Jobs");
+        Button btnMarkComplete = new Button("Mark Selected Job As Complete");
+        ObservableList<Work> ipJobs = FXCollections.observableArrayList();
+        ObservableList<Work> completedJobs = FXCollections.observableArrayList();
+        ListView ipJobsList = new ListView<>(ipJobs);
+        ListView completedJobsList = new ListView<>(completedJobs);
+        VBox ipVBox = new VBox();
+        VBox completedVBox = new VBox();
+
+        ipJobsList.getItems().clear();
+        completedJobsList.getItems().clear();
+        for (Work w : Work.workList) {
+            if (w.getVolunteerID().equalsIgnoreCase(currentUser.getVolunteerID())) {
+                if (w.getJobID() != null) {
+                    if (w.getWorkStatus().equalsIgnoreCase("completed")) {
+                        completedJobs.add(w);
+                    } else if (w.getWorkStatus().equalsIgnoreCase("in progress")) {
+                        ipJobs.add(w);
+                    }
+                }
+            }
+        }
+        ipJobsList.setItems(ipJobs);
+        completedJobsList.setItems(completedJobs);
+
+        myJobsPane.setAlignment(Pos.CENTER);
+        ipVBox.setAlignment(Pos.CENTER);
+        completedVBox.setAlignment(Pos.CENTER);
+
+        myJobsPane.add(ipVBox, 0, 0);
+        myJobsPane.add(completedVBox, 1, 0);
+
+        ipVBox.setSpacing(10);
+        ipVBox.setPadding(new Insets(10, 20, 10, 20));
+        ipVBox.getChildren().addAll(myIPJobs, ipJobsList, btnMarkComplete);
+
+        completedVBox.setSpacing(10);
+        completedVBox.setPadding(new Insets(10, 20, 10, 20));
+        completedVBox.getChildren().addAll(myCompletedJobs, completedJobsList);
+
+        Stage myJobsStage = new Stage();
+        Scene myJobsScene = new Scene(myJobsPane, 900, 550);
+        myJobsStage.setScene(myJobsScene);
+        myJobsStage.setTitle("My Jobs");
+        myJobsStage.show();
+
+        btnMarkComplete.setOnAction(e2 -> {
+            try {
+                Work selectedJob = (Work) ipJobsList.getSelectionModel().getSelectedItem();
+                selectedJob.setWorkStatus("completed");
+                ipJobsList.getItems().clear();
+                completedJobsList.getItems().clear();
+                for (Work w : Work.workList) {
+                    if (w.getVolunteerID().equalsIgnoreCase(currentUser.getVolunteerID())) {
+                        if (w.getJobID() != null) {
+                            if (w.getWorkStatus().equalsIgnoreCase("completed")) {
+                                completedJobs.add(w);
+                            } else if (w.getWorkStatus().equalsIgnoreCase("in progress")) {
+                                ipJobs.add(w);
+                            }
+                        }
+                    }
+                }
+                ipJobsList.setItems(ipJobs);
+                completedJobsList.setItems(completedJobs);
+
+                Alert confirmMarkComplete = new Alert(Alert.AlertType.CONFIRMATION,
+                        "You have marked this job as complete.",
+                        ButtonType.OK);
+                confirmMarkComplete.show();
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select a job to be marked as completed.",
+                        ButtonType.OK);
+                noSelection.show();
+            }
+        });
+    }
+    
+    public void myEventsMenuItem(Volunteer currentUser) {
+        GridPane myEventsPane = new GridPane();
+        Label myIPEvents = new Label("Events in Progress");
+        Label myCompletedEvents = new Label("Completed Events");
+        Button btnMarkComplete = new Button("Mark Selected Event As Complete");
+        ObservableList<Work> ipEvents = FXCollections.observableArrayList();
+        ObservableList<Work> completedEvents = FXCollections.observableArrayList();
+        ListView ipEventsList = new ListView<>(ipEvents);
+        ListView completedEventsList = new ListView<>(completedEvents);
+        VBox ipVBox = new VBox();
+        VBox completedVBox = new VBox();
+
+        ipEventsList.getItems().clear();
+        completedEventsList.getItems().clear();
+        for (Work w : Work.workList) {
+            if (w.getVolunteerID().equalsIgnoreCase(currentUser.getVolunteerID())) {
+                if (w.getEventID() != null) {
+                    if (w.getWorkStatus().equalsIgnoreCase("completed")) {
+                        completedEvents.add(w);
+                    } else if (w.getWorkStatus().equalsIgnoreCase("in progress")) {
+                        ipEvents.add(w);
+                    }
+                }
+            }
+        }
+        ipEventsList.setItems(ipEvents);
+        completedEventsList.setItems(completedEvents);
+
+        myEventsPane.setAlignment(Pos.CENTER);
+        ipVBox.setAlignment(Pos.CENTER);
+        completedVBox.setAlignment(Pos.CENTER);
+
+        myEventsPane.add(ipVBox, 0, 0);
+        myEventsPane.add(completedVBox, 1, 0);
+
+        ipVBox.setSpacing(10);
+        ipVBox.setPadding(new Insets(10, 20, 10, 20));
+        ipVBox.getChildren().addAll(myIPEvents, ipEventsList, btnMarkComplete);
+
+        completedVBox.setSpacing(10);
+        completedVBox.setPadding(new Insets(10, 20, 10, 20));
+        completedVBox.getChildren().addAll(myCompletedEvents, completedEventsList);
+
+        Stage myEventsStage = new Stage();
+        Scene myEventsScene = new Scene(myEventsPane, 900, 550);
+        myEventsStage.setScene(myEventsScene);
+        myEventsStage.setTitle("My Events");
+        myEventsStage.show();
+
+        btnMarkComplete.setOnAction(e2 -> {
+            try {
+                Work selectedEvent = (Work) ipEventsList.getSelectionModel().getSelectedItem();
+                selectedEvent.setWorkStatus("completed");
+                ipEventsList.getItems().clear();
+                completedEventsList.getItems().clear();
+                for (Work w : Work.workList) {
+                    if (w.getVolunteerID().equalsIgnoreCase(currentUser.getVolunteerID())) {
+                        if (w.getEventID() != null) {
+                            if (w.getWorkStatus().equalsIgnoreCase("completed")) {
+                                completedEvents.add(w);
+                            } else if (w.getWorkStatus().equalsIgnoreCase("in progress")) {
+                                ipEvents.add(w);
+                            }
+                        }
+                    }
+                }
+                ipEventsList.setItems(ipEvents);
+                completedEventsList.setItems(completedEvents);
+
+                Alert confirmMarkComplete = new Alert(Alert.AlertType.CONFIRMATION,
+                        "You have marked this event as complete.",
+                        ButtonType.OK);
+                confirmMarkComplete.show();
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select an event to be marked as completed.",
+                        ButtonType.OK);
+                noSelection.show();
+            }
+        });
+    }
+
     public void homePage() throws IOException {
         // FX Controls
 
@@ -421,15 +590,13 @@ public class MainWindow {
 
         InputStream imgInput = new FileInputStream("profilepic.jpeg");
 
-        inProgressList.getItems().clear();
+        homePageList.getItems().clear();
         for (Work w : Work.workList) {
-            if (w.getWorkStatus().equalsIgnoreCase("in progress")) {
-                workInProgress.add(w);
-            }
+                homePageOL.add(w);
         }
-        inProgressList.setItems(workInProgress);
+        homePageList.setItems(homePageOL);
 
-        inProgressList.setCellFactory(new Callback<ListView<Work>, ListCell<Work>>() {
+        homePageList.setCellFactory(new Callback<ListView<Work>, ListCell<Work>>() {
             @Override
             public ListCell<Work> call(ListView<Work> param) {
                 return new ListCell<Work>() {
@@ -468,11 +635,18 @@ public class MainWindow {
                                 }
                             }
 
+                            Label lblAction = new Label("");
+                            if (work.getWorkStatus().equalsIgnoreCase("in progress")) {
+                                lblAction = new Label("Signed up for " + work.toString());
+                            }
+                            else if (work.getWorkStatus().equalsIgnoreCase("completed")) {
+                                lblAction = new Label("Completed " + work.toString());
+                            }
                             // Add our Work details
                             vBox.getChildren().addAll(
-                                    new Label(volunteerName),
-                                    new Label("Signed up for " + work.toString())
-                            );
+                                        new Label(volunteerName),
+                                        lblAction
+                                );
 
                             // Add our VBox to the cellRoot
                             cellRoot.getChildren().add(vBox);
@@ -485,8 +659,8 @@ public class MainWindow {
             }
         });
         // Now, add our ListView to the root layout
-        inProgressList.setPrefSize(400, 400);
-        root.getChildren().add(inProgressList);
+        homePageList.setPrefSize(400, 400);
+        root.getChildren().add(homePageList);
         homePane.add(root, 0, 0);
 
     }
@@ -601,13 +775,11 @@ public class MainWindow {
 
         // Populate job table data
         jobTable.setItems(jobData);
-        TableColumn tblcJobID = new TableColumn("ID");
         TableColumn tblcJobName = new TableColumn("Name");
         TableColumn tblcJobType = new TableColumn("Type");
         TableColumn tblcJobLocation = new TableColumn("Location");
         TableColumn tblcJobNotes = new TableColumn("Notes");
 
-        tblcJobID.setCellValueFactory(new PropertyValueFactory<Job, String>("jobID"));
         tblcJobName.setCellValueFactory(new PropertyValueFactory<Job, String>("jobName"));
         tblcJobType.setCellValueFactory(new PropertyValueFactory<Job, Double>("jobType"));
         tblcJobLocation.setCellValueFactory(new PropertyValueFactory<Job, String>("locationName"));
@@ -616,9 +788,9 @@ public class MainWindow {
         tblcJobName.setMinWidth(150);
         tblcJobType.setMinWidth(150);
         tblcJobLocation.setMinWidth(150);
-        tblcJobNotes.setMinWidth(200);
+        tblcJobNotes.setMinWidth(250);
 
-        jobTable.getColumns().addAll(tblcJobID, tblcJobName, tblcJobType, tblcJobLocation, tblcJobNotes);
+        jobTable.getColumns().addAll(tblcJobName, tblcJobType, tblcJobLocation, tblcJobNotes);
 
     }
 
@@ -629,7 +801,6 @@ public class MainWindow {
 
         // Populate Event table data
         eventTable.setItems(eventData);
-        TableColumn tblcEventID = new TableColumn("ID");
         TableColumn tblcEventName = new TableColumn("Name");
         TableColumn tblcEventDate = new TableColumn("Date");
         TableColumn tblcEventTime = new TableColumn("Time");
@@ -638,7 +809,6 @@ public class MainWindow {
         TableColumn tblcSpotsLeft = new TableColumn("Spots Left");
         TableColumn tblcEventDescription = new TableColumn("Description");
 
-        tblcEventID.setCellValueFactory(new PropertyValueFactory<Event, String>("eventID"));
         tblcEventName.setCellValueFactory(new PropertyValueFactory<Event, String>("eventName"));
         tblcEventDate.setCellValueFactory(new PropertyValueFactory<Event, String>("eventDate"));
         tblcEventTime.setCellValueFactory(new PropertyValueFactory<Event, String>("eventTime"));
@@ -647,10 +817,10 @@ public class MainWindow {
         tblcSpotsLeft.setCellValueFactory(new PropertyValueFactory<Event, Integer>("spotsLeft"));
         tblcEventDescription.setCellValueFactory(new PropertyValueFactory<Event, String>("eventDescription"));
 
-        eventTable.getColumns().addAll(tblcEventID, tblcEventName, tblcEventDate, tblcEventTime, tblcEventLocation, tblcMaxVolunteers, tblcSpotsLeft, tblcEventDescription);
+        eventTable.getColumns().addAll(tblcEventName, tblcEventDate, tblcEventTime, tblcEventLocation, tblcMaxVolunteers, tblcSpotsLeft, tblcEventDescription);
 
         tblcEventName.setMinWidth(150);
-        tblcEventDescription.setMinWidth(200);
+        tblcEventDescription.setMinWidth(250);
         tblcMaxVolunteers.setMinWidth(120);
 
     }
@@ -1058,11 +1228,10 @@ public class MainWindow {
         buttonHB.getChildren().addAll(showVolunteersBT);
 
         //2):Populate Corresponding Volunteer Name
-        showVolunteersBT.setOnAction(e->{
-        
+        showVolunteersBT.setOnAction(e -> {
+
         });
-        
-        
+
         Scene scene = new Scene(reportEVPane, 500, 500);
         stage.setScene(scene);
         stage.show();
@@ -1648,16 +1817,16 @@ public class MainWindow {
             //Read Specialization data into Specialization objects
             String specializationQuery = "SELECT SPECIALIZATIONNAME FROM SPECIALIZATION";
             ResultSet dbSpecializations = commStmt.executeQuery(specializationQuery);
-            while(dbSpecializations.next()){
+            while (dbSpecializations.next()) {
                 Specialization dbSpecialization = new Specialization(
-                dbSpecializations.getNString("SPECIALIZATIONNAME"));
-                
+                        dbSpecializations.getNString("SPECIALIZATIONNAME"));
+
                 Specialization.specializationList.add(dbSpecialization);
             }
-            for(Specialization s : Specialization.specializationList){
+            for (Specialization s : Specialization.specializationList) {
                 specializations.add(s.getSpecializationName());
             }
-            
+
             // Reading Job data into Job objects
             String jobQuery = "SELECT JOBID,JOBNAME,JOBTYPE,LOCATIONID,JOBNOTES FROM JOB";
             ResultSet dbJobs = commStmt.executeQuery(jobQuery);
