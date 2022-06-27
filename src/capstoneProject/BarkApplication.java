@@ -164,7 +164,7 @@ public class BarkApplication extends Application {
             String volunteerQuery = "SELECT VOLUNTEERID,FIRSTNAME,LASTNAME,DATEOFBIRTH,"
                     + "EMAIL,PHONENUMBER,SPECIALIZATION,VOLUNTEERSTREET,VOLUNTEERCITY,"
                     + "VOLUNTEERSTATE,VOLUNTEERZIP,PERSONALINFO,EXPERIENCE,STATUS,"
-                    + "PASSWORD FROM VOLUNTEER";
+                    + "PASSWORD, TOTALQUARTERHOURS FROM VOLUNTEER";
             ResultSet dbVolunteers = commStmt.executeQuery(volunteerQuery);
             System.out.println(volunteerQuery);
             while (dbVolunteers.next()) {
@@ -183,7 +183,8 @@ public class BarkApplication extends Application {
                         dbVolunteers.getNString("PERSONALINFO"),
                         dbVolunteers.getNString("EXPERIENCE"),
                         dbVolunteers.getNString("STATUS"),
-                        dbVolunteers.getNString("PASSWORD")
+                        dbVolunteers.getNString("PASSWORD"),
+                        dbVolunteers.getInt("TOTALQUARTERHOURS")
                 );
                 Volunteer.volunteerArrayList.add(dbVolunteer);
             }

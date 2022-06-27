@@ -294,8 +294,9 @@ public class MainWindow {
 
         miCheckOut.setOnAction(e -> {
             Instant checkOut = Instant.now();
-            long timeElapsed = Duration.between(checkIn, checkOut).toMinutes();
-            System.out.println("Time Elapsed: " + timeElapsed);
+            double timeElapsed = Duration.between(checkIn, checkOut).toMinutes();
+            int qHours = (int) (timeElapsed/15);
+            System.out.println("Quaeter Hours Elapsed: " + timeElapsed);
 
             Shift tempShift = new Shift(
                     "shift" + Shift.shiftCount,
@@ -305,7 +306,7 @@ public class MainWindow {
             );
 
             // CALCULATE TOTAL QUARTER HOURS HERE - **you actually wont add timeElapsed...you'll end up adding the quarter hours for the shift
-            currentUser.setTotalHours(currentUser.getTotalHours() + timeElapsed);
+            currentUser.setTotalQHours((int)(currentUser.getTotalQHours() + timeElapsed));
 
             Alert confirmCheckOut = new Alert(Alert.AlertType.CONFIRMATION,
                     "You have checked out for today.",
@@ -743,7 +744,7 @@ public class MainWindow {
         txtName.setText(volunteer.toString());
         txtSpecialization.setText(volunteer.getSpecialization());
         txtMileage.setText(String.valueOf(Drives.returnTotalMiles(volunteer.getVolunteerID())));
-        txtHours.setText(String.valueOf(volunteer.getTotalHours()));
+        txtHours.setText(String.valueOf(volunteer.getTotalQHours()));
 
         workHistoryList.getItems().clear();
         eventHistoryList.getItems().clear();
@@ -1569,7 +1570,7 @@ public class MainWindow {
         txtInfo.setText(volunteer.getPersonalInfo());
         comboSpecialization.valueProperty().setValue(volunteer.getSpecialization());
         txtExperience.setText(volunteer.getExperience());
-        txtTotHours.setText(String.valueOf(volunteer.getTotalHours()));
+        txtTotHours.setText(String.valueOf(volunteer.getTotalQHours()));
 
         VBox leftVBox = new VBox();
         VBox rightVBox = new VBox();
