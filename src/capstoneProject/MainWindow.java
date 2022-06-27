@@ -351,7 +351,7 @@ public class MainWindow {
                 Work.workList.add(tempWork);
                 homePageList.getItems().clear();
                 for (Work w : Work.workList) {
-                        homePageOL.add(w);
+                    homePageOL.add(w);
                 }
                 jobData.remove(selectedJob);
                 homePageList.setItems(homePageOL);
@@ -388,7 +388,7 @@ public class MainWindow {
                     Work.workList.add(tempWork);
                     homePageList.getItems().clear();
                     for (Work w : Work.workList) {
-                            homePageOL.add(w);
+                        homePageOL.add(w);
                     }
                     homePageList.setItems(homePageOL);
                     eventTable.refresh();
@@ -498,7 +498,7 @@ public class MainWindow {
             }
         });
     }
-    
+
     public void myEventsMenuItem(Volunteer currentUser) {
         GridPane myEventsPane = new GridPane();
         Label myIPEvents = new Label("Events in Progress");
@@ -592,7 +592,7 @@ public class MainWindow {
 
         homePageList.getItems().clear();
         for (Work w : Work.workList) {
-                homePageOL.add(w);
+            homePageOL.add(w);
         }
         homePageList.setItems(homePageOL);
 
@@ -638,15 +638,14 @@ public class MainWindow {
                             Label lblAction = new Label("");
                             if (work.getWorkStatus().equalsIgnoreCase("in progress")) {
                                 lblAction = new Label("Signed up for " + work.toString());
-                            }
-                            else if (work.getWorkStatus().equalsIgnoreCase("completed")) {
+                            } else if (work.getWorkStatus().equalsIgnoreCase("completed")) {
                                 lblAction = new Label("Completed " + work.toString());
                             }
                             // Add our Work details
                             vBox.getChildren().addAll(
-                                        new Label(volunteerName),
-                                        lblAction
-                                );
+                                    new Label(volunteerName),
+                                    lblAction
+                            );
 
                             // Add our VBox to the cellRoot
                             cellRoot.getChildren().add(vBox);
@@ -662,16 +661,37 @@ public class MainWindow {
         homePageList.setPrefSize(400, 400);
         root.getChildren().add(homePageList);
         homePane.add(root, 0, 0);
-
     }
 
     public void volunteerSummary() {
         // FX Controls
-
         Label lblVolList = new Label("BARK Volunteers");
         Button btnViewVol = new Button("View Summary for Selected Volunteer");
         ListView volunteerSumList = new ListView<>(currentVolunteers);
         VBox volSumBox = new VBox();
+
+        volSumBox.setAlignment(Pos.CENTER);
+
+        volunteerPane.add(volSumBox, 0, 0);
+        volSumBox.setSpacing(10);
+        volSumBox.setPadding(new Insets(10, 20, 10, 20));
+        volSumBox.getChildren().addAll(lblVolList, volunteerSumList, btnViewVol);
+
+        // View summary button action
+        btnViewVol.setOnAction(e -> {
+            try {
+                Volunteer volunteer = (Volunteer) volunteerSumList.getSelectionModel().getSelectedItem();
+                viewSummary(volunteer);
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select a volunteer.",
+                        ButtonType.OK);
+                noSelection.show();
+            }
+        });
+    }
+
+    public void viewSummary(Volunteer volunteer) {
         GridPane viewSummaryPane = new GridPane();
         Label lblName = new Label("Volunteer:");
         Label lblSpecialization = new Label("Specialization:");
@@ -695,77 +715,57 @@ public class MainWindow {
         VBox eventHistoryBox = new VBox();
         VBox volStatsVbox = new VBox();
 
-        volSumBox.setAlignment(Pos.CENTER);
+        viewSummaryPane.setAlignment(Pos.CENTER);
+        viewSummaryPane.add(volStatsVbox, 0, 0);
+        viewSummaryPane.add(workHistoryBox, 0, 1);
+        viewSummaryPane.add(eventHistoryBox, 1, 1);
 
-        volunteerPane.add(volSumBox, 0, 0);
-        volSumBox.setSpacing(10);
-        volSumBox.setPadding(new Insets(10, 20, 10, 20));
-        volSumBox.getChildren().addAll(lblVolList, volunteerSumList, btnViewVol);
+        workHistoryList.setPrefHeight(200);
+        eventHistoryBox.setPrefHeight(200);
+        nameBox.setSpacing(10);
+        specialBox.setSpacing(10);
+        mileageBox.setSpacing(10);
+        hoursBox.setSpacing(10);
 
-        // View summary button action
-        btnViewVol.setOnAction(e -> {
+        // new Insets(top, left, bottom, right)
+        volStatsVbox.setSpacing(10);
+        volStatsVbox.setPadding(new Insets(10, 20, 30, 20));
+        volStatsVbox.getChildren().addAll(nameBox, specialBox, mileageBox, hoursBox);
 
-            viewSummaryPane.setAlignment(Pos.CENTER);
-            viewSummaryPane.add(volStatsVbox, 0, 0);
-            viewSummaryPane.add(workHistoryBox, 0, 1);
-            viewSummaryPane.add(eventHistoryBox, 1, 1);
+        workHistoryBox.setSpacing(10);
+        workHistoryBox.setPadding(new Insets(10, 20, 10, 20));
+        workHistoryBox.getChildren().addAll(lblWorkHistory, workHistoryList);
 
-            workHistoryList.setPrefHeight(200);
-            eventHistoryBox.setPrefHeight(200);
-            nameBox.setSpacing(10);
-            specialBox.setSpacing(10);
-            mileageBox.setSpacing(10);
-            hoursBox.setSpacing(10);
+        eventHistoryBox.setSpacing(10);
+        eventHistoryBox.setPadding(new Insets(10, 20, 10, 20));
+        eventHistoryBox.getChildren().addAll(lblCompleteEvents, eventHistoryList);
 
-            // new Insets(top, left, bottom, right)
-            volStatsVbox.setSpacing(10);
-            volStatsVbox.setPadding(new Insets(10, 20, 30, 20));
-            volStatsVbox.getChildren().addAll(nameBox, specialBox, mileageBox, hoursBox);
+        txtName.setText(volunteer.toString());
+        txtSpecialization.setText(volunteer.getSpecialization());
+        txtMileage.setText(String.valueOf(Drives.returnTotalMiles(volunteer.getVolunteerID())));
+        txtHours.setText(String.valueOf(volunteer.getTotalHours()));
 
-            workHistoryBox.setSpacing(10);
-            workHistoryBox.setPadding(new Insets(10, 20, 10, 20));
-            workHistoryBox.getChildren().addAll(lblWorkHistory, workHistoryList);
-
-            eventHistoryBox.setSpacing(10);
-            eventHistoryBox.setPadding(new Insets(10, 20, 10, 20));
-            eventHistoryBox.getChildren().addAll(lblCompleteEvents, eventHistoryList);
-
-            Volunteer volunteer = (Volunteer) volunteerSumList.getSelectionModel().getSelectedItem();
-            try {
-                txtName.setText(volunteer.toString());
-                txtSpecialization.setText(volunteer.getSpecialization());
-                txtMileage.setText(String.valueOf(Drives.returnTotalMiles(volunteer.getVolunteerID())));
-                txtHours.setText(String.valueOf(volunteer.getTotalHours()));
-
-                workHistoryList.getItems().clear();
-                eventHistoryList.getItems().clear();
-                for (Work w : Work.workList) {
-                    if (w.getWorkStatus().equalsIgnoreCase("completed")) {
-                        if (volunteer.getVolunteerID().equalsIgnoreCase(w.getVolunteerID())) {
-                            if (w.getJobID() != null && w.getEventID() == null) {
-                                workHistory.add(w);
-                            } else if (w.getEventID() != null && w.getJobID() == null) {
-                                eventHistory.add(w);
-                            }
-                        }
+        workHistoryList.getItems().clear();
+        eventHistoryList.getItems().clear();
+        for (Work w : Work.workList) {
+            if (w.getWorkStatus().equalsIgnoreCase("completed")) {
+                if (volunteer.getVolunteerID().equalsIgnoreCase(w.getVolunteerID())) {
+                    if (w.getJobID() != null && w.getEventID() == null) {
+                        workHistory.add(w);
+                    } else if (w.getEventID() != null && w.getJobID() == null) {
+                        eventHistory.add(w);
                     }
                 }
-                workHistoryList.setItems(workHistory);
-                eventHistoryList.setItems(eventHistory);
-
-            } catch (NullPointerException npe) {
-                Alert noSelection = new Alert(Alert.AlertType.ERROR,
-                        "You must select a volunteer.",
-                        ButtonType.OK);
-                noSelection.show();
             }
+        }
+        workHistoryList.setItems(workHistory);
+        eventHistoryList.setItems(eventHistory);
 
-            Stage primaryStage = new Stage();
-            Scene primaryScene = new Scene(viewSummaryPane, 900, 550);
-            primaryStage.setScene(primaryScene);
-            primaryStage.setTitle("Volunteer Summary for " + volunteer.toString());
-            primaryStage.show();
-        });
+        Stage primaryStage = new Stage();
+        Scene primaryScene = new Scene(viewSummaryPane, 900, 550);
+        primaryStage.setScene(primaryScene);
+        primaryStage.setTitle("Volunteer Summary for " + volunteer.toString());
+        primaryStage.show();
     }
 
     public void populateJobsTable(Volunteer currentUser) {
@@ -1248,6 +1248,7 @@ public class MainWindow {
         Label lblInactive = new Label("Inactive Volunteers:");
         Button btnSetInactive = new Button("Set Selected Volunteer as Inactive");
         Button btnDetails = new Button("View Details for\nSelected Volunteer");
+        Button btnSetActive = new Button("Set Selected Volunteer as Active");
 
         VBox leftVBox = new VBox();
         VBox middleVBox = new VBox();
@@ -1275,7 +1276,7 @@ public class MainWindow {
 
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
-        rightVBox.getChildren().addAll(lblInactive, inactiveVolList, btnDetails);
+        rightVBox.getChildren().addAll(lblInactive, inactiveVolList, btnDetails, btnSetActive);
 
         // adding each volunteer to corresponding list
         for (Volunteer v : Volunteer.volunteerArrayList) {
@@ -1340,6 +1341,22 @@ public class MainWindow {
             Volunteer selectedVolunteer = inactiveVolList.getSelectionModel().getSelectedItem();
             try {
                 reviewApplication(selectedVolunteer);
+            } catch (NullPointerException npe) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "You must select a volunteer.",
+                        ButtonType.OK);
+                noSelection.show();
+                npe.toString();
+            }
+        });
+        
+        // Set Active Button action
+        btnSetActive.setOnAction(e -> {
+            Volunteer selectedVolunteer = inactiveVolList.getSelectionModel().getSelectedItem();
+            try {
+                selectedVolunteer.setStatus("active");
+                inactiveVolunteers.remove(selectedVolunteer);
+                currentVolunteers.add(selectedVolunteer);
             } catch (NullPointerException npe) {
                 Alert noSelection = new Alert(Alert.AlertType.ERROR,
                         "You must select a volunteer.",
