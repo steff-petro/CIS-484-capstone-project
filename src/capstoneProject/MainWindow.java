@@ -890,6 +890,12 @@ public class MainWindow {
                         tempJob.setJobType(txtJobType.getText());
                         tempJob.setLocationID(Location.returnLocationID((String) comboJobLocation.getValue()));
                         tempJob.setJobNotes(txtJobNotes.getText());
+                        sendDBCommand("UPDATE JOB SET JOBNAME = '"
+                                + tempJob.getJobName() + "', JOBTYPE = '"
+                                + tempJob.getJobType() + "', LOCATIONID ='"
+                                + Location.returnLocationID((String) comboJobLocation.getValue()) + "', JOBNOTES = '"
+                                + tempJob.getJobNotes() + "' WHERE JOBID ='" + tempJob.getJobID() + "'");
+                                
                     }
                 }
             } else {
@@ -1006,6 +1012,16 @@ public class MainWindow {
                         tempEvent.setMaxVolunteers(Integer.valueOf(txtMaxVolunteers.getText()));
                         tempEvent.setEventDescription(txtEventDescription.getText());
                         tempEvent.setLocationID(Location.returnLocationID((String) comboLocation.getValue()));
+                        
+                        sendDBCommand("UPDATE EVENT SET EVENTNAME = '"
+                                + tempEvent.getEventName()+ "', EVENTDATE = '"
+                                + tempEvent.getEventDate()+ "', EVENTTIME ='"
+                                + tempEvent.getEventTime()+ "', MAXVOLUNTEERS = "
+                                + tempEvent.getMaxVolunteers()+ ", EVENTDESCRIPTION = '"
+                                + tempEvent.getEventDescription()+ "', LOCATIONID = '"
+                                + tempEvent.getLocationID() + "' "
+                                + "WHERE EVENTID ='" + tempEvent.getEventID()+ "'");
+                        
                     }
                 }
             } else {
@@ -1129,6 +1145,18 @@ public class MainWindow {
                         tempLocation.setState(txtLocationState.getText());
                         tempLocation.setZip(Integer.valueOf(txtLocationZip.getText()));
                         tempLocation.setLtype(txtLocationType.getText());
+                        
+                        sendDBCommand("UPDATE LOCATION SET LOCATIONNAME = '"
+                                + tempLocation.getName()+ "', LOCATIONTYPE = '"
+                                + tempLocation.getType()+ "', LOCATIONSTREET = '"
+                                + tempLocation.getStreet()+ "', LOCATIONCITY = '"
+                                + tempLocation.getCity()+ "', LOCATIONSTATE = '"
+                                + tempLocation.getState()+ "', LOCATIONZIP = "
+                                + tempLocation.getZip() + 
+                                "WHERE LOCATIONID ='" + tempLocation.getLocationID()+ "'");
+                        
+                    
+                        
                     }
                 }
             } else {
@@ -1436,6 +1464,14 @@ public class MainWindow {
                         tempAnimal.setAnimalSpecies(txtAnimalSpecies.getText());
                         tempAnimal.setAnimalBreed(txtAnimalBreed.getText());
                         tempAnimal.setAnimalAge(Integer.valueOf(txtAnimalAge.getText()));
+                        
+                        sendDBCommand("UPDATE ANIMAL SET ANIMALNAME = '"
+                                + tempAnimal.getAnimalName() + "', ANIMALSPECIES = '"
+                                + tempAnimal.getAnimalSpecies()+ "', ANIMALBREED = '"
+                                + tempAnimal.getAnimalBreed()+ "', ANIMALAGE = "
+                                + tempAnimal.getAnimalAge()+
+                                " WHERE ANIMALID ='" + tempAnimal.getAnimalID()+ "'");
+                        
                     }
                 }
             } else {
@@ -1448,7 +1484,7 @@ public class MainWindow {
                 );
                 Animal.animalList.add(tempAnimal);
             }
-            jobData.clear();
+            currentAnimals.clear();
             for (Animal a : Animal.animalList) {
                 currentAnimals.add(a);
             }
