@@ -114,14 +114,19 @@ public class Work {
         insertAnimal += "'" + this.getVolunteerID() + "',";
         insertAnimal += "" + this.getJobID() + ",";
         insertAnimal += "'" + this.getEventID() + "',";
-        insertAnimal += "'" + this.getAnimalID() + "')";
+        //insertAnimal += "'" + this.getAnimalID() + "')";
         } else if(eventID == null && jobID != null){
         insertAnimal += "'" + this.getWorkID() + "',";
         insertAnimal += "'" + this.getWorkStatus() + "',";
         insertAnimal += "'" + this.getVolunteerID() + "',";
         insertAnimal += "'" + this.getJobID() + "',";
         insertAnimal += "" + this.getEventID() + ",";
-        insertAnimal += "'" + this.getAnimalID() + "')";
+        //insertAnimal += "'" + this.getAnimalID() + "')";
+        }
+        if(this.animalID == null){
+            insertAnimal += "" + this.getAnimalID() + ")";
+        } else {
+            insertAnimal += "'" + this.getAnimalID() + "')";
         }
         sendDBCommand(insertAnimal);
         
