@@ -227,7 +227,8 @@ public class Volunteer {
         insertVolunteer += "'" + this.getStatus() + "',";
         insertVolunteer += "'" + this.getPassword() + "',";
         insertVolunteer += "'" + this.getSpecialization() + "',";
-        insertVolunteer += "'" + this.getPersonalInfo() + "')";
+        insertVolunteer += "'" + this.getPersonalInfo() + "',";
+        insertVolunteer += "" + this.getTotalQHours() + ")";
         sendDBCommand(insertVolunteer);
     }
 

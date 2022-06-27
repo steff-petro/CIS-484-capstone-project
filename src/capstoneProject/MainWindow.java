@@ -312,6 +312,12 @@ public class MainWindow {
                     "You have checked out for today.",
                     ButtonType.OK);
             confirmCheckOut.show();
+            
+            //Update Qhours in DB for this volunteer
+            sendDBCommand("UPDATE VOLUNTEER SET TOTALQUARTERHOURS = "
+            + currentUser.getTotalQHours() + " WHERE VOLUNTEERID = '"
+            + currentUser.getVolunteerID() + "'"
+            );
             primaryStage.close();
         });
 
@@ -350,6 +356,7 @@ public class MainWindow {
                         null
                 );
                 Work.workList.add(tempWork);
+                tempWork.writeWork();
                 homePageList.getItems().clear();
                 for (Work w : Work.workList) {
                     homePageOL.add(w);
@@ -387,6 +394,7 @@ public class MainWindow {
                             null
                     );
                     Work.workList.add(tempWork);
+                    tempWork.writeWork();
                     homePageList.getItems().clear();
                     for (Work w : Work.workList) {
                         homePageOL.add(w);
