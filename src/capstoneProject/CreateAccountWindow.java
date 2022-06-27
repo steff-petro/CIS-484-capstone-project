@@ -119,7 +119,7 @@ public class CreateAccountWindow {
             //NEED TO TEST! COULD WRITE VOL TO DB?
             Volunteer tempVolunteer = new Volunteer("volunteer" + Volunteer.volunteerCount, txtFirstName.getText(), txtLastName.getText(), txtDateOfBirth.getText(),
             txtEmail.getText(), txtPhone.getText(), comboSpecialization.getSelectionModel().getSelectedItem(), txtStreet.getText(), txtCity.getText(),
-            txtState.getText(), zipInt, txtInfo.getText(), txtExperience.getText(), "conditional", "Password123");
+            txtState.getText(), zipInt, txtInfo.getText(), txtExperience.getText(), "conditional", "Password123", 0);
             volunteerArray.add(tempVolunteer);
             tempVolunteer.writeVolunteer();
             

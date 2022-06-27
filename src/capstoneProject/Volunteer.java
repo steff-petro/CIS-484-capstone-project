@@ -31,7 +31,7 @@ public class Volunteer {
     private String experience;
     private String status;
     private String password;
-    private double totalHours;
+    private int totalQHours;
     static ArrayList<Volunteer> volunteerArrayList = new ArrayList<>();
 
     static int volunteerCount = 0;
@@ -53,6 +53,7 @@ public class Volunteer {
         this.experience = "Default Experience";
         this.status = "admin";
         this.password = "TestPassword123!";
+        this.totalQHours = 0;
         
         volunteerCount++;
     }
@@ -60,7 +61,7 @@ public class Volunteer {
     // Overloaded constructor
     public Volunteer(String volunteerID, String firstName, String lastName, String dateOfBirth,
             String email, String phone, String specialization, String street, String city,
-            String state, int zip, String personalInfo, String experience, String status, String password) {
+            String state, int zip, String personalInfo, String experience, String status, String password, int totalQHours) {
         
         this.volunteerID = "volunteer" + volunteerCount;
         this.firstName = firstName;
@@ -77,6 +78,7 @@ public class Volunteer {
         this.experience = experience;
         this.status = status;
         this.password = password;
+        this.totalQHours = totalQHours;
 
         volunteerCount++;
     }
@@ -201,12 +203,12 @@ public class Volunteer {
         this.password = password;
     }
     
-    public double getTotalHours() {
-        return this.totalHours;
+    public int getTotalQHours() {
+        return this.totalQHours;
     }
     
-    public void setTotalHours(double totalHours) {
-        this.totalHours = totalHours;
+    public void setTotalQHours(int totalQHours) {
+        this.totalQHours = totalQHours;
     }
     
     public void writeVolunteer() {
