@@ -143,7 +143,7 @@ public class Animal {
     
     @Override
     public String toString() {
-        return "Name: " + animalName + "\tSpecies: " + animalSpecies;
+        return "Name: " + animalName + "\t\tSpecies: " + animalSpecies;
     }
 
 }

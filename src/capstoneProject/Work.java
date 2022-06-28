@@ -108,28 +108,28 @@ public class Work {
 
     public void writeWork() {
         String insertAnimal = "INSERT INTO Work VALUES (";
-        if(jobID == null && eventID != null){
-        insertAnimal += "'" + this.getWorkID() + "',";
-        insertAnimal += "'" + this.getWorkStatus() + "',";
-        insertAnimal += "'" + this.getVolunteerID() + "',";
-        insertAnimal += "" + this.getJobID() + ",";
-        insertAnimal += "'" + this.getEventID() + "',";
-        //insertAnimal += "'" + this.getAnimalID() + "')";
-        } else if(eventID == null && jobID != null){
-        insertAnimal += "'" + this.getWorkID() + "',";
-        insertAnimal += "'" + this.getWorkStatus() + "',";
-        insertAnimal += "'" + this.getVolunteerID() + "',";
-        insertAnimal += "'" + this.getJobID() + "',";
-        insertAnimal += "" + this.getEventID() + ",";
-        //insertAnimal += "'" + this.getAnimalID() + "')";
+        if (jobID == null && eventID != null) {
+            insertAnimal += "'" + this.getWorkID() + "',";
+            insertAnimal += "'" + this.getWorkStatus() + "',";
+            insertAnimal += "'" + this.getVolunteerID() + "',";
+            insertAnimal += "" + this.getJobID() + ",";
+            insertAnimal += "'" + this.getEventID() + "',";
+            //insertAnimal += "'" + this.getAnimalID() + "')";
+        } else if (eventID == null && jobID != null) {
+            insertAnimal += "'" + this.getWorkID() + "',";
+            insertAnimal += "'" + this.getWorkStatus() + "',";
+            insertAnimal += "'" + this.getVolunteerID() + "',";
+            insertAnimal += "'" + this.getJobID() + "',";
+            insertAnimal += "" + this.getEventID() + ",";
+            //insertAnimal += "'" + this.getAnimalID() + "')";
         }
-        if(this.animalID == null){
+        if (this.animalID == null) {
             insertAnimal += "" + this.getAnimalID() + ")";
         } else {
             insertAnimal += "'" + this.getAnimalID() + "')";
         }
         sendDBCommand(insertAnimal);
-        
+
     }
 
     public void sendDBCommand(String sqlQuery) {
@@ -165,6 +165,18 @@ public class Work {
             return Event.returnEventName(eventID);
         }
         return Job.returnJobName(jobID) + Event.returnEventName(eventID);
+    }
+
+    // Checks to see if volunteer already registered for an event
+    public static boolean isAlreadyRegistered(Volunteer currentUser, Event selectedEvent) {
+        for (Work w : workList) {
+            if (w.getEventID() != null) {
+                if (w.getEventID().equalsIgnoreCase(selectedEvent.getEventID()) && w.getVolunteerID().equalsIgnoreCase(currentUser.getVolunteerID())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

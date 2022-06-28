@@ -68,9 +68,6 @@ public class CreateAccountWindow {
 
     public CreateAccountWindow() {
 
-        // Storing data in memory
-        ArrayList<Volunteer> volunteerArray = new ArrayList<>();
-
         overallPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_LEFT);
         rightVBox.setAlignment(Pos.TOP_CENTER);
@@ -120,7 +117,7 @@ public class CreateAccountWindow {
             Volunteer tempVolunteer = new Volunteer("volunteer" + Volunteer.volunteerCount, txtFirstName.getText(), txtLastName.getText(), txtDateOfBirth.getText(),
             txtEmail.getText(), txtPhone.getText(), comboSpecialization.getSelectionModel().getSelectedItem(), txtStreet.getText(), txtCity.getText(),
             txtState.getText(), zipInt, txtInfo.getText(), txtExperience.getText(), "conditional", "Password123", 0);
-            volunteerArray.add(tempVolunteer);
+            Volunteer.volunteerArrayList.add(tempVolunteer);
             tempVolunteer.writeVolunteer();
             
             Alert confirmSubmit = new Alert(Alert.AlertType.CONFIRMATION,

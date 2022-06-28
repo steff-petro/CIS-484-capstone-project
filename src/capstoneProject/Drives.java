@@ -21,6 +21,7 @@ public class Drives {
     private double miles;
     private String driveDate;
     private String driveNotes;
+    private String locationName;
     static ArrayList<Drives> drivesList = new ArrayList<>();
     
     static int driveCount;
@@ -105,6 +106,14 @@ public class Drives {
     // @param driveNotes the driveNotes to set
     public void setDriveNotes(String driveNotes) {
         this.driveNotes = driveNotes;
+    }
+    
+    public String getLocationName() {
+        return this.locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
     
     // Method to return total miles driven by specified volunteer

@@ -188,6 +188,23 @@ public class BarkApplication extends Application {
                 );
                 Volunteer.volunteerArrayList.add(dbVolunteer);
             }
+            MainWindow.allVolunteers.clear();
+            for (Volunteer v: Volunteer.volunteerArrayList) {
+                MainWindow.allVolunteers.add(v);
+            }
+            
+            //Read Specialization data into Specialization objects
+            String specializationQuery = "SELECT SPECIALIZATIONNAME FROM SPECIALIZATION";
+            ResultSet dbSpecializations = commStmt.executeQuery(specializationQuery);
+            while (dbSpecializations.next()) {
+                Specialization dbSpecialization = new Specialization(
+                        dbSpecializations.getNString("SPECIALIZATIONNAME"));
+
+                Specialization.specializationList.add(dbSpecialization);
+            }
+            for (Specialization s : Specialization.specializationList) {
+                MainWindow.specializations.add(s.getSpecializationName());
+            }
 
         } catch (SQLException e) {
             System.out.println(e.toString());
