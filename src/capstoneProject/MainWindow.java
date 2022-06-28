@@ -254,6 +254,7 @@ public class MainWindow {
         // Select event button action
         btnSelectEvent.setOnAction(e -> {
             Event selectedEvent = eventTable.getSelectionModel().getSelectedItem();
+            
 
             try {
                 if (selectedEvent.getSpotsLeft() != 0) {
@@ -307,7 +308,6 @@ public class MainWindow {
                     checkOut,
                     currentUser.getVolunteerID()
             );
-            tempShift.writeShift();
 
             // CALCULATE TOTAL QUARTER HOURS HERE - **you actually wont add timeElapsed...you'll end up adding the quarter hours for the shift
             currentUser.setTotalQHours(currentUser.getTotalQHours() + quarterHours);
@@ -337,6 +337,7 @@ public class MainWindow {
                     txtDriveNotes.getText()
             );
             Drives.drivesList.add(tempDrive);
+            tempDrive.writeDrives();
             driveHistoryList.getItems().clear();
             for (Drives d : Drives.drivesList) {
                 if (d.getVolunteerID().equals(currentUser.getVolunteerID())) {
@@ -386,6 +387,7 @@ public class MainWindow {
             Event selectedEvent = eventTable.getSelectionModel().getSelectedItem();
             try {
                 if (selectedEvent.getSpotsLeft() != 0) {
+                    sendDBCommand("UPDATE EVENT SET REGISTEREDVOLUNTEERS = " + (selectedEvent.getMaxVolunteers()-selectedEvent.getSpotsLeft()+ 1) + " WHERE EVENTID = '" + selectedEvent.getEventID() + "'");
                     selectedEvent.setRegisteredVolunteers(selectedEvent.getRegisteredVolunteers() + 1);
                     selectedEvent.setSpotsLeft(selectedEvent.getSpotsLeft() - 1);
                     // CODE TO ASSOCIATE EVENT WITH CURRENT VOLUNTEER GOES HERE
@@ -1180,6 +1182,8 @@ public class MainWindow {
             }
 
             currentLocationsList.getItems().clear();
+            currentLocations.clear();
+            locationNames.clear();
             for (Location l : Location.locationList) {
                 currentLocations.add(l);
                 locationNames.add(l.getName());
