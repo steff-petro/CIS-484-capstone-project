@@ -93,7 +93,7 @@ public class BarkApplication extends Application {
         launch(args);
     }
 
-    //Method runs when program is closed
+    /*Method runs when program is closed
     @Override
     public void stop() {
         //Write all Animal instances on close
@@ -141,7 +141,7 @@ public class BarkApplication extends Application {
         for (Work w : Work.workList) {
             w.writeWork();
         }
-    }
+    }*/
 
     // Method to read volunteer data from database
     public void readVolunteerData() {

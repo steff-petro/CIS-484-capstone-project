@@ -139,7 +139,7 @@ public class MainWindow {
 
     public MainWindow(BarkApplication signInForm, Instant checkIn, String volunteerID) {
         this.checkIn = checkIn;
-        
+
         // Class wide variable that can be used to display content related to the logged in user
         currentLoggedInUser = volunteerID;
 
@@ -159,7 +159,7 @@ public class MainWindow {
         menuMyWork.getItems().addAll(miMyJobs, miMyEvents);
         menuBar.getMenus().addAll(menuMyAccount, menuMyWork);
         overallPane.add(menuBar, 0, 0);
-        menuBar.setPadding(new Insets(20,0,0,0));
+        menuBar.setPadding(new Insets(20, 0, 0, 0));
 
         // Home Pane
         // Jobs Pane
@@ -298,7 +298,7 @@ public class MainWindow {
         miCheckOut.setOnAction(e -> {
             Instant checkOut = Instant.now();
             double timeElapsed = Duration.between(checkIn, checkOut).toMinutes();
-            int quarterHours = (int)timeElapsed / 15;
+            int quarterHours = (int) timeElapsed / 15;
             System.out.println("Quarter Hours Elapsed: " + quarterHours);
 
             Shift tempShift = new Shift(
@@ -307,6 +307,7 @@ public class MainWindow {
                     checkOut,
                     currentUser.getVolunteerID()
             );
+            tempShift.writeShift();
 
             // CALCULATE TOTAL QUARTER HOURS HERE - **you actually wont add timeElapsed...you'll end up adding the quarter hours for the shift
             currentUser.setTotalQHours(currentUser.getTotalQHours() + quarterHours);
@@ -315,11 +316,11 @@ public class MainWindow {
                     "You have checked out for today.",
                     ButtonType.OK);
             confirmCheckOut.show();
-            
+
             //Update Qhours in DB for this volunteer
             sendDBCommand("UPDATE VOLUNTEER SET TOTALQUARTERHOURS = "
-            + currentUser.getTotalQHours() + " WHERE VOLUNTEERID = '"
-            + currentUser.getVolunteerID() + "'"
+                    + currentUser.getTotalQHours() + " WHERE VOLUNTEERID = '"
+                    + currentUser.getVolunteerID() + "'"
             );
             primaryStage.close();
         });
@@ -482,6 +483,7 @@ public class MainWindow {
             try {
                 Work selectedJob = (Work) ipJobsList.getSelectionModel().getSelectedItem();
                 selectedJob.setWorkStatus("completed");
+                sendDBCommand("UPDATE WORK SET WORKSTATUS = 'completed' WHERE JOBID = '" + selectedJob.getJobID()+ "' AND VOLUNTEERID = '" + currentUser.getVolunteerID() + "'");
                 ipJobsList.getItems().clear();
                 completedJobsList.getItems().clear();
                 for (Work w : Work.workList) {
@@ -564,6 +566,7 @@ public class MainWindow {
             try {
                 Work selectedEvent = (Work) ipEventsList.getSelectionModel().getSelectedItem();
                 selectedEvent.setWorkStatus("completed");
+                sendDBCommand("UPDATE WORK SET WORKSTATUS = 'completed' WHERE EVENTID = '" + selectedEvent.getEventID()+ "' AND VOLUNTEERID = '" + currentUser.getVolunteerID() + "'");
                 ipEventsList.getItems().clear();
                 completedEventsList.getItems().clear();
                 for (Work w : Work.workList) {
@@ -898,7 +901,7 @@ public class MainWindow {
                                 + tempJob.getJobType() + "', LOCATIONID ='"
                                 + Location.returnLocationID((String) comboJobLocation.getValue()) + "', JOBNOTES = '"
                                 + tempJob.getJobNotes() + "' WHERE JOBID ='" + tempJob.getJobID() + "'");
-                                
+
                     }
                 }
             } else {
@@ -910,6 +913,7 @@ public class MainWindow {
                         txtJobNotes.getText()
                 );
                 Job.jobList.add(tempJob);
+                tempJob.writeJob();
             }
             jobData.clear();
             currentJobsList.getItems().clear();
@@ -1015,16 +1019,16 @@ public class MainWindow {
                         tempEvent.setMaxVolunteers(Integer.valueOf(txtMaxVolunteers.getText()));
                         tempEvent.setEventDescription(txtEventDescription.getText());
                         tempEvent.setLocationID(Location.returnLocationID((String) comboLocation.getValue()));
-                        
+
                         sendDBCommand("UPDATE EVENT SET EVENTNAME = '"
-                                + tempEvent.getEventName()+ "', EVENTDATE = '"
-                                + tempEvent.getEventDate()+ "', EVENTTIME ='"
-                                + tempEvent.getEventTime()+ "', MAXVOLUNTEERS = "
-                                + tempEvent.getMaxVolunteers()+ ", EVENTDESCRIPTION = '"
-                                + tempEvent.getEventDescription()+ "', LOCATIONID = '"
+                                + tempEvent.getEventName() + "', EVENTDATE = '"
+                                + tempEvent.getEventDate() + "', EVENTTIME ='"
+                                + tempEvent.getEventTime() + "', MAXVOLUNTEERS = "
+                                + tempEvent.getMaxVolunteers() + ", EVENTDESCRIPTION = '"
+                                + tempEvent.getEventDescription() + "', LOCATIONID = '"
                                 + tempEvent.getLocationID() + "' "
-                                + "WHERE EVENTID ='" + tempEvent.getEventID()+ "'");
-                        
+                                + "WHERE EVENTID ='" + tempEvent.getEventID() + "'");
+
                     }
                 }
             } else {
@@ -1039,6 +1043,7 @@ public class MainWindow {
                         Location.returnLocationID((String) comboLocation.getValue())
                 );
                 Event.eventList.add(tempEvent);
+                tempEvent.writeEvent();
             }
             eventData.clear();
             currentEventsList.getItems().clear();
@@ -1148,18 +1153,16 @@ public class MainWindow {
                         tempLocation.setState(txtLocationState.getText());
                         tempLocation.setZip(Integer.valueOf(txtLocationZip.getText()));
                         tempLocation.setLtype(txtLocationType.getText());
-                        
+
                         sendDBCommand("UPDATE LOCATION SET LOCATIONNAME = '"
-                                + tempLocation.getName()+ "', LOCATIONTYPE = '"
-                                + tempLocation.getType()+ "', LOCATIONSTREET = '"
-                                + tempLocation.getStreet()+ "', LOCATIONCITY = '"
-                                + tempLocation.getCity()+ "', LOCATIONSTATE = '"
-                                + tempLocation.getState()+ "', LOCATIONZIP = "
-                                + tempLocation.getZip() + 
-                                "WHERE LOCATIONID ='" + tempLocation.getLocationID()+ "'");
-                        
-                    
-                        
+                                + tempLocation.getName() + "', LOCATIONTYPE = '"
+                                + tempLocation.getType() + "', LOCATIONSTREET = '"
+                                + tempLocation.getStreet() + "', LOCATIONCITY = '"
+                                + tempLocation.getCity() + "', LOCATIONSTATE = '"
+                                + tempLocation.getState() + "', LOCATIONZIP = "
+                                + tempLocation.getZip()
+                                + "WHERE LOCATIONID ='" + tempLocation.getLocationID() + "'");
+
                     }
                 }
             } else {
@@ -1173,8 +1176,14 @@ public class MainWindow {
                         txtLocationType.getText()
                 );
                 Location.locationList.add(tempLocation);
+                tempLocation.writeLocation();
             }
 
+            currentLocationsList.getItems().clear();
+            for (Location l : Location.locationList) {
+                currentLocations.add(l);
+                locationNames.add(l.getName());
+            }
             txtLocationID.setText("location" + Location.locationCount);
             txtLocationName.clear();
             txtLocationStreet.clear();
@@ -1422,7 +1431,7 @@ public class MainWindow {
         bc.setTitle("Specialization Summary");
         xAxis.setLabel("Specialization");
         yAxis.setLabel("# of Volunteers");
-            
+
         //Number of volunteers will need to be changed to match accurate results
         XYChart.Series series = new XYChart.Series();
         series.getData().add(new XYChart.Data(animalHC, 2));
@@ -1444,7 +1453,7 @@ public class MainWindow {
         n.setStyle("-fx-bar-fill: DARKGRAY");
         n = bc.lookup(".data4.chart-bar");
         n.setStyle("-fx-bar-fill: CADETBLUE");
-        
+
         bc.setLegendVisible(false);
 
         pane.add(specialVB, 0, 0);
@@ -1455,6 +1464,7 @@ public class MainWindow {
         stage.show();
 
     }
+
     public void manageVolunteersTab() {
 
         // FX Controls
@@ -1567,7 +1577,7 @@ public class MainWindow {
                 npe.toString();
             }
         });
-        
+
         // Set Active Button action
         btnSetActive.setOnAction(e -> {
             Volunteer selectedVolunteer = inactiveVolList.getSelectionModel().getSelectedItem();
@@ -1646,14 +1656,14 @@ public class MainWindow {
                         tempAnimal.setAnimalSpecies(txtAnimalSpecies.getText());
                         tempAnimal.setAnimalBreed(txtAnimalBreed.getText());
                         tempAnimal.setAnimalAge(Integer.valueOf(txtAnimalAge.getText()));
-                        
+
                         sendDBCommand("UPDATE ANIMAL SET ANIMALNAME = '"
                                 + tempAnimal.getAnimalName() + "', ANIMALSPECIES = '"
-                                + tempAnimal.getAnimalSpecies()+ "', ANIMALBREED = '"
-                                + tempAnimal.getAnimalBreed()+ "', ANIMALAGE = "
-                                + tempAnimal.getAnimalAge()+
-                                " WHERE ANIMALID ='" + tempAnimal.getAnimalID()+ "'");
-                        
+                                + tempAnimal.getAnimalSpecies() + "', ANIMALBREED = '"
+                                + tempAnimal.getAnimalBreed() + "', ANIMALAGE = "
+                                + tempAnimal.getAnimalAge()
+                                + " WHERE ANIMALID ='" + tempAnimal.getAnimalID() + "'");
+
                     }
                 }
             } else {
@@ -1665,6 +1675,7 @@ public class MainWindow {
                         Integer.valueOf(txtAnimalAge.getText())
                 );
                 Animal.animalList.add(tempAnimal);
+                tempAnimal.writeAnimal();
             }
             currentAnimals.clear();
             for (Animal a : Animal.animalList) {
