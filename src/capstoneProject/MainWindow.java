@@ -1765,7 +1765,7 @@ public class MainWindow {
         Label lblZip = new Label("Zip:");
         Label lblInfo = new Label("Personal Information:");
         Label lblExperience = new Label("Please describe your Animal Experience Here: ");
-        Label lblTotHours = new Label("Total Hours Worked To-Date:");
+        Label lblTotHours = new Label("Total Quarter Hours Worked To-Date:");
 
         Text txtvolunteerID = new Text();
         TextField txtFirstName = new TextField();
