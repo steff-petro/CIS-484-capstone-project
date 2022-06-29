@@ -1855,6 +1855,7 @@ public class MainWindow {
         Label lblInfo = new Label("Personal Information:");
         Label lblExperience = new Label("Please describe your Animal Experience Here: ");
         Label lblTotHours = new Label("Total Quarter Hours Worked To-Date:");
+        Label lblStatus = new Label("Current Status:");
 
         Text txtvolunteerID = new Text();
         TextField txtFirstName = new TextField();
@@ -1871,6 +1872,7 @@ public class MainWindow {
         ComboBox<String> comboSpecialization = new ComboBox<>(specializations);
         TextArea txtExperience = new TextArea();
         Button submit = new Button("Save Changes");
+        Text txtStatus = new Text();
 
         txtvolunteerID.setText(volunteer.getVolunteerID());
         txtFirstName.setText(volunteer.getFirstName());
@@ -1886,6 +1888,7 @@ public class MainWindow {
         comboSpecialization.valueProperty().setValue(volunteer.getSpecialization());
         txtExperience.setText(volunteer.getExperience());
         txtTotHours.setText(String.valueOf(volunteer.getTotalQHours()));
+        txtStatus.setText(volunteer.getStatus());
 
         VBox leftVBox = new VBox();
         VBox rightVBox = new VBox();
@@ -1903,6 +1906,7 @@ public class MainWindow {
         VBox infoBox = new VBox(lblInfo, txtInfo);
         VBox experienceBox = new VBox(lblExperience, txtExperience);
         HBox hoursBox = new HBox(lblTotHours, txtTotHours);
+        HBox statusBox = new HBox(lblStatus, txtStatus);
 
         editPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_LEFT);
@@ -1926,10 +1930,13 @@ public class MainWindow {
         zipBox.setSpacing(10);
         infoBox.setSpacing(10);
         hoursBox.setSpacing(10);
+        statusBox.setSpacing(10);
 
         leftVBox.setSpacing(10);
         leftVBox.setPadding(new Insets(10, 20, 10, 20));
-        leftVBox.getChildren().addAll(idBox, firstNameBox, lastNameBox, dateOfBirthBox, emailBox, phoneBox, specialBox, streetBox, cityBox, stateBox, zipBox, hoursBox);
+        leftVBox.getChildren().addAll(idBox, firstNameBox, lastNameBox, 
+                dateOfBirthBox, emailBox, phoneBox, specialBox, streetBox, 
+                cityBox, stateBox, zipBox, hoursBox, statusBox);
 
         rightVBox.setSpacing(10);
         rightVBox.setPadding(new Insets(10, 20, 10, 20));
