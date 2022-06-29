@@ -23,14 +23,6 @@ public class Shift {
     static ArrayList<Shift> shiftList = new ArrayList<>();
     
     static int shiftCount;
-    
-//    // Default constructor
-//    public Shift() {
-//        this.shiftID = "Default Shift ID";
-//        this.clockIn = 00;
-//        this.clockOut = 00;
-//        this.volunteerID = "Default Volunteer ID";
-//    }
 
     // Overloaded constructor
     public Shift(String shiftID, Instant clockIn, Instant clockOut, String volunteerID) {

@@ -26,16 +26,6 @@ public class Drives {
     
     static int driveCount;
 
-    // Default constructor
-    public Drives() {
-        this.driveID = "Default Drive ID";
-        this.volunteerID = "Default Volunteer ID";
-        this.locationID = "Default Location ID";
-        this.miles = 0;
-        this.driveDate = "Default Drive Date";
-        this.driveNotes = "Default Drive Notes";
-    }
-
     // Overloaded constructor
     public Drives(String driveID, String volunteerID, String locationID, double miles, String driveDate, String driveNotes) {
         this.driveID = "drive" + driveCount;

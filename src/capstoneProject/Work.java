@@ -23,17 +23,7 @@ public class Work {
     static ArrayList<Work> workList = new ArrayList<>();
 
     static int workCount;
-
-    // Default constructor
-    public Work() {
-        this.workID = "Default Work ID";
-        this.workStatus = "Default Work Status";
-        this.volunteerID = "Default Volunteer ID";
-        this.jobID = "Default Job ID";
-        this.eventID = "Default Event ID";
-        this.animalID = "Default Animal ID";
-    }
-
+    
     // Overloaded constructor
     public Work(String workID, String workStatus, String volunteerID, String jobID, String eventID, String animalID) {
         this.workID = "work" + workCount;

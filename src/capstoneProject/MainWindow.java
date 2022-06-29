@@ -574,6 +574,9 @@ public class MainWindow {
         });
     }
 
+    /* Referenced https://stackoverflow.com/questions/53771119/javafx-property-binding-with-multiple-objects-on-on-screen
+        for custom list view
+    */
     public void homePage() throws IOException {
         // FX Controls
 

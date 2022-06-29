@@ -21,18 +21,7 @@ public class Location {
 
     static int locationCount = 0;
 
-    public Location() {
-        this.locationID = "location" + locationCount;
-        this.name = "Default";
-        this.street = "Default";
-        this.city = "Default";
-        this.state = "NA";
-        this.zip = 00000;
-        this.type = "Default";
-
-        locationCount++;
-    }
-
+    // Overloaded constructor
     public Location(String locationID, String name, String street, String city, String state, int zip, String type) {
         this.locationID = "location" + locationCount;
         this.name = name;

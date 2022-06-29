@@ -36,28 +36,6 @@ public class Volunteer {
 
     static int volunteerCount = 0;
 
-    // Default constructor
-    public Volunteer() {
-        this.volunteerID = "Default Volunteer ID" + volunteerCount;
-        this.firstName = "Default Volunteer First Name";
-        this.lastName = "Default Volunteer Last Name";
-        this.dateOfBirth = "00/00/0000";
-        this.email = "Default Email";
-        this.phone = "1234567890";
-        this.specialization = "Default Specialization";
-        this.street = "Default Volunteer Street";
-        this.city = "Default Volunteer City";
-        this.state = "XX";
-        this.zip = 00000;
-        this.personalInfo = "none";
-        this.experience = "Default Experience";
-        this.status = "admin";
-        this.password = "TestPassword123!";
-        this.totalQHours = 0;
-        
-        volunteerCount++;
-    }
-
     // Overloaded constructor
     public Volunteer(String volunteerID, String firstName, String lastName, String dateOfBirth,
             String email, String phone, String specialization, String street, String city,

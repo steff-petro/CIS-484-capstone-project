@@ -19,17 +19,6 @@ public class Job {
 
     static int jobCount = 0;
 
-    // Default constructor
-    public Job() {
-        this.jobID = "job" + jobCount;
-        this.jobName = "Clean Holding Area";
-        this.jobType = "Enclosure Care";
-        this.locationID = "location1";
-        this.jobNotes = null;
-
-        jobCount++;
-    }
-
     // Overloaded constructor
     public Job(String jobID, String jobName, String jobType, String locationID, String jobNotes) {
         this.jobID = "job" + jobCount;

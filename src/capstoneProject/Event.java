@@ -29,6 +29,7 @@ public class Event {
     
     static int eventCount = 0;
     
+    // Overloaded constructor
     public Event(String eventID, String eventName, String eventDate, String eventTime, int maxVolunteers, int registeredVolunteers, String eventDescription, String locationID) {
         this.eventID = "event" + eventCount;
         this.eventName = eventName;

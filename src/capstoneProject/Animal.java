@@ -24,16 +24,6 @@ public class Animal {
     
     static int animalCount = 0;
 
-    // Default Constructor
-    public Animal() {
-
-        this.animalID = "Default Animal ID";
-        this.animalName = "Default Animal Name";
-        this.animalSpecies = "Default Animal Type";
-        this.animalAge = 0;
-
-    }
-
     // Overloaded constructor
     public Animal(String animalID, String animalName, String animalSpecies, String animalBreed, int animalAge) {
         this.animalID = "animal" + animalCount;
