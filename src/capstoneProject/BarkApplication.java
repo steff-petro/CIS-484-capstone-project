@@ -210,7 +210,6 @@ public class BarkApplication extends Application {
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
-
     }
 
     public void sendDBCommand(String sqlQuery) {

@@ -1484,7 +1484,6 @@ public class MainWindow {
             }
             volunteerList.setItems(specialVolunteers);
         });
-
     }
 
     // Method to display bar chart - updates in real time because we use SQL!
