@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.time.Instant;
 import javafx.application.Application;
 import javafx.geometry.*;
@@ -16,12 +17,14 @@ import oracle.jdbc.pool.OracleDataSource;
 
 public class BarkApplication extends Application {
 
+    Instant checkIn;
+    Instant checkOut;
+
 //     JavaFX Controls for Sign In page
 //    // Create GridPanes for all tabs
     GridPane overallPane = new GridPane();
 
     // Labels, text fields, buttons, boxes
-    Label welcomeLabel = new Label("Welcome! If you are a volunteer, check in below.");
     Label volunteerIDLabel = new Label("VolunteerID:");
     TextField textVolunteerID = new TextField();
     Label passwordLabel = new Label("Password:");
@@ -63,26 +66,75 @@ public class BarkApplication extends Application {
 
         // Actions to open main form when user logs in or open create account form
         btnCheckIn.setOnAction(e -> {
+            if (btnCheckIn.getText().equalsIgnoreCase("Check In")) {
+                String volunteerID = textVolunteerID.getText();
+                String password = textPassword.getText();
 
-            String volunteerID = textVolunteerID.getText();
-            String password = textPassword.getText();
-
-//            MainWindow mainW = new MainWindow(this, volunteerID);
-            // Login verification
+                // Login verification
 //            boolean userExists = Volunteer.verifyLogin(volunteerID, password);
-            boolean userExists = Volunteer.verifyLogin("volunteer2", "AdminPassword12!");
+                boolean userExists = Volunteer.verifyLogin("volunteer2", "AdminPassword12!");
 
-            if (userExists) {
-                Instant checkIn = Instant.now();
-                MainWindow mainW = new MainWindow(this, checkIn, "volunteer2");
-                primaryStage.close();
+                if (userExists) {
+                    checkIn = Instant.now();
+                    MainWindow mainW = new MainWindow(this, checkIn, "volunteer2");
+                } else {
+                    Alert invalidInput = new Alert(Alert.AlertType.ERROR,
+                            "Incorrect user credentials.",
+                            ButtonType.OK);
+                    invalidInput.show();
+                }
+
+                textVolunteerID.clear();
+                textPassword.clear();
+
+                // Displays window to log out
             } else {
-                Alert invalidInput = new Alert(Alert.AlertType.ERROR,
-                        "Incorrect user credentials.",
-                        ButtonType.OK);
-                invalidInput.show();
-            }
+                Volunteer currentUser = Volunteer.returnVolunteerObject(textVolunteerID.getText());
 
+                String volunteerID = textVolunteerID.getText();
+                String password = textPassword.getText();
+
+                // Login verification
+                boolean userExists = Volunteer.verifyLogin(volunteerID, password);
+
+                if (userExists) {
+                    checkOut = Instant.now();
+                    double timeElapsed = Duration.between(checkIn, checkOut).toMinutes();
+                    int quarterHours = (int) timeElapsed / 15;
+                    System.out.println("Quarter Hours Elapsed: " + quarterHours);
+
+                    Shift tempShift = new Shift(
+                            "shift" + Shift.shiftCount,
+                            checkIn,
+                            checkOut,
+                            currentUser.getVolunteerID()
+                    );
+
+                    // Calculating total quarter hours
+                    currentUser.setTotalQHours(currentUser.getTotalQHours() + quarterHours);
+                    if (currentUser.getTotalQHours() >= 80) {
+                        currentUser.setStatus("active");
+                    }
+
+                    Alert confirmCheckOut = new Alert(Alert.AlertType.CONFIRMATION,
+                            "You have checked out for today.",
+                            ButtonType.OK);
+                    confirmCheckOut.show();
+                    primaryStage.close();
+
+                    //Update Qhours and Status in DB for this volunteer
+                    sendDBCommand("UPDATE VOLUNTEER SET TOTALQUARTERHOURS = "
+                            + currentUser.getTotalQHours() + ", STATUS = '"
+                            + currentUser.getStatus() + "' "
+                            + "WHERE VOLUNTEERID = '" + currentUser.getVolunteerID() + "'"
+                    );
+                } else {
+                    Alert invalidInput = new Alert(Alert.AlertType.ERROR,
+                            "Incorrect user credentials.",
+                            ButtonType.OK);
+                    invalidInput.show();
+                }
+            }
         });
         btnApplyHere.setOnAction(e -> {
             CreateAccountWindow createAcct = new CreateAccountWindow();

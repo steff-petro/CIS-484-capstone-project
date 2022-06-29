@@ -1,7 +1,5 @@
 package capstoneProject;
 
-import capstoneProject.Volunteer;
-import java.util.*;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;

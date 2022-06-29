@@ -26,7 +26,7 @@ import oracle.jdbc.pool.OracleDataSource;
 public class MainWindow {
 
     // Data Fields
-    BarkApplication signInForm;
+    BarkApplication checkInOutForm;
     String volunteerID;
     Instant checkIn;
 
@@ -140,7 +140,8 @@ public class MainWindow {
     // Class wide variable that can be used to display content related to the logged in user
     String currentLoggedInUser;
 
-    public MainWindow(BarkApplication signInForm, Instant checkIn, String volunteerID) {
+    public MainWindow(BarkApplication checkInOutForm, Instant checkIn, String volunteerID) {
+        this.checkInOutForm = checkInOutForm;
         this.checkIn = checkIn;
 
         // Class wide variable that can be used to display content related to the logged in user
@@ -268,61 +269,55 @@ public class MainWindow {
         });
 
         miCheckOut.setOnAction(e -> {
-            Instant checkOut = Instant.now();
-            double timeElapsed = Duration.between(checkIn, checkOut).toMinutes();
-            int quarterHours = (int) timeElapsed / 15;
-            System.out.println("Quarter Hours Elapsed: " + quarterHours);
-
-            Shift tempShift = new Shift(
-                    "shift" + Shift.shiftCount,
-                    checkIn,
-                    checkOut,
-                    currentUser.getVolunteerID()
-            );
-
-            // CALCULATE TOTAL QUARTER HOURS HERE - **you actually wont add timeElapsed...you'll end up adding the quarter hours for the shift
-            currentUser.setTotalQHours(currentUser.getTotalQHours() + quarterHours);
-
-            Alert confirmCheckOut = new Alert(Alert.AlertType.CONFIRMATION,
-                    "You have checked out for today.",
-                    ButtonType.OK);
-            confirmCheckOut.show();
-
-            //Update Qhours in DB for this volunteer
-            sendDBCommand("UPDATE VOLUNTEER SET TOTALQUARTERHOURS = "
-                    + currentUser.getTotalQHours() + " WHERE VOLUNTEERID = '"
-                    + currentUser.getVolunteerID() + "'"
-            );
+            checkInOutForm.textVolunteerID.setText(currentUser.getVolunteerID());
+            checkInOutForm.btnCheckIn.setText("Check Out");
+            checkInOutForm.noAccountVBox.getChildren().remove(checkInOutForm.noAccountLabel);
+            checkInOutForm.noAccountVBox.getChildren().remove(checkInOutForm.btnApplyHere);
             primaryStage.close();
         });
 
         // Log Drive button action
         btnLogDrive.setOnAction(e -> {
-            String driveLocationID = Location.returnLocationID((String) comboLocation.getValue());
-            Drives tempDrive = new Drives(
-                    "drive" + Drives.driveCount,
-                    currentUser.getVolunteerID(),
-                    driveLocationID,
-                    Double.valueOf(txtMiles.getText()),
-                    txtDriveDate.getText(),
-                    txtDriveNotes.getText()
-            );
-            Drives.drivesList.add(tempDrive);
-            tempDrive.writeDrives();
-            driveHistoryList.getItems().clear();
-            for (Drives d : Drives.drivesList) {
-                if (d.getVolunteerID().equals(currentUser.getVolunteerID())) {
-                    drivesData.add(d);
+            if (comboLocation.getSelectionModel().isEmpty() || txtMiles.getText().isEmpty()
+                    || txtDriveDate.getText().isEmpty()) {
+                Alert emptyField = new Alert(Alert.AlertType.ERROR,
+                        "Please make sure you have filled out all required fields.",
+                        ButtonType.OK);
+                emptyField.show();
+            } else {
+                try {
+                    String driveLocationID = Location.returnLocationID((String) comboLocation.getValue());
+                    Drives tempDrive = new Drives(
+                            "drive" + Drives.driveCount,
+                            currentUser.getVolunteerID(),
+                            driveLocationID,
+                            Double.valueOf(txtMiles.getText()),
+                            txtDriveDate.getText(),
+                            txtDriveNotes.getText()
+                    );
+                    Drives.drivesList.add(tempDrive);
+                    tempDrive.writeDrives();
+                    driveHistoryList.getItems().clear();
+                    for (Drives d : Drives.drivesList) {
+                        if (d.getVolunteerID().equals(currentUser.getVolunteerID())) {
+                            drivesData.add(d);
+                        }
+                    }
+                    txtDriveID.setText("drive" + Drives.driveCount);
+                } catch (NumberFormatException nfe) {
+                    Alert nfException = new Alert(Alert.AlertType.ERROR,
+                            "Please make sure to enter a number for miles driven.",
+                            ButtonType.OK);
+                    nfException.show();
                 }
             }
-            txtDriveID.setText("drive" + Drives.driveCount);
         });
 
         // Select job button action
         btnSelectJob.setOnAction(e -> {
             Job selectedJob = jobTable.getSelectionModel().getSelectedItem();
             try {
-                // CODE TO ASSOCIATE JOB WITH CURRENT VOLUNTEER GOES HERE
+                // Associate job with current volunteer
                 Work tempWork = new Work(
                         "work" + Work.workCount,
                         "in progress",
@@ -367,7 +362,7 @@ public class MainWindow {
                         sendDBCommand("UPDATE EVENT SET REGISTEREDVOLUNTEERS = " + (selectedEvent.getMaxVolunteers() - selectedEvent.getSpotsLeft() + 1) + " WHERE EVENTID = '" + selectedEvent.getEventID() + "'");
                         selectedEvent.setRegisteredVolunteers(selectedEvent.getRegisteredVolunteers() + 1);
                         selectedEvent.setSpotsLeft(selectedEvent.getSpotsLeft() - 1);
-                        // CODE TO ASSOCIATE EVENT WITH CURRENT VOLUNTEER GOES HERE
+                        // Associate event with current volunteer
                         Work tempWork = new Work(
                                 "work" + Work.workCount,
                                 "in progress",
@@ -965,7 +960,7 @@ public class MainWindow {
         TextField txtEventTime = new TextField();
         TextField txtMaxVolunteers = new TextField();
         TextField txtEventDescription = new TextField();
-        ComboBox comboLocation = new ComboBox<>(locationNames);
+        ComboBox combobLocation = new ComboBox<>(locationNames);
         Button btnAddNewEvent = new Button("Add Event");
         Button btnEdit = new Button("Edit Selected Event");
         VBox leftVBox = new VBox();
@@ -976,7 +971,7 @@ public class MainWindow {
         HBox timeHBox = new HBox(lblEventTime, txtEventTime);
         HBox maxVolHBox = new HBox(lblMaxVolunteers, txtMaxVolunteers);
         HBox descHBox = new HBox(lblEventDescription, txtEventDescription);
-        HBox eventLocationHBox = new HBox(lblEventLocation, comboLocation);
+        HBox eventLocationHBox = new HBox(lblEventLocation, combobLocation);
 
         adminEventsPane.setAlignment(Pos.CENTER);
         leftVBox.setAlignment(Pos.TOP_CENTER);
@@ -1007,72 +1002,79 @@ public class MainWindow {
         btnAddNewEvent.setOnAction(e -> {
             if (txtEventName.getText().isEmpty() || txtEventDate.getText().isEmpty()
                     || txtEventTime.getText().isEmpty() || txtMaxVolunteers.getText().isEmpty()
-                    || txtEventDescription.getText().isEmpty() || comboLocation.getSelectionModel().isEmpty()) {
+                    || txtEventDescription.getText().isEmpty() || combobLocation.getSelectionModel().isEmpty()) {
                 Alert emptyField = new Alert(Alert.AlertType.ERROR,
                         "Please make sure you have filled out all required fields.",
                         ButtonType.OK);
                 emptyField.show();
             } else {
-                Event tempEvent;
-                if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
-                    for (Event ev : Event.eventList) {
-                        if (ev.getEventID().equalsIgnoreCase(txtEventID.getText())) {
-                            tempEvent = Event.returnEventObject(txtEventID.getText());
-                            tempEvent.setEventName(txtEventName.getText());
-                            tempEvent.setEventDate(txtEventDate.getText());
-                            tempEvent.setEventTime(txtEventTime.getText());
-                            tempEvent.setMaxVolunteers(Integer.valueOf(txtMaxVolunteers.getText()));
-                            tempEvent.setEventDescription(txtEventDescription.getText());
-                            tempEvent.setLocationID(Location.returnLocationID((String) comboLocation.getValue()));
+                try {
+                    Event tempEvent;
+                    if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
+                        for (Event ev : Event.eventList) {
+                            if (ev.getEventID().equalsIgnoreCase(txtEventID.getText())) {
+                                tempEvent = Event.returnEventObject(txtEventID.getText());
+                                tempEvent.setEventName(txtEventName.getText());
+                                tempEvent.setEventDate(txtEventDate.getText());
+                                tempEvent.setEventTime(txtEventTime.getText());
+                                tempEvent.setMaxVolunteers(Integer.valueOf(txtMaxVolunteers.getText()));
+                                tempEvent.setEventDescription(txtEventDescription.getText());
+                                tempEvent.setLocationID(Location.returnLocationID((String) combobLocation.getValue()));
 
-                            sendDBCommand("UPDATE EVENT SET EVENTNAME = '"
-                                    + tempEvent.getEventName() + "', EVENTDATE = '"
-                                    + tempEvent.getEventDate() + "', EVENTTIME ='"
-                                    + tempEvent.getEventTime() + "', MAXVOLUNTEERS = "
-                                    + tempEvent.getMaxVolunteers() + ", EVENTDESCRIPTION = '"
-                                    + tempEvent.getEventDescription() + "', LOCATIONID = '"
-                                    + tempEvent.getLocationID() + "' "
-                                    + "WHERE EVENTID ='" + tempEvent.getEventID() + "'");
+                                sendDBCommand("UPDATE EVENT SET EVENTNAME = '"
+                                        + tempEvent.getEventName() + "', EVENTDATE = '"
+                                        + tempEvent.getEventDate() + "', EVENTTIME ='"
+                                        + tempEvent.getEventTime() + "', MAXVOLUNTEERS = "
+                                        + tempEvent.getMaxVolunteers() + ", EVENTDESCRIPTION = '"
+                                        + tempEvent.getEventDescription() + "', LOCATIONID = '"
+                                        + tempEvent.getLocationID() + "' "
+                                        + "WHERE EVENTID ='" + tempEvent.getEventID() + "'");
+                            }
                         }
+                    } else {
+                        tempEvent = new Event(
+                                txtEventID.getText(),
+                                txtEventName.getText(),
+                                txtEventDate.getText(),
+                                txtEventTime.getText(),
+                                Integer.valueOf(txtMaxVolunteers.getText()),
+                                0,
+                                txtEventDescription.getText(),
+                                Location.returnLocationID((String) combobLocation.getValue())
+                        );
+                        Event.eventList.add(tempEvent);
+                        tempEvent.writeEvent();
                     }
-                } else {
-                    tempEvent = new Event(
-                            txtEventID.getText(),
-                            txtEventName.getText(),
-                            txtEventDate.getText(),
-                            txtEventTime.getText(),
-                            Integer.valueOf(txtMaxVolunteers.getText()),
-                            0,
-                            txtEventDescription.getText(),
-                            Location.returnLocationID((String) comboLocation.getValue())
-                    );
-                    Event.eventList.add(tempEvent);
-                    tempEvent.writeEvent();
-                }
-                eventData.clear();
-                currentEventsList.getItems().clear();
-                for (Event ev : Event.eventList) {
-                    eventData.add(ev);
-                }
-                txtEventID.setText("event" + Event.eventCount);
-                txtEventName.clear();
-                txtEventDate.clear();
-                txtEventTime.clear();
-                txtMaxVolunteers.clear();
-                txtEventDescription.clear();
-                comboLocation.setValue("");
-                if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
-                    Alert confirmEditEvent = new Alert(Alert.AlertType.CONFIRMATION,
-                            "Changes to event have been saved.",
+                    eventData.clear();
+                    currentEventsList.getItems().clear();
+                    for (Event ev : Event.eventList) {
+                        eventData.add(ev);
+                    }
+                    txtEventID.setText("event" + Event.eventCount);
+                    txtEventName.clear();
+                    txtEventDate.clear();
+                    txtEventTime.clear();
+                    txtMaxVolunteers.clear();
+                    txtEventDescription.clear();
+                    combobLocation.setValue("");
+                    if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
+                        Alert confirmEditEvent = new Alert(Alert.AlertType.CONFIRMATION,
+                                "Changes to event have been saved.",
+                                ButtonType.OK);
+                        confirmEditEvent.show();
+                    } else {
+                        Alert confirmAddEvent = new Alert(Alert.AlertType.CONFIRMATION,
+                                "New event has been added to the list.",
+                                ButtonType.OK);
+                        confirmAddEvent.show();
+                    }
+                    btnAddNewEvent.setText("Add Event");
+                } catch (NumberFormatException nfe) {
+                    Alert nfException = new Alert(Alert.AlertType.ERROR,
+                            "Please make sure to enter a number for Miles Driven.",
                             ButtonType.OK);
-                    confirmEditEvent.show();
-                } else {
-                    Alert confirmAddEvent = new Alert(Alert.AlertType.CONFIRMATION,
-                            "New event has been added to the list.",
-                            ButtonType.OK);
-                    confirmAddEvent.show();
+                    nfException.show();
                 }
-                btnAddNewEvent.setText("Add Event");
             }
         });
 
@@ -1085,7 +1087,7 @@ public class MainWindow {
             txtEventTime.setText(selectedEvent.getEventTime());
             txtMaxVolunteers.setText(String.valueOf(selectedEvent.getMaxVolunteers()));
             txtEventDescription.setText(selectedEvent.getEventDescription());
-            comboLocation.setValue(Location.reutrnLocationName(selectedEvent.getLocationID()));
+            combobLocation.setValue(Location.reutrnLocationName(selectedEvent.getLocationID()));
             btnAddNewEvent.setText("Save Changes");
         });
     }
@@ -1934,8 +1936,8 @@ public class MainWindow {
 
         leftVBox.setSpacing(10);
         leftVBox.setPadding(new Insets(10, 20, 10, 20));
-        leftVBox.getChildren().addAll(idBox, firstNameBox, lastNameBox, 
-                dateOfBirthBox, emailBox, phoneBox, specialBox, streetBox, 
+        leftVBox.getChildren().addAll(idBox, firstNameBox, lastNameBox,
+                dateOfBirthBox, emailBox, phoneBox, specialBox, streetBox,
                 cityBox, stateBox, zipBox, hoursBox, statusBox);
 
         rightVBox.setSpacing(10);
