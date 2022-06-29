@@ -108,26 +108,32 @@ public class CreateAccountWindow {
 
         // Submit button action to create new volunteer
         btnSubmit.setOnAction(e -> {
-            
-            // ERROR / EVENT HANDLING
 
-            Integer zipInt = Integer.parseInt(txtZip.getText());
-            
-            
-            Volunteer tempVolunteer = new Volunteer("volunteer" + Volunteer.volunteerCount, txtFirstName.getText(), txtLastName.getText(), txtDateOfBirth.getText(),
-            txtEmail.getText(), txtPhone.getText(), comboSpecialization.getSelectionModel().getSelectedItem(), txtStreet.getText(), txtCity.getText(),
-            txtState.getText(), zipInt, txtInfo.getText(), txtExperience.getText(), "conditional", "Password123", 0);
-            Volunteer.volunteerArrayList.add(tempVolunteer);
-            tempVolunteer.writeVolunteer();
-            
-            Alert confirmSubmit = new Alert(Alert.AlertType.CONFIRMATION,
-                    "BARK has received your volunteer application. Thank you for applying!",
-                    ButtonType.OK);
-            confirmSubmit.show();
-            primaryStage.close();
+            // ERROR / EVENT HANDLING
+            try {
+                Integer zipInt = Integer.parseInt(txtZip.getText());
+
+                Volunteer tempVolunteer = new Volunteer("volunteer" + Volunteer.volunteerCount, txtFirstName.getText(), txtLastName.getText(), txtDateOfBirth.getText(),
+                        txtEmail.getText(), txtPhone.getText(), comboSpecialization.getSelectionModel().getSelectedItem(), txtStreet.getText(), txtCity.getText(),
+                        txtState.getText(), zipInt, txtInfo.getText(), txtExperience.getText(), "conditional", "Password123", 0);
+                Volunteer.volunteerArrayList.add(tempVolunteer);
+                tempVolunteer.writeVolunteer();
+
+                Alert confirmSubmit = new Alert(Alert.AlertType.CONFIRMATION,
+                        "BARK has received your volunteer application. Thank you for applying!",
+                        ButtonType.OK);
+                confirmSubmit.show();
+                primaryStage.close();
+
+            } catch (Exception ex) {
+                Alert noSelection = new Alert(Alert.AlertType.ERROR,
+                        "Your application could not be submitted. Please make sure you have filled out all fields.",
+                        ButtonType.OK);
+                noSelection.show();
+            }
         });
     }
-    
+
     public void sendDBCommand(String sqlQuery) {
         Connection dbConn;
         Statement commStmt;

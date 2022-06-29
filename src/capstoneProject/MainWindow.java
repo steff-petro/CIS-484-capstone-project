@@ -4,6 +4,7 @@ import java.io.*;
 import java.sql.*;
 import java.time.Instant;
 import java.time.Duration;
+import java.util.ArrayList;
 import javafx.geometry.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -869,63 +870,70 @@ public class MainWindow {
 
         // Add Job button action
         btnAddNewJob.setOnAction(e -> {
-            Job tempJob;
-            if (btnAddNewJob.getText().equalsIgnoreCase("Save Changes")) {
-                for (Job j : Job.jobList) {
-                    if (j.getJobID().equalsIgnoreCase(txtJobID.getText())) {
-                        tempJob = Job.returnJobObject(txtJobID.getText());
-                        tempJob.setJobName(txtJobName.getText());
-                        tempJob.setJobType(txtJobType.getText());
-                        tempJob.setLocationID(Location.returnLocationID((String) comboJobLocation.getValue()));
-                        tempJob.setJobNotes(txtJobNotes.getText());
-                        sendDBCommand("UPDATE JOB SET JOBNAME = '"
-                                + tempJob.getJobName() + "', JOBTYPE = '"
-                                + tempJob.getJobType() + "', LOCATIONID ='"
-                                + Location.returnLocationID((String) comboJobLocation.getValue()) + "', JOBNOTES = '"
-                                + tempJob.getJobNotes() + "' WHERE JOBID ='" + tempJob.getJobID() + "'");
 
+            if (txtJobName.getText().isEmpty() || txtJobType.getText().isEmpty() || comboJobLocation.getSelectionModel().isEmpty()) {
+                Alert emptyField = new Alert(Alert.AlertType.ERROR,
+                        "Please make sure you have filled out all required fields.",
+                        ButtonType.OK);
+                emptyField.show();
+            } else {
+                Job tempJob;
+                if (btnAddNewJob.getText().equalsIgnoreCase("Save Changes")) {
+                    for (Job j : Job.jobList) {
+                        if (j.getJobID().equalsIgnoreCase(txtJobID.getText())) {
+                            tempJob = Job.returnJobObject(txtJobID.getText());
+                            tempJob.setJobName(txtJobName.getText());
+                            tempJob.setJobType(txtJobType.getText());
+                            tempJob.setLocationID(Location.returnLocationID((String) comboJobLocation.getValue()));
+                            tempJob.setJobNotes(txtJobNotes.getText());
+                            sendDBCommand("UPDATE JOB SET JOBNAME = '"
+                                    + tempJob.getJobName() + "', JOBTYPE = '"
+                                    + tempJob.getJobType() + "', LOCATIONID ='"
+                                    + Location.returnLocationID((String) comboJobLocation.getValue()) + "', JOBNOTES = '"
+                                    + tempJob.getJobNotes() + "' WHERE JOBID ='" + tempJob.getJobID() + "'");
+                        }
+                    }
+                } else {
+                    tempJob = new Job(
+                            txtJobID.getText(),
+                            txtJobName.getText(),
+                            txtJobType.getText(),
+                            Location.returnLocationID((String) comboJobLocation.getValue()),
+                            txtJobNotes.getText()
+                    );
+                    Job.jobList.add(tempJob);
+                    tempJob.writeJob();
+                }
+                jobData.clear();
+                currentJobsList.getItems().clear();
+                for (Job j : Job.jobList) {
+                    jobData.add(j);
+                }
+                for (Job j : Job.jobList) {
+                    for (Work w : Work.workList) {
+                        if (j.getJobID().equalsIgnoreCase(w.getJobID())) {
+                            jobData.remove(j);
+                        }
                     }
                 }
-            } else {
-                tempJob = new Job(
-                        txtJobID.getText(),
-                        txtJobName.getText(),
-                        txtJobType.getText(),
-                        Location.returnLocationID((String) comboJobLocation.getValue()),
-                        txtJobNotes.getText()
-                );
-                Job.jobList.add(tempJob);
-                tempJob.writeJob();
-            }
-            jobData.clear();
-            currentJobsList.getItems().clear();
-            for (Job j : Job.jobList) {
-                jobData.add(j);
-            }
-            for (Job j : Job.jobList) {
-                for (Work w : Work.workList) {
-                    if (j.getJobID().equalsIgnoreCase(w.getJobID())) {
-                        jobData.remove(j);
-                    }
+                txtJobID.setText("job" + Job.jobCount);
+                txtJobName.clear();
+                txtJobType.clear();
+                comboJobLocation.setValue("");
+                txtJobNotes.clear();
+                if (btnAddNewJob.getText().equalsIgnoreCase("Save Changes")) {
+                    Alert confirmEditJob = new Alert(Alert.AlertType.CONFIRMATION,
+                            "Changes to job have been saved.",
+                            ButtonType.OK);
+                    confirmEditJob.show();
+                } else {
+                    Alert confirmAddJob = new Alert(Alert.AlertType.CONFIRMATION,
+                            "Jobs have been updated.",
+                            ButtonType.OK);
+                    confirmAddJob.show();
                 }
+                btnAddNewJob.setText("Add Job");
             }
-            txtJobID.setText("job" + Job.jobCount);
-            txtJobName.clear();
-            txtJobType.clear();
-            comboJobLocation.setValue("");
-            txtJobNotes.clear();
-            if (btnAddNewJob.getText().equalsIgnoreCase("Save Changes")) {
-                Alert confirmEditJob = new Alert(Alert.AlertType.CONFIRMATION,
-                        "Changes to job have been saved.",
-                        ButtonType.OK);
-                confirmEditJob.show();
-            } else {
-                Alert confirmAddJob = new Alert(Alert.AlertType.CONFIRMATION,
-                        "Jobs have been updated.",
-                        ButtonType.OK);
-                confirmAddJob.show();
-            }
-            btnAddNewJob.setText("Add Job");
         });
 
         // Edit Button actions
@@ -997,67 +1005,75 @@ public class MainWindow {
 
         // Add Event button action
         btnAddNewEvent.setOnAction(e -> {
-            Event tempEvent;
-            if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
-                for (Event ev : Event.eventList) {
-                    if (ev.getEventID().equalsIgnoreCase(txtEventID.getText())) {
-                        tempEvent = Event.returnEventObject(txtEventID.getText());
-                        tempEvent.setEventName(txtEventName.getText());
-                        tempEvent.setEventDate(txtEventDate.getText());
-                        tempEvent.setEventTime(txtEventTime.getText());
-                        tempEvent.setMaxVolunteers(Integer.valueOf(txtMaxVolunteers.getText()));
-                        tempEvent.setEventDescription(txtEventDescription.getText());
-                        tempEvent.setLocationID(Location.returnLocationID((String) comboLocation.getValue()));
+            if (txtEventName.getText().isEmpty() || txtEventDate.getText().isEmpty()
+                    || txtEventTime.getText().isEmpty() || txtMaxVolunteers.getText().isEmpty()
+                    || txtEventDescription.getText().isEmpty() || comboLocation.getSelectionModel().isEmpty()) {
+                Alert emptyField = new Alert(Alert.AlertType.ERROR,
+                        "Please make sure you have filled out all required fields.",
+                        ButtonType.OK);
+                emptyField.show();
+            } else {
+                Event tempEvent;
+                if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
+                    for (Event ev : Event.eventList) {
+                        if (ev.getEventID().equalsIgnoreCase(txtEventID.getText())) {
+                            tempEvent = Event.returnEventObject(txtEventID.getText());
+                            tempEvent.setEventName(txtEventName.getText());
+                            tempEvent.setEventDate(txtEventDate.getText());
+                            tempEvent.setEventTime(txtEventTime.getText());
+                            tempEvent.setMaxVolunteers(Integer.valueOf(txtMaxVolunteers.getText()));
+                            tempEvent.setEventDescription(txtEventDescription.getText());
+                            tempEvent.setLocationID(Location.returnLocationID((String) comboLocation.getValue()));
 
-                        sendDBCommand("UPDATE EVENT SET EVENTNAME = '"
-                                + tempEvent.getEventName() + "', EVENTDATE = '"
-                                + tempEvent.getEventDate() + "', EVENTTIME ='"
-                                + tempEvent.getEventTime() + "', MAXVOLUNTEERS = "
-                                + tempEvent.getMaxVolunteers() + ", EVENTDESCRIPTION = '"
-                                + tempEvent.getEventDescription() + "', LOCATIONID = '"
-                                + tempEvent.getLocationID() + "' "
-                                + "WHERE EVENTID ='" + tempEvent.getEventID() + "'");
-
+                            sendDBCommand("UPDATE EVENT SET EVENTNAME = '"
+                                    + tempEvent.getEventName() + "', EVENTDATE = '"
+                                    + tempEvent.getEventDate() + "', EVENTTIME ='"
+                                    + tempEvent.getEventTime() + "', MAXVOLUNTEERS = "
+                                    + tempEvent.getMaxVolunteers() + ", EVENTDESCRIPTION = '"
+                                    + tempEvent.getEventDescription() + "', LOCATIONID = '"
+                                    + tempEvent.getLocationID() + "' "
+                                    + "WHERE EVENTID ='" + tempEvent.getEventID() + "'");
+                        }
                     }
+                } else {
+                    tempEvent = new Event(
+                            txtEventID.getText(),
+                            txtEventName.getText(),
+                            txtEventDate.getText(),
+                            txtEventTime.getText(),
+                            Integer.valueOf(txtMaxVolunteers.getText()),
+                            0,
+                            txtEventDescription.getText(),
+                            Location.returnLocationID((String) comboLocation.getValue())
+                    );
+                    Event.eventList.add(tempEvent);
+                    tempEvent.writeEvent();
                 }
-            } else {
-                tempEvent = new Event(
-                        txtEventID.getText(),
-                        txtEventName.getText(),
-                        txtEventDate.getText(),
-                        txtEventTime.getText(),
-                        Integer.valueOf(txtMaxVolunteers.getText()),
-                        0,
-                        txtEventDescription.getText(),
-                        Location.returnLocationID((String) comboLocation.getValue())
-                );
-                Event.eventList.add(tempEvent);
-                tempEvent.writeEvent();
+                eventData.clear();
+                currentEventsList.getItems().clear();
+                for (Event ev : Event.eventList) {
+                    eventData.add(ev);
+                }
+                txtEventID.setText("event" + Event.eventCount);
+                txtEventName.clear();
+                txtEventDate.clear();
+                txtEventTime.clear();
+                txtMaxVolunteers.clear();
+                txtEventDescription.clear();
+                comboLocation.setValue("");
+                if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
+                    Alert confirmEditEvent = new Alert(Alert.AlertType.CONFIRMATION,
+                            "Changes to event have been saved.",
+                            ButtonType.OK);
+                    confirmEditEvent.show();
+                } else {
+                    Alert confirmAddEvent = new Alert(Alert.AlertType.CONFIRMATION,
+                            "New event has been added to the list.",
+                            ButtonType.OK);
+                    confirmAddEvent.show();
+                }
+                btnAddNewEvent.setText("Add Event");
             }
-            eventData.clear();
-            currentEventsList.getItems().clear();
-            for (Event ev : Event.eventList) {
-                eventData.add(ev);
-            }
-            txtEventID.setText("event" + Event.eventCount);
-            txtEventName.clear();
-            txtEventDate.clear();
-            txtEventTime.clear();
-            txtMaxVolunteers.clear();
-            txtEventDescription.clear();
-            comboLocation.setValue("");
-            if (btnAddNewEvent.getText().equalsIgnoreCase("Save Changes")) {
-                Alert confirmEditEvent = new Alert(Alert.AlertType.CONFIRMATION,
-                        "Changes to event have been saved.",
-                        ButtonType.OK);
-                confirmEditEvent.show();
-            } else {
-                Alert confirmAddEvent = new Alert(Alert.AlertType.CONFIRMATION,
-                        "New event has been added to the list.",
-                        ButtonType.OK);
-                confirmAddEvent.show();
-            }
-            btnAddNewEvent.setText("Add Event");
         });
 
         // Edit Button actions
@@ -1131,69 +1147,77 @@ public class MainWindow {
 
         // Add Location button action
         btnAddLocation.setOnAction(e -> {
-            Location tempLocation;
-            if (btnAddLocation.getText().equalsIgnoreCase("Save Changes")) {
-                for (Location l : Location.locationList) {
-                    if (l.getLocationID().equalsIgnoreCase(txtLocationID.getText())) {
-                        tempLocation = Location.returnLocationObject(txtLocationID.getText());
-                        tempLocation.setName(txtLocationName.getText());
-                        tempLocation.setStreet(txtLocationStreet.getText());
-                        tempLocation.setCity(txtLocationCity.getText());
-                        tempLocation.setState(txtLocationState.getText());
-                        tempLocation.setZip(Integer.valueOf(txtLocationZip.getText()));
-                        tempLocation.setLtype(txtLocationType.getText());
+            if (txtLocationName.getText().isEmpty() || txtLocationStreet.getText().isEmpty()
+                    || txtLocationCity.getText().isEmpty() || txtLocationState.getText().isEmpty()
+                    || txtLocationZip.getText().isEmpty() || txtLocationType.getText().isEmpty()) {
+                Alert emptyField = new Alert(Alert.AlertType.ERROR,
+                        "Please make sure you have filled out all required fields.",
+                        ButtonType.OK);
+                emptyField.show();
+            } else {
+                Location tempLocation;
+                if (btnAddLocation.getText().equalsIgnoreCase("Save Changes")) {
+                    for (Location l : Location.locationList) {
+                        if (l.getLocationID().equalsIgnoreCase(txtLocationID.getText())) {
+                            tempLocation = Location.returnLocationObject(txtLocationID.getText());
+                            tempLocation.setName(txtLocationName.getText());
+                            tempLocation.setStreet(txtLocationStreet.getText());
+                            tempLocation.setCity(txtLocationCity.getText());
+                            tempLocation.setState(txtLocationState.getText());
+                            tempLocation.setZip(Integer.valueOf(txtLocationZip.getText()));
+                            tempLocation.setLtype(txtLocationType.getText());
 
-                        sendDBCommand("UPDATE LOCATION SET LOCATIONNAME = '"
-                                + tempLocation.getName() + "', LOCATIONTYPE = '"
-                                + tempLocation.getType() + "', LOCATIONSTREET = '"
-                                + tempLocation.getStreet() + "', LOCATIONCITY = '"
-                                + tempLocation.getCity() + "', LOCATIONSTATE = '"
-                                + tempLocation.getState() + "', LOCATIONZIP = "
-                                + tempLocation.getZip()
-                                + "WHERE LOCATIONID ='" + tempLocation.getLocationID() + "'");
-
+                            sendDBCommand("UPDATE LOCATION SET LOCATIONNAME = '"
+                                    + tempLocation.getName() + "', LOCATIONTYPE = '"
+                                    + tempLocation.getType() + "', LOCATIONSTREET = '"
+                                    + tempLocation.getStreet() + "', LOCATIONCITY = '"
+                                    + tempLocation.getCity() + "', LOCATIONSTATE = '"
+                                    + tempLocation.getState() + "', LOCATIONZIP = "
+                                    + tempLocation.getZip()
+                                    + "WHERE LOCATIONID ='" + tempLocation.getLocationID() + "'");
+                        }
                     }
+                } else {
+                    tempLocation = new Location(
+                            txtLocationID.getText(),
+                            txtLocationName.getText(),
+                            txtLocationStreet.getText(),
+                            txtLocationCity.getText(),
+                            txtLocationState.getText(),
+                            Integer.valueOf(txtLocationZip.getText()),
+                            txtLocationType.getText()
+                    );
+                    Location.locationList.add(tempLocation);
+                    tempLocation.writeLocation();
                 }
-            } else {
-                tempLocation = new Location(
-                        txtLocationID.getText(),
-                        txtLocationName.getText(),
-                        txtLocationStreet.getText(),
-                        txtLocationCity.getText(),
-                        txtLocationState.getText(),
-                        Integer.valueOf(txtLocationZip.getText()),
-                        txtLocationType.getText()
-                );
-                Location.locationList.add(tempLocation);
-                tempLocation.writeLocation();
-            }
 
-            currentLocationsList.getItems().clear();
-            currentLocations.clear();
-            locationNames.clear();
-            for (Location l : Location.locationList) {
-                currentLocations.add(l);
-                locationNames.add(l.getName());
+                currentLocationsList.getItems().clear();
+                currentLocations.clear();
+                locationNames.clear();
+                for (Location l : Location.locationList) {
+                    currentLocations.add(l);
+                    locationNames.add(l.getName());
+                }
+                txtLocationID.setText("location" + Location.locationCount);
+                txtLocationName.clear();
+                txtLocationStreet.clear();
+                txtLocationCity.clear();
+                txtLocationState.clear();
+                txtLocationZip.clear();
+                txtLocationType.clear();
+                if (btnAddLocation.getText().equalsIgnoreCase("Save Changes")) {
+                    Alert confirmEditLocation = new Alert(Alert.AlertType.CONFIRMATION,
+                            "Changes to location have been saved.",
+                            ButtonType.OK);
+                    confirmEditLocation.show();
+                } else {
+                    Alert confirmAddLocation = new Alert(Alert.AlertType.CONFIRMATION,
+                            "New Location has been added to the list.",
+                            ButtonType.OK);
+                    confirmAddLocation.show();
+                }
+                btnAddLocation.setText("Add New Location");
             }
-            txtLocationID.setText("location" + Location.locationCount);
-            txtLocationName.clear();
-            txtLocationStreet.clear();
-            txtLocationCity.clear();
-            txtLocationState.clear();
-            txtLocationZip.clear();
-            txtLocationType.clear();
-            if (btnAddLocation.getText().equalsIgnoreCase("Save Changes")) {
-                Alert confirmEditLocation = new Alert(Alert.AlertType.CONFIRMATION,
-                        "Changes to location have been saved.",
-                        ButtonType.OK);
-                confirmEditLocation.show();
-            } else {
-                Alert confirmAddLocation = new Alert(Alert.AlertType.CONFIRMATION,
-                        "New Location has been added to the list.",
-                        ButtonType.OK);
-                confirmAddLocation.show();
-            }
-            btnAddLocation.setText("Add New Location");
         });
 
         // Edit Button actions
@@ -1303,54 +1327,45 @@ public class MainWindow {
         stage.setScene(scene);
         stage.show();
 
+        eventLV.setPrefHeight(300);
+        volunteerLV.setPrefHeight(300);
+
     }
 
     public void totalHoursReport() {
         Stage stage = new Stage();
         stage.setTitle("Volunteers Total Hours Report");
-        GridPane pane = new GridPane();
-        Label volunteerLBL = new Label("Select Volunteer: ");
-        Label totalHoursLBL = new Label("Total Quarter Hours Worked To-Date:");
-        Label totalHoursCalculated = new Label("0");
-        ComboBox<Volunteer> volunteerCB = new ComboBox<>(FXCollections.observableList(Volunteer.volunteerArrayList));
-        VBox hoursVB = new VBox();
-        HBox titleHB = new HBox();
-        HBox hoursHB = new HBox();
+        GridPane hoursReportPane = new GridPane();
+        Label lblHoursReport = new Label("Total Quarter Hours Worked To-Date by Each BARK Volunteer");
+        VBox hoursVBox = new VBox();
+        Text txtReportIncludes = new Text("*This report includes all active and inactive volunteers.");
 
-        hoursVB.setAlignment(Pos.CENTER);
-        pane.setAlignment(Pos.CENTER);
-        titleHB.setAlignment(Pos.CENTER);
-        hoursHB.setAlignment(Pos.CENTER);
+        hoursReportPane.setAlignment(Pos.CENTER);
+        hoursVBox.setAlignment(Pos.CENTER);
 
         //Table for Volunteer Hours
         TableView volunteerTable = new TableView();
-        TableColumn dateCol = new TableColumn("Date");
-        TableColumn checkInCol = new TableColumn("Check In");
-        TableColumn checkOutCol = new TableColumn("Check Out");
-        TableColumn hoursCol = new TableColumn("Total Hours");
+        volunteerTable.setItems(allVolunteers);
+        TableColumn tblcVolunteerFName = new TableColumn("Volunteer First Name");
+        TableColumn tblcVolunteerLName = new TableColumn("Volunteer Last Name");
+        TableColumn tblcTotalQHours = new TableColumn("Total Quarter Hours");
+
+        tblcVolunteerFName.setCellValueFactory(new PropertyValueFactory<Event, String>("firstName"));
+        tblcVolunteerLName.setCellValueFactory(new PropertyValueFactory<Event, String>("lastName"));
+        tblcTotalQHours.setCellValueFactory(new PropertyValueFactory<Event, String>("totalQHours"));
+
         volunteerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);//Makes it so the user cannot make the columns bigger/smaller
         volunteerTable.setPrefWidth(500);
-        volunteerTable.getColumns().addAll(dateCol, checkInCol, checkOutCol, hoursCol);
+        volunteerTable.getColumns().addAll(tblcVolunteerFName, tblcVolunteerLName, tblcTotalQHours);
 
-        pane.add(hoursVB, 0, 0);
+        hoursReportPane.add(hoursVBox, 0, 0);
+        hoursVBox.setSpacing(10);
+        hoursVBox.setPadding(new Insets(10, 20, 10, 20));
+        hoursVBox.getChildren().addAll(lblHoursReport, volunteerTable, txtReportIncludes);
 
-        //VBox for grouping
-        hoursVB.setSpacing(20);
-        hoursVB.setPadding(new Insets(10, 10, 10, 10));
-        hoursVB.getChildren().addAll(titleHB, volunteerTable, hoursHB);
-
-        //HBox for title
-        titleHB.getChildren().addAll(volunteerLBL, volunteerCB);
-        titleHB.setSpacing(20);
-
-        //HBox for Hours Calculated
-        hoursHB.getChildren().addAll(totalHoursLBL, totalHoursCalculated);
-        hoursHB.setSpacing(20);
-
-        Scene scene = new Scene(pane, 600, 500);
+        Scene scene = new Scene(hoursReportPane, 600, 500);
         stage.setScene(scene);
         stage.show();
-
     }
 
     public void mileageReport() {
@@ -1379,7 +1394,7 @@ public class MainWindow {
         TableView volunteerDrivesTable = new TableView();
         TableColumn tblcDate = new TableColumn("Date");
         TableColumn tblcLocation = new TableColumn("Location");
-        TableColumn tblcMiles = new TableColumn("Mileage Driven");
+        TableColumn tblcMiles = new TableColumn("Miles Driven");
 
         tblcDate.setCellValueFactory(new PropertyValueFactory<Drives, String>("driveDate"));
         tblcLocation.setCellValueFactory(new PropertyValueFactory<Drives, String>("locationName"));
@@ -1403,6 +1418,8 @@ public class MainWindow {
         stage.setScene(scene);
         stage.show();
 
+        volunteerDrivesTable.setPrefHeight(250);
+
         comboVolunteers.setOnAction(e -> {
             try {
                 Volunteer selectedVolunteer = comboVolunteers.getSelectionModel().getSelectedItem();
@@ -1424,6 +1441,7 @@ public class MainWindow {
         });
     }
 
+    // Method to generate specialization report 
     public void specializationReport() {
         Stage stage = new Stage();
         stage.setTitle("Volunteers Specialization Report");
@@ -1447,57 +1465,9 @@ public class MainWindow {
         specialVBox.getChildren().addAll(specialHBox, lblVolunteers, volunteerList);
         specialVBox.setPadding(new Insets(10, 20, 10, 20));
 
-        //Bar Graph
-        String animalHC = "Animal Health Care";
-        String feeding = "Feeding";
-        String enclosureCare = "Enclosure Care";
-        String adopterRel = "Adopter Relations";
-        String eventVol = "Event Volunteer";
-        CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setCategories(specializations);
-        NumberAxis yAxis = new NumberAxis();
-        BarChart<String, Number> bc
-                = new BarChart<String, Number>(xAxis, yAxis);
-        bc.setTitle("Specialization Summary");
-        xAxis.setLabel("Specialization");
-        yAxis.setLabel("# of Volunteers");
-
-        // Get count of volunteers associated with each specialization
-        int healthCareCount = 0;
-        int feedingCount = 0;
-        int enclosureCount = 0;
-        int adoptRelCount = 0;
-        int eventVolCount = 0;
-        for (Volunteer v : Volunteer.volunteerArrayList) {
-
-        }
-
-        //Number of volunteers will need to be changed to match accurate results
-        XYChart.Series series = new XYChart.Series();
-        series.getData().add(new XYChart.Data(animalHC, 2));
-        series.getData().add(new XYChart.Data(feeding, 5));
-        series.getData().add(new XYChart.Data(enclosureCare, 7));
-        series.getData().add(new XYChart.Data(adopterRel, 3));
-        series.getData().add(new XYChart.Data(eventVol, 10));
-
-        bc.getData().addAll(series);
-
-        //Changes the color of the bars
-        Node n = bc.lookup(".data0.chart-bar");
-        n.setStyle("-fx-bar-fill: CADETBLUE");
-        n = bc.lookup(".data1.chart-bar");
-        n.setStyle("-fx-bar-fill:DARKGRAY");
-        n = bc.lookup(".data2.chart-bar");
-        n.setStyle("-fx-bar-fill: CADETBLUE");
-        n = bc.lookup(".data3.chart-bar");
-        n.setStyle("-fx-bar-fill: DARKGRAY");
-        n = bc.lookup(".data4.chart-bar");
-        n.setStyle("-fx-bar-fill: CADETBLUE");
-
-        bc.setLegendVisible(false);
-
+        BarChart bc = displayBarChart();
         specializationReportPane.add(specialVBox, 0, 0);
-        specializationReportPane.add(bc, 1, 0);
+        specializationReportPane.add(bc, 7, 0);
 
         Scene scene = new Scene(specializationReportPane, 900, 500);
         stage.setScene(scene);
@@ -1515,6 +1485,56 @@ public class MainWindow {
             volunteerList.setItems(specialVolunteers);
         });
 
+    }
+
+    // Method to display bar chart - updates in real time because we use SQL!
+    public BarChart displayBarChart() {
+
+        Connection dbConn;
+        Statement commStmt;
+        // Set up connection strings
+        String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+        String userID = "javauser";
+        String userPASS = "javapass";
+        OracleDataSource ds;
+
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        BarChart bc = new BarChart(xAxis, yAxis);
+        bc.setTitle("Specialization Summary");
+        xAxis.setLabel("Specialization");
+        yAxis.setLabel("# of Volunteers");
+
+        // try to connect
+        try {
+            ds = new OracleDataSource();
+            ds.setURL(URL);
+            dbConn = ds.getConnection(userID, userPASS);
+            commStmt = dbConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            // Query to get count of volunteers associated with each specialization
+            String sqlQuery = "SELECT S.SPECIALIZATIONNAME, COUNT(V.VOLUNTEERID) "
+                    + "FROM VOLUNTEER V, SPECIALIZATION S "
+                    + "WHERE S.SPECIALIZATIONNAME = V.SPECIALIZATION GROUP BY S.SPECIALIZATIONNAME";
+            ResultSet dbResults = commStmt.executeQuery(sqlQuery);
+            ArrayList<String> names = new ArrayList<>();
+            ArrayList<Double> count = new ArrayList<>();
+            while (dbResults.next()) {
+                names.add(dbResults.getString(1));
+                count.add(dbResults.getDouble(2));
+            }
+            XYChart.Series series = new XYChart.Series();
+
+            for (int i = 0; i < names.size(); i++) {
+                series.getData().add(new XYChart.Data(names.get(i), count.get(i)));
+            }
+            bc.getData().add(series);
+            bc.setLegendVisible(false);
+
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+        return bc;
     }
 
     public void manageVolunteersTab() {
@@ -1699,57 +1719,64 @@ public class MainWindow {
 
         // Add Animal button action
         btnAdd.setOnAction(e -> {
-            Animal tempAnimal;
-            if (btnAdd.getText().equalsIgnoreCase("Save Changes")) {
-                for (Animal a : Animal.animalList) {
-                    if (a.getAnimalID().equalsIgnoreCase(txtAnimalID.getText())) {
-                        tempAnimal = Animal.returnAnimalObject(txtAnimalID.getText());
-                        tempAnimal.setAnimalName(txtAnimalName.getText());
-                        tempAnimal.setAnimalSpecies(txtAnimalSpecies.getText());
-                        tempAnimal.setAnimalBreed(txtAnimalBreed.getText());
-                        tempAnimal.setAnimalAge(Integer.valueOf(txtAnimalAge.getText()));
+            if (txtAnimalName.getText().isEmpty() || txtAnimalSpecies.getText().isEmpty()
+                    || txtAnimalBreed.getText().isEmpty() || txtAnimalAge.getText().isEmpty()) {
+                Alert emptyField = new Alert(Alert.AlertType.ERROR,
+                        "Please make sure you have filled out all required fields.",
+                        ButtonType.OK);
+                emptyField.show();
+            } else {
+                Animal tempAnimal;
+                if (btnAdd.getText().equalsIgnoreCase("Save Changes")) {
+                    for (Animal a : Animal.animalList) {
+                        if (a.getAnimalID().equalsIgnoreCase(txtAnimalID.getText())) {
+                            tempAnimal = Animal.returnAnimalObject(txtAnimalID.getText());
+                            tempAnimal.setAnimalName(txtAnimalName.getText());
+                            tempAnimal.setAnimalSpecies(txtAnimalSpecies.getText());
+                            tempAnimal.setAnimalBreed(txtAnimalBreed.getText());
+                            tempAnimal.setAnimalAge(Integer.valueOf(txtAnimalAge.getText()));
 
-                        sendDBCommand("UPDATE ANIMAL SET ANIMALNAME = '"
-                                + tempAnimal.getAnimalName() + "', ANIMALSPECIES = '"
-                                + tempAnimal.getAnimalSpecies() + "', ANIMALBREED = '"
-                                + tempAnimal.getAnimalBreed() + "', ANIMALAGE = "
-                                + tempAnimal.getAnimalAge()
-                                + " WHERE ANIMALID ='" + tempAnimal.getAnimalID() + "'");
-
+                            sendDBCommand("UPDATE ANIMAL SET ANIMALNAME = '"
+                                    + tempAnimal.getAnimalName() + "', ANIMALSPECIES = '"
+                                    + tempAnimal.getAnimalSpecies() + "', ANIMALBREED = '"
+                                    + tempAnimal.getAnimalBreed() + "', ANIMALAGE = "
+                                    + tempAnimal.getAnimalAge()
+                                    + " WHERE ANIMALID ='" + tempAnimal.getAnimalID() + "'");
+                        }
                     }
+                } else {
+                    tempAnimal = new Animal(
+                            txtAnimalID.getText(),
+                            txtAnimalName.getText(),
+                            txtAnimalSpecies.getText(),
+                            txtAnimalBreed.getText(),
+                            Integer.valueOf(txtAnimalAge.getText())
+                    );
+                    Animal.animalList.add(tempAnimal);
+                    tempAnimal.writeAnimal();
                 }
-            } else {
-                tempAnimal = new Animal(
-                        txtAnimalID.getText(),
-                        txtAnimalName.getText(),
-                        txtAnimalSpecies.getText(),
-                        txtAnimalBreed.getText(),
-                        Integer.valueOf(txtAnimalAge.getText())
-                );
-                Animal.animalList.add(tempAnimal);
-                tempAnimal.writeAnimal();
+                currentAnimals.clear();
+                for (Animal a : Animal.animalList) {
+                    currentAnimals.add(a);
+                }
+                txtAnimalID.setText("animal" + Animal.animalCount);
+                txtAnimalName.clear();
+                txtAnimalSpecies.clear();
+                txtAnimalBreed.clear();
+                txtAnimalAge.clear();
+                if (btnAdd.getText().equalsIgnoreCase("Save Changes")) {
+                    Alert confirmEditAnimal = new Alert(Alert.AlertType.CONFIRMATION,
+                            "Changes to animal have been saved.",
+                            ButtonType.OK);
+                    confirmEditAnimal.show();
+                } else {
+                    Alert confirmAddAnimal = new Alert(Alert.AlertType.CONFIRMATION,
+                            "New animal has been added to the list.",
+                            ButtonType.OK);
+                    confirmAddAnimal.show();
+                }
+                btnAdd.setText("Add New Animal");
             }
-            currentAnimals.clear();
-            for (Animal a : Animal.animalList) {
-                currentAnimals.add(a);
-            }
-            txtAnimalID.setText("animal" + Animal.animalCount);
-            txtAnimalName.clear();
-            txtAnimalSpecies.clear();
-            txtAnimalBreed.clear();
-            txtAnimalAge.clear();
-            if (btnAdd.getText().equalsIgnoreCase("Save Changes")) {
-                Alert confirmEditAnimal = new Alert(Alert.AlertType.CONFIRMATION,
-                        "Changes to animal have been saved.",
-                        ButtonType.OK);
-                confirmEditAnimal.show();
-            } else {
-                Alert confirmAddAnimal = new Alert(Alert.AlertType.CONFIRMATION,
-                        "New animal has been added to the list.",
-                        ButtonType.OK);
-                confirmAddAnimal.show();
-            }
-            btnAdd.setText("Add New Animal");
         });
 
         // Edit Button actions
@@ -1793,11 +1820,18 @@ public class MainWindow {
 
         // Add Button action
         btnAdd.setOnAction(e -> {
-            Specialization newSpecial = new Specialization(txtAdd.getText());
-            specializations.add(newSpecial.getSpecializationName());
-            specializationList.setItems(specializations);
-            newSpecial.writeSpecialization();
-            txtAdd.clear();
+            if (txtAdd.getText().isEmpty()) {
+                Alert emptyField = new Alert(Alert.AlertType.ERROR,
+                        "Please enter a specialization to add.",
+                        ButtonType.OK);
+                emptyField.show();
+            } else {
+                Specialization newSpecial = new Specialization(txtAdd.getText());
+                specializations.add(newSpecial.getSpecializationName());
+                specializationList.setItems(specializations);
+                newSpecial.writeSpecialization();
+                txtAdd.clear();
+            }
         });
     }
 

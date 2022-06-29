@@ -142,7 +142,6 @@ public class BarkApplication extends Application {
             w.writeWork();
         }
     }*/
-
     // Method to read volunteer data from database
     public void readVolunteerData() {
         Connection dbConn;
@@ -189,10 +188,12 @@ public class BarkApplication extends Application {
                 Volunteer.volunteerArrayList.add(dbVolunteer);
             }
             MainWindow.allVolunteers.clear();
-            for (Volunteer v: Volunteer.volunteerArrayList) {
-                MainWindow.allVolunteers.add(v);
+            for (Volunteer v : Volunteer.volunteerArrayList) {
+                if (!v.getStatus().equalsIgnoreCase("conditional")) {
+                    MainWindow.allVolunteers.add(v);
+                }
             }
-            
+
             //Read Specialization data into Specialization objects
             String specializationQuery = "SELECT SPECIALIZATIONNAME FROM SPECIALIZATION";
             ResultSet dbSpecializations = commStmt.executeQuery(specializationQuery);
