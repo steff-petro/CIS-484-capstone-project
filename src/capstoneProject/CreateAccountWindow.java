@@ -123,6 +123,11 @@ public class CreateAccountWindow {
                 confirmSubmit.show();
                 primaryStage.close();
 
+            } catch (NumberFormatException nfe) {
+                Alert nfException = new Alert(Alert.AlertType.ERROR,
+                        "Please make sure to enter a number for zip code.",
+                        ButtonType.OK);
+                nfException.show();
             } catch (Exception ex) {
                 Alert noSelection = new Alert(Alert.AlertType.ERROR,
                         "Your application could not be submitted. Please make sure you have filled out all fields.",

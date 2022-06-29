@@ -71,12 +71,15 @@ public class BarkApplication extends Application {
                 String password = textPassword.getText();
 
                 // Login verification
-//            boolean userExists = Volunteer.verifyLogin(volunteerID, password);
-                boolean userExists = Volunteer.verifyLogin("volunteer2", "AdminPassword12!");
+                boolean userExists = Volunteer.verifyLogin(volunteerID, password);
 
                 if (userExists) {
                     checkIn = Instant.now();
-                    MainWindow mainW = new MainWindow(this, checkIn, "volunteer2");
+                    MainWindow mainW = new MainWindow(this, volunteerID);
+                    btnCheckIn.setText("Check Out");
+                    noAccountVBox.getChildren().remove(noAccountLabel);
+                    noAccountVBox.getChildren().remove(btnApplyHere);
+
                 } else {
                     Alert invalidInput = new Alert(Alert.AlertType.ERROR,
                             "Incorrect user credentials.",
@@ -86,6 +89,7 @@ public class BarkApplication extends Application {
 
                 textVolunteerID.clear();
                 textPassword.clear();
+                textVolunteerID.setText(volunteerID);
 
                 // Displays window to log out
             } else {
@@ -112,7 +116,7 @@ public class BarkApplication extends Application {
 
                     // Calculating total quarter hours
                     currentUser.setTotalQHours(currentUser.getTotalQHours() + quarterHours);
-                    if (currentUser.getTotalQHours() >= 80) {
+                    if (currentUser.getTotalQHours() >= 80 && (!currentUser.getStatus().equalsIgnoreCase("admin"))) {
                         currentUser.setStatus("active");
                     }
 
